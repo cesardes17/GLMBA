@@ -3,8 +3,8 @@ import {
   getAuth,
   setPersistence,
   browserLocalPersistence,
-  browserSessionPersistence,
   initializeAuth,
+  // eslint-disable-next-line import/named
   getReactNativePersistence,
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
