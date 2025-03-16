@@ -10,13 +10,14 @@ export const themes = {
     borderColor: colors.color800,
     textColor: colors.color950,
     //boton
-    buttonbackgroundColor: colors.color500,
+    buttonbackgroundColor: colors.color200,
     buttonTextColor: colors.color950,
-    buttonBorderColor: colors.color500,
+    buttonBorderColor: colors.color950,
     // Inputs
-    inputBackgroundColor: colors.color100,
+    inputBackgroundColor: colors.color050,
     inputBorderColor: colors.color500,
     inputTextColor: colors.color950,
+    inputFocusedBackgroundColor: colors.color200,
   },
   dark: {
     background: colors.darkBackground,
@@ -25,14 +26,17 @@ export const themes = {
     inactiveIconColor: colors.color500,
     borderColor: colors.color300,
     textColor: colors.color200,
-
     //boton
-    buttonbackgroundColor: colors.color500,
+    buttonbackgroundColor: colors.color200,
     buttonTextColor: colors.color950,
-    buttonBorderColor: colors.color500,
+    buttonBorderColor: colors.color950,
     // Inputs
-    inputBackgroundColor: colors.color100,
+    inputBackgroundColor: colors.color050,
     inputBorderColor: colors.color500,
     inputTextColor: colors.color950,
+    inputFocusedBackgroundColor: colors.color200,
+    inputErrorBackgroundColor: colors.errorLight,
+    inputErrorBorderColor: colors.errorStrong,
+    inputErrorTextColor: colors.errorText,
   },
 };

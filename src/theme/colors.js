@@ -12,4 +12,8 @@ export const colors = {
   color950: "#002F23",
   lightBackground: "#FFFFFF",
   darkBackground: "#1D1D1D",
+  errorLight: "#FFEBEB",
+  errorStrong: "#DC2626",
+  errorText: "#D32F2F",
+  red: "#E74C3C",
 };
