@@ -7,7 +7,6 @@ import { StatusBar } from "expo-status-bar";
 export default function Layout() {
   return (
     <ThemeProvider>
-      <StatusBar style="auto" />
       <Slot />
     </ThemeProvider>
   );

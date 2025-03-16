@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { themes } from "../theme/themes";
-
+import { StatusBar } from "expo-status-bar";
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
@@ -48,6 +48,7 @@ export const ThemeProvider = ({ children }) => {
     <ThemeContext.Provider
       value={{ theme: getTheme(), userPreference, setUserPreference }}
     >
+      <StatusBar style={userPreference === "dark" ? "light" : "dark"} />
       {children}
     </ThemeContext.Provider>
   );

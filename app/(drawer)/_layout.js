@@ -6,7 +6,9 @@ import { useTheme } from "../../src/hooks/useTheme";
 export default function DrawerLayout() {
   const { theme } = useTheme();
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: theme.background }}
+    >
       <Drawer
         screenOptions={{
           drawerStyle: {
