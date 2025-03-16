@@ -1,30 +1,29 @@
-// components/HeaderRight.js
-import React, { useContext } from "react";
-import { TouchableOpacity, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { Text, TouchableOpacity } from "react-native";
+import { Link } from "expo-router";
+import { useTheme } from "../hooks/useTheme";
 
 export default function HeaderRight() {
-  const isAuthenticated = false;
-  const navigation = useNavigation();
-
-  const handlePress = () => {
-    if (isAuthenticated) {
-      // Navega a la pantalla de perfil o abre un menú de opciones
-      navigation.navigate("Profile");
-    } else {
-      // Navega a la pantalla de inicio de sesión
-      navigation.navigate("Login");
-    }
-  };
-
+  const { theme } = useTheme();
   return (
-    <TouchableOpacity onPress={handlePress} style={{ marginRight: 10 }}>
-      {isAuthenticated ? (
-        <Ionicons name="person-circle-outline" size={24} color="#fff" />
-      ) : (
-        <Text style={{ color: "#fff" }}>Iniciar Sesión</Text>
-      )}
-    </TouchableOpacity>
+    <Link href="/" style={{ marginRight: 20 }}>
+      <TouchableOpacity>
+        <Text style={{ color: theme.textColor, ...styles.appTitle }}>
+          {" "}
+          GLMBA
+        </Text>
+      </TouchableOpacity>
+    </Link>
   );
 }
+const styles = {
+  appTitle: {
+    fontSize: 20, // Tamaño grande pero sin ser exagerado
+    fontWeight: "bold", // Fuente en negrita para destacar
+    letterSpacing: 1, // Espaciado entre letras para mejor legibilidad
+    textTransform: "uppercase", // Convertir a mayúsculas para un diseño más limpio
+    textShadowColor: "rgba(0, 0, 0, 0.2)", // Ligero sombreado
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+};
