@@ -1,0 +1,15 @@
+export const colors = {
+  color050: "#EBFEF5",
+  color100: "#CEFDE5",
+  color200: "#A2F8D0",
+  color300: "#66EFB8",
+  color400: "#29DE9B",
+  color500: "#05C484",
+  color600: "#00A06C",
+  color700: "#008059",
+  color800: "#007050",
+  color900: "#01533D",
+  color950: "#002F23",
+  lightBackground: "#FFFFFF",
+  darkBackground: "#1D1D1D",
+};
