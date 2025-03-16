@@ -1,4 +1,4 @@
-import { View } from "react-native-web";
+import { View } from "react-native";
 import { useTheme } from "../../src/hooks/useTheme";
 import SettingsScreen from "../../src/screens/SettingsScreen";
 export default function HomePage() {
@@ -8,7 +8,7 @@ export default function HomePage() {
     <View
       style={{
         flex: 1,
-        backgroundColor: theme.background,
+        backgroundColor: "#00FF00",
         alignItems: "center",
         justifyContent: "center",
       }}

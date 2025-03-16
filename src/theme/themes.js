@@ -4,19 +4,35 @@ import { colors } from "./colors";
 export const themes = {
   light: {
     background: colors.lightBackground,
-    color: colors.color950,
-    colorIcon: colors.color500,
-    inactiveIconColor: colors.color200,
+    color: colors.color500,
+    colorIcon: colors.color700,
+    inactiveIconColor: colors.color500,
     borderColor: colors.color800,
-    // Puedes añadir más propiedades como buttonColor, borderColor, etc.
+    textColor: colors.color950,
+    //boton
+    buttonbackgroundColor: colors.color500,
+    buttonTextColor: colors.color950,
+    buttonBorderColor: colors.color500,
+    // Inputs
+    inputBackgroundColor: colors.color100,
+    inputBorderColor: colors.color500,
+    inputTextColor: colors.color950,
   },
   dark: {
     background: colors.darkBackground,
-    color: colors.color200,
-    colorIcon: colors.color500,
-    inactiveIconColor: colors.color200,
+    color: colors.color500,
+    colorIcon: colors.color700,
+    inactiveIconColor: colors.color500,
     borderColor: colors.color300,
+    textColor: colors.color200,
 
-    // Añade más propiedades según necesites
+    //boton
+    buttonbackgroundColor: colors.color500,
+    buttonTextColor: colors.color950,
+    buttonBorderColor: colors.color500,
+    // Inputs
+    inputBackgroundColor: colors.color100,
+    inputBorderColor: colors.color500,
+    inputTextColor: colors.color950,
   },
 };
