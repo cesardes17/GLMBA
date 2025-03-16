@@ -2,12 +2,14 @@
 import React from "react";
 import { ThemeProvider } from "../src/hooks/useTheme";
 import { Slot } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { AuthProvider } from "../src/hooks/useAuth";
 
 export default function Layout() {
   return (
-    <ThemeProvider>
-      <Slot />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <Slot />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
