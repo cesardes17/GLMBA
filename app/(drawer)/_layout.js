@@ -30,8 +30,12 @@ export default function DrawerLayout() {
           options={{ drawerLabel: "Ajustes", title: "Ajustes" }}
         />
         <Drawer.Screen
-          name="(auth)/login"
+          name="login"
           options={{ drawerLabel: "Login", title: "Inicio de Sesion" }}
+        />
+        <Drawer.Screen
+          name="registration"
+          options={{ drawerLabel: "", title: "Crear una Cuenta" }}
         />
       </Drawer>
     </GestureHandlerRootView>

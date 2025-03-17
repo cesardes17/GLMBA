@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Formik } from "formik";
-import {
-  View,
-  Button,
-  Text,
-  ActivityIndicator,
-  StyleSheet,
-} from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import FormikInputValue from "../formik/FormikInputValue";
 import { loginSchema } from "../../schemas/ValidationSchemas";
 import { login } from "../../servicies/firebase/authService";
+import StyledButton from "../StyledButton";
+
+const initialValues = {
+  email: "",
+  password: "",
+};
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
@@ -17,22 +17,22 @@ export default function LoginForm() {
 
   const handleLogin = async (values) => {
     setLoading(true);
-    setAuthError(""); // Limpiar errores previos
+    setAuthError("");
     try {
       await login(values.email, values.password);
     } catch (error) {
-      setAuthError(error.message); // Guardar mensaje de error
+      setAuthError(error.message);
     }
     setLoading(false);
   };
 
   return (
     <Formik
-      initialValues={{ email: "", password: "" }}
+      initialValues={initialValues}
       validationSchema={loginSchema}
       onSubmit={(values) => handleLogin(values)}
     >
-      {({ handleSubmit }) => (
+      {({ handleSubmit, isValid, dirty }) => (
         <View style={styles.container}>
           <FormikInputValue name="email" placeholder="Correo electrónico" />
           <FormikInputValue
@@ -41,17 +41,15 @@ export default function LoginForm() {
             secureTextEntry
           />
 
-          {/* 🔹 Mostrar errores de autenticación */}
           {authError ? <Text style={styles.errorText}>{authError}</Text> : null}
 
-          {/* 🔹 Botón de inicio de sesión con estado de carga */}
           {loading ? (
             <ActivityIndicator size="large" color="#05C484" />
           ) : (
-            <Button
+            <StyledButton
               title="Iniciar sesión"
               onPress={handleSubmit}
-              disabled={loading}
+              disabled={!isValid || !dirty}
             />
           )}
         </View>

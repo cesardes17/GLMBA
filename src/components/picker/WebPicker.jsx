@@ -15,8 +15,9 @@ export default function WebPicker({ data, selectedValue, onValueChange }) {
         borderColor: theme.inputBorderColor,
         borderWidth: 1, // Necesario para que el borde sea visible
         maxWidth: 300,
+        minWidth: 250,
         padding: 10,
-        fontSize: 16,
+        fontSize: 14,
         alignSelf: "center",
       }}
     >
