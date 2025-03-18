@@ -1,10 +1,14 @@
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme } from "../../src/hooks/useTheme";
+import { useAuth } from "../../src/hooks/useAuth";
 import HeaderRight from "../../src/components/headerRight";
 
 export default function DrawerLayout() {
   const { theme } = useTheme();
+  const { user } = useAuth();
+
+  console.log("Usuario autenticado:", user);
 
   return (
     <GestureHandlerRootView
@@ -20,22 +24,20 @@ export default function DrawerLayout() {
           headerRight: () => <HeaderRight />,
         }}
       >
-        {/* 🔹 Solo agregamos las rutas que queremos en el Drawer */}
+        {/* 🔹 Enlace común para todos los usuarios */}
         <Drawer.Screen
           name="index"
           options={{ drawerLabel: "Inicio", title: "Inicio" }}
         />
+
+        {/* 🔹 Enlaces de Login y Registro */}
         <Drawer.Screen
-          name="settings"
-          options={{ drawerLabel: "Ajustes", title: "Ajustes" }}
-        />
-        <Drawer.Screen
-          name="login"
-          options={{ drawerLabel: "Login", title: "Inicio de Sesion" }}
-        />
-        <Drawer.Screen
-          name="registration"
-          options={{ drawerLabel: "", title: "Crear una Cuenta" }}
+          name="(auth)"
+          options={{
+            drawerLabel: "Inicio/Registro",
+            title: "",
+            drawerItemStyle: { display: user ? "none" : "flex" },
+          }}
         />
       </Drawer>
     </GestureHandlerRootView>

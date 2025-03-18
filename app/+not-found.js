@@ -1,9 +1,11 @@
-import { View, Text, Button } from "react-native-web";
+import { View, Text } from "react-native";
 import { useTheme } from "../src/hooks/useTheme";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
+import StyledButton from "../src/components/StyledButton";
 
 export default function HomePage() {
   const { theme } = useTheme();
+  const router = useRouter();
 
   return (
     <View
@@ -15,9 +17,12 @@ export default function HomePage() {
       }}
     >
       <Text style={{ color: theme.color }}>PAGINA NO ENCONTRADA </Text>
-      <Link href={"/"}>
-        <Button title="Regresar" />
-      </Link>
+      <StyledButton
+        title="Ir a Inicio"
+        onPress={() => {
+          router.push("/");
+        }}
+      />
     </View>
   );
 }

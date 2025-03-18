@@ -1,49 +1,68 @@
-// src/context/AuthContext.js
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { getUserData } from "../servicies/userService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Creamos el contexto
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Escuchar el estado de autenticación en Firebase
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
+    let isMounted = true; // 🔹 Variable para verificar si el componente está montado
 
-      // Guardar el estado en AsyncStorage para persistencia
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!isMounted) return; // Evita la actualización si el componente está desmontado
+
       if (currentUser) {
-        await AsyncStorage.setItem("user", JSON.stringify(currentUser));
+        setUser(currentUser);
+
+        try {
+          const userInfo = await getUserData(currentUser.uid);
+          if (isMounted) {
+            setUserData(userInfo);
+            await AsyncStorage.setItem("user", JSON.stringify(userInfo));
+          }
+        } catch (error) {
+          console.error("Error obteniendo datos del usuario:", error);
+        }
       } else {
+        setUser(null);
+        setUserData(null);
         await AsyncStorage.removeItem("user");
       }
+
+      if (isMounted) setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false; // 🔹 Marcamos el componente como desmontado al limpiar el efecto
+      unsubscribe();
+    };
   }, []);
 
-  // Función para cerrar sesión
+  // 🔹 Función de logout protegida contra actualizaciones en componentes desmontados
   const logout = async () => {
     try {
       await signOut(auth);
-      await AsyncStorage.removeItem("user"); // Eliminar usuario de AsyncStorage
+      setUser(null);
+      setUserData(null);
+      await AsyncStorage.removeItem("user");
     } catch (error) {
       console.error("Error al cerrar sesión:", error.message);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider
+      value={{ user, userData, setUserData, loading, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook personalizado para usar el contexto
 export const useAuth = () => useContext(AuthContext);

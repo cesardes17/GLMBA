@@ -1,7 +1,8 @@
 import { View, Text } from "react-native";
-import { useTheme } from "../../src/hooks/useTheme";
+import { useTheme } from "../../../src/hooks/useTheme";
+import LoginScreen from "../../../src/screens/LoginScreen";
 
-export default function HomePage() {
+export default function LoginPage() {
   const { theme } = useTheme();
 
   return (
@@ -13,9 +14,7 @@ export default function HomePage() {
         justifyContent: "center",
       }}
     >
-      <Text style={{ color: theme.color }}>
-        Este es un ejemplo de tema desde drawer
-      </Text>
+      <LoginScreen />
     </View>
   );
 }

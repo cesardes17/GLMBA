@@ -12,14 +12,21 @@ export default function HomePage() {
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: theme.background,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       {user ? (
         <>
-          <Text>Bienvenido, {user.email}</Text>
+          <Text style={{ color: theme.color }}>Bienvenido, {user.email}</Text>
           <Button title="Cerrar sesión" onPress={logout} />
         </>
       ) : (
-        <Text>No hay usuario autenticado</Text>
+        <Text style={{ color: theme.color }}>No hay usuario autenticado</Text>
       )}
     </View>
   );

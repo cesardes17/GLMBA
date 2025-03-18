@@ -1,7 +1,8 @@
 import { View } from "react-native";
-import { useTheme } from "../../src/hooks/useTheme";
-import SettingsScreen from "../../src/screens/SettingsScreen";
-export default function HomePage() {
+import { useTheme } from "../../../src/hooks/useTheme";
+import RegistrationScreen from "../../../src/screens/RegistrationScreen";
+
+export default function RegistrationPage() {
   const { theme } = useTheme();
 
   return (
@@ -13,7 +14,7 @@ export default function HomePage() {
         justifyContent: "center",
       }}
     >
-      <SettingsScreen />
+      <RegistrationScreen />
     </View>
   );
 }

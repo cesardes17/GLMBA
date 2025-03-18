@@ -1,7 +1,8 @@
-import { View } from "react-native-web";
-import { useTheme } from "../../src/hooks/useTheme";
-import LoginScreen from "../../src/screens/LoginScreen";
-export default function HomePage() {
+import { View, Text } from "react-native";
+import { useTheme } from "../../../src/hooks/useTheme";
+import LoginScreen from "../../../src/screens/LoginScreen";
+
+export default function LoginPage() {
   const { theme } = useTheme();
 
   return (

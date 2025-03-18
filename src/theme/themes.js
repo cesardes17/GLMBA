@@ -22,8 +22,8 @@ export const themes = {
   dark: {
     background: colors.darkBackground,
     color: colors.color500,
-    colorIcon: colors.color700,
-    inactiveIconColor: colors.color500,
+    colorIcon: colors.color500,
+    inactiveIconColor: colors.color700,
     borderColor: colors.color300,
     textColor: colors.color200,
     //boton

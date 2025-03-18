@@ -42,6 +42,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     minWidth: 150,
+    maxWidth: 250,
+    alignSelf: "center",
     borderWidth: 2, // 🔹 Bordes visibles
     borderColor: "#000", // 🔹 De momento fijo en negro
     elevation: 3, // 🔹 Sombras en Android

@@ -10,11 +10,13 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 
+import { getDatabase } from "firebase/database";
+
 // Configuración de Firebase
 import firebaseConfig from "./config/firebaseConfig";
 // Inicializar Firebase
 export const app = initializeApp(firebaseConfig);
-
+const database = getDatabase(app);
 // Inicializar Auth
 let auth;
 if (Platform.OS === "web") {
@@ -32,4 +34,4 @@ if (Platform.OS === "web") {
   });
 }
 
-export { auth };
+export { auth, database };

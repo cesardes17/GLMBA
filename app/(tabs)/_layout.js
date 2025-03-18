@@ -1,45 +1,79 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+// /app/(tabs)/_layout.js
 import { Tabs } from "expo-router";
 import { useTheme } from "../../src/hooks/useTheme";
-import { SafeAreaView } from "react-native-safe-area-context";
-export default function TabLayout() {
-  const { theme } = useTheme();
+import { FontAwesome } from "@expo/vector-icons";
+import { useAuth } from "../../src/hooks/useAuth";
 
+export default function TabsLayout() {
+  const { theme } = useTheme();
+  const { user } = useAuth();
   return (
     <Tabs
       screenOptions={{
-        // Color de texto activo e inactivo
         tabBarActiveTintColor: theme.colorIcon,
-        tabBarInactiveTintColor: theme.inactiveIconColor || "#888",
-        // Estilos de la barra de tabs
+        tabBarInactiveTintColor: theme.inactiveIconColor,
         tabBarStyle: {
           backgroundColor: theme.background,
-          borderTopColor: theme.borderColor || "#ccc",
+          borderTopColor: theme.borderColor,
           height: 80,
         },
-        // Estilos del header (si lo usas)
-        headerStyle: {
-          backgroundColor: theme.background,
-        },
+        headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.color,
       }}
     >
+      <Tabs.Screen
+        name="games"
+        options={{
+          title: "Jornadas",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="calendar" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="clasification"
+        options={{
+          title: "Clasificación",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="list-ol" size={size} color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{
           title: "Inicio",
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome size={size} name="home" color={color} />
+            <FontAwesome name="home" size={size} color={color} />
           ),
         }}
       />
+
       <Tabs.Screen
-        name="settings"
+        name="profile"
         options={{
-          title: "Ajustes",
+          title: user ? "Perfil" : "Iniciar sesión",
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome size={size} name="cog" color={color} />
+            <FontAwesome name="user" size={size} color={color} />
           ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="links"
+        options={{
+          title: "Enlaces",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="ellipsis-h" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="(auth)"
+        options={{
+          title: "Autenticación",
+          tabBarItemStyle: { display: "none" },
         }}
       />
     </Tabs>

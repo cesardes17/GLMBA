@@ -1,7 +1,8 @@
-import { View } from "react-native-web";
-import { useTheme } from "../../src/hooks/useTheme";
-import RegistrationScreen from "../../src/screens/RegistrationScreen";
-export default function HomePage() {
+import { View } from "react-native";
+import { useTheme } from "../../../src/hooks/useTheme";
+import RegistrationScreen from "../../../src/screens/RegistrationScreen";
+
+export default function RegistrationPage() {
   const { theme } = useTheme();
 
   return (
