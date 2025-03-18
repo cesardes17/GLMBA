@@ -1,10 +1,4 @@
-import {
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  View,
-  Text,
-} from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useTheme } from "../../src/hooks/useTheme";
 import SettingsScreen from "../../src/screens/SettingsScreen";
 import { useAuth } from "../../src/hooks/useAuth";
@@ -17,56 +11,155 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const router = useRouter();
 
-  // Definir si se debe usar `KeyboardAvoidingView`
-  const isMobile = Platform.OS === "ios" || Platform.OS === "android";
-  const Container = isMobile ? KeyboardAvoidingView : View;
-
   return (
-    <Container
-      behavior={isMobile ? "padding" : undefined}
-      style={{ flex: 1, backgroundColor: theme.background }}
-    >
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView
         contentContainerStyle={{
-          padding: 20, // Espacio para evitar que quede pegado a los bordes
+          flexGrow: 1, // 🔥 Asegura que el contenido crezca y no haya fondo blanco
+          backgroundColor: theme.background,
+          paddingTop: 20,
         }}
         keyboardShouldPersistTaps="handled"
       >
-        {!user && (
-          <>
-            <StyledButton
-              title="Iniciar sesión"
-              onPress={() => {
-                router.push("/login");
-              }}
-            />
+        <View
+          style={{
+            backgroundColor: theme.background,
+            padding: 20,
+          }}
+        >
+          {!user ? (
+            <>
+              <StyledButton
+                title="Iniciar sesión"
+                onPress={() => {
+                  router.push("/login");
+                }}
+              />
+              <Separator />
+            </>
+          ) : null}
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+          <Text style={{ color: theme.textColor, marginTop: 15 }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
 
-            <Text style={{ color: theme.textColor, marginTop: 20 }}>
-              Sit culpa culpa nulla eu. Nostrud elit fugiat id esse qui nostrud
-              anim anim. Sunt irure elit pariatur aliquip labore adipisicing non
-              deserunt consequat sunt quis esse aliqua reprehenderit. Proident
-              in officia irure fugiat ipsum dolore tempor proident magna. Anim
-              ad reprehenderit nisi ad. Do labore aute officia mollit non Lorem
-              labore cupidatat adipisicing tempor veniam. Amet do excepteur
-              tempor non aliquip ipsum.{" "}
-            </Text>
-            <Text style={{ color: theme.textColor, marginTop: 20 }}>
-              Sit culpa culpa nulla eu. Nostrud elit fugiat id esse qui nostrud
-              anim anim. Sunt irure elit pariatur aliquip labore adipisicing non
-              deserunt consequat sunt quis esse aliqua reprehenderit. Proident
-              in officia irure fugiat ipsum dolore tempor proident magna. Anim
-              ad reprehenderit nisi ad. Do labore aute officia mollit non Lorem
-              labore cupidatat adipisicing tempor veniam. Amet do excepteur
-              tempor non aliquip ipsum.{" "}
-            </Text>
-            <Text style={{ color: theme.textColor, marginTop: 20 }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </Text>
-          </>
-        )}
-        <SettingsScreen />
+          {/* Más contenido... */}
+
+          <SettingsScreen />
+        </View>
       </ScrollView>
-    </Container>
+    </View>
   );
 }
