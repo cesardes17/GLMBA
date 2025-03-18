@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import { useTheme } from "../../src/hooks/useTheme";
 
 export default function ClasificationPage() {
-  const theme = useTheme();
+  const { theme } = useTheme();
   return (
     <View
       style={{

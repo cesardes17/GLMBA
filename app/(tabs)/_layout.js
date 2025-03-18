@@ -76,6 +76,20 @@ export default function TabsLayout() {
           tabBarItemStyle: { display: "none" },
         }}
       />
+      <Tabs.Screen
+        name="(organizador)"
+        options={{
+          title: "Autenticación",
+          tabBarItemStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(links)"
+        options={{
+          title: "Autenticación",
+          tabBarItemStyle: { display: "none" },
+        }}
+      />
     </Tabs>
   );
 }

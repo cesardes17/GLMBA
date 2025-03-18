@@ -52,10 +52,9 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    height: "100%",
+    alignSelf: "center",
+    width: "75%",
     padding: 20,
-    justifyContent: "center",
   },
   title: {
     fontSize: 20,

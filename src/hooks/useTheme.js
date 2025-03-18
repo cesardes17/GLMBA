@@ -3,19 +3,27 @@ import { useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { themes } from "../theme/themes";
 import { StatusBar } from "expo-status-bar";
+
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const systemColorScheme = useColorScheme();
-  const [userPreference, setUserPreference] = useState("system"); // Por defecto, "system"
+  const [userPreference, setUserPreference] = useState("system"); // Por defecto "system"
+  const [statusBarStyle, setStatusBarStyle] = useState("dark"); // Estado para actualizar la StatusBar
 
-  // Función para obtener el tema correcto según la preferencia del usuario
+  // Obtener el tema correcto según la preferencia del usuario
   const getTheme = () => {
     if (userPreference === "system") {
       return systemColorScheme === "dark" ? themes.dark : themes.light;
     }
     return userPreference === "dark" ? themes.dark : themes.light;
   };
+
+  // Actualizar `StatusBar` cuando cambie el esquema de colores
+  useEffect(() => {
+    const newStatusBarStyle = getTheme() === themes.dark ? "light" : "dark";
+    setStatusBarStyle(newStatusBarStyle);
+  }, [userPreference, systemColorScheme]);
 
   // Cargar la preferencia del usuario desde AsyncStorage al iniciar la app
   useEffect(() => {
@@ -48,7 +56,7 @@ export const ThemeProvider = ({ children }) => {
     <ThemeContext.Provider
       value={{ theme: getTheme(), userPreference, setUserPreference }}
     >
-      <StatusBar style={userPreference === "dark" ? "light" : "dark"} />
+      <StatusBar style={statusBarStyle} />
       {children}
     </ThemeContext.Provider>
   );

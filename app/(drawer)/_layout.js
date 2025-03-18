@@ -20,7 +20,8 @@ export default function DrawerLayout() {
           drawerActiveTintColor: theme.colorIcon,
           drawerInactiveTintColor: theme.inactiveIconColor,
           headerStyle: { backgroundColor: theme.background },
-          headerTintColor: theme.color,
+          headerTintColor: theme.colorIcon,
+          headerTitleStyle: { color: theme.textColor },
           headerRight: () => <HeaderRight />,
         }}
       >
@@ -29,12 +30,41 @@ export default function DrawerLayout() {
           name="index"
           options={{ drawerLabel: "Inicio", title: "Inicio" }}
         />
+        <Drawer.Screen
+          name="games"
+          options={{
+            drawerLabel: "Jornadas",
+            title: "Jornadas",
+          }}
+        />
+        <Drawer.Screen
+          name="clasification"
+          options={{
+            drawerLabel: "Clasificación",
+            title: "Clasificación",
+          }}
+        />
+        <Drawer.Screen
+          name="profile"
+          options={{
+            drawerLabel: user ? "Perfil" : "Iniciar sesión",
+            title: user ? "Perfil" : "Iniciar sesión",
+          }}
+        />
 
         {/* 🔹 Enlaces de Login y Registro */}
         <Drawer.Screen
           name="(auth)"
           options={{
-            drawerLabel: "Inicio/Registro",
+            drawerLabel: "",
+            title: "",
+            drawerItemStyle: { display: user ? "none" : "flex" },
+          }}
+        />
+        <Drawer.Screen
+          name="(organizadores)"
+          options={{
+            drawerLabel: "",
             title: "",
             drawerItemStyle: { display: user ? "none" : "flex" },
           }}
