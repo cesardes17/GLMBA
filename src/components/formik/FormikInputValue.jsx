@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import StyledTextInput from "../StyledTextInput";
 import { useField } from "formik";
-import { Text, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { colors } from "../../theme/colors";
+import StyledText from "../StyledText";
 
 export default function FormikInputValue({ name, ...props }) {
   const [field, meta, helpers] = useField(name);
@@ -23,7 +24,9 @@ export default function FormikInputValue({ name, ...props }) {
         isFocused={isFocused} // Pasamos el estado de foco
         {...props}
       />
-      {hasError && <Text style={styles.errorText}>{meta.error}</Text>}
+      {hasError && (
+        <StyledText style={styles.errorText}>{meta.error}</StyledText>
+      )}
     </View>
   );
 }

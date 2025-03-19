@@ -1,6 +1,7 @@
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
+import StyledText from "./StyledText";
 import { useTheme } from "../hooks/useTheme";
 
 export default function HeaderRight() {
@@ -8,10 +9,7 @@ export default function HeaderRight() {
   return (
     <Link href="/" style={{ marginRight: 20 }}>
       <TouchableOpacity>
-        <Text style={{ color: theme.textColor, ...styles.appTitle }}>
-          {" "}
-          GLMBA
-        </Text>
+        <StyledText style={styles.appTitle}> GLMBA</StyledText>
       </TouchableOpacity>
     </Link>
   );

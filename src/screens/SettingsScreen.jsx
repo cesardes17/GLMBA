@@ -1,11 +1,13 @@
 // screens/SettingsScreen.js
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import UniversalPicker from "../components/UniversalPicker";
 import { useTheme } from "../hooks/useTheme";
 import { useAuth } from "../hooks/useAuth";
 import StyledButton from "../components/StyledButton";
 import Separator from "../components/Separator";
+import StyledText from "../components/StyledText";
+
 const themeOptions = [
   { key: "system", label: "Preferencias del Sistema" },
   { key: "light", label: "Modo Claro" },
@@ -24,17 +26,17 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container]}>
-      <Text style={[styles.title, { color: theme.textColor }]}>
+      <StyledText style={[styles.title, { color: theme.textColor }]}>
         Selecciona el tema:
-      </Text>
+      </StyledText>
       <UniversalPicker
         data={themeOptions}
         selectedValue={userPreference}
         onValueChange={setUserPreference}
       />
-      <Text style={[styles.info, { color: theme.textColor }]}>
+      <StyledText style={[styles.info, { color: theme.textColor }]}>
         Tema seleccionado: {userPreference}
-      </Text>
+      </StyledText>
 
       {user && (
         <>

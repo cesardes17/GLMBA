@@ -1,6 +1,12 @@
-import { Redirect } from "expo-router";
+// /app/index.js
+import React from "react";
+import GamesScreen from "../src/screens/GamesScreen";
 import { Platform } from "react-native";
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  return <Redirect href={Platform.OS === "web" ? "/(drawer)" : "/(tabs)"} />;
+  if (Platform.OS === "web") {
+    return <Redirect href="(drawer)/" />; // 🔹 Redirigir al Drawer
+  }
+  return <GamesScreen />;
 }

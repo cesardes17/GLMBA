@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useField } from "formik";
 import UniversalPicker from "../UniversalPicker";
 import { colors } from "../../theme/colors";
+import StyledText from "../StyledText";
 
 export default function FormikPickerValue({
   name,
@@ -23,7 +24,9 @@ export default function FormikPickerValue({
         onBlur={() => helpers.setTouched(true)} // Marca el campo como tocado
         {...props}
       />
-      {hasError && <Text style={styles.errorText}>{meta.error}</Text>}
+      {hasError && (
+        <StyledText style={styles.errorText}>{meta.error}</StyledText>
+      )}
     </View>
   );
 }

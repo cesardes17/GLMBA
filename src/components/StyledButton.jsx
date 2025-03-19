@@ -1,6 +1,8 @@
+// /src/components/StyledButton.js
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet, Platform } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import { colors } from "../theme/colors";
+import StyledText from "./StyledText"; // 🔹 Importamos StyledText
 
 export default function StyledButton({
   title,
@@ -10,27 +12,28 @@ export default function StyledButton({
   style = {},
 }) {
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={0.7}
-      style={[
+      style={({ pressed }) => [
         styles.button,
         disabled && styles.disabledButton,
         danger ? styles.dangerButton : styles.defaultButton,
+        pressed && styles.pressedButton, // 🔹 Efecto al presionar
         style,
       ]}
     >
-      <Text
+      <StyledText
         style={[
           styles.text,
+          { color: colors.color950 },
           disabled && styles.disabledText,
           danger && styles.dangerText,
         ]}
       >
         {title}
-      </Text>
-    </TouchableOpacity>
+      </StyledText>
+    </Pressable>
   );
 }
 
@@ -38,38 +41,40 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 10, // 🔹 Fijo según tu preferencia
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     minWidth: 150,
     maxWidth: 250,
     alignSelf: "center",
-    borderWidth: 2, // 🔹 Bordes visibles
-    borderColor: "#000", // 🔹 De momento fijo en negro
-    elevation: 3, // 🔹 Sombras en Android
-    shadowColor: "#000", // 🔹 Sombras en iOS
+    borderWidth: 2,
+    borderColor: "#000",
+    elevation: 3,
+    shadowColor: "#000",
     shadowOffset: { width: 1, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
   defaultButton: {
-    backgroundColor: colors.color200, // 🔹 Default
+    backgroundColor: colors.color200,
+  },
+  pressedButton: {
+    opacity: 0.7, // 🔹 Reduce opacidad al presionar
   },
   text: {
-    color: "#000",
     fontSize: 16,
     fontWeight: "bold",
     textTransform: "uppercase",
   },
   disabledButton: {
-    backgroundColor: colors.color100, // 🔹 Color más claro para deshabilitado
-    borderColor: colors.color300, // 🔹 Borde más suave
+    backgroundColor: colors.color100,
+    borderColor: colors.color300,
   },
   disabledText: {
-    color: colors.color400, // 🔹 Más claro que el fondo para contraste
+    color: colors.color400,
   },
   dangerButton: {
-    backgroundColor: "red", // 🔹 Ajustable según preferencia
+    backgroundColor: "red",
     borderColor: "#000",
   },
   dangerText: {

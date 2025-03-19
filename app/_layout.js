@@ -1,27 +1,37 @@
 // /app/_layout.js
-import React, { useEffect, useState } from "react";
-import { useWindowDimensions, Platform, View } from "react-native";
-import { Slot } from "expo-router";
-import { AuthProvider } from "../src/hooks/useAuth";
-import { ThemeProvider } from "../src/hooks/useTheme";
+import React from "react";
+import { Platform } from "react-native";
+import { Slot, Stack } from "expo-router";
+import { AppProvider } from "../src/hooks/useApp";
+import { useTheme } from "../src/hooks/useTheme";
 
 export default function Layout() {
-  const { width } = useWindowDimensions();
-  const [useDrawer, setUseDrawer] = useState(
-    width >= 1024 || Platform.OS === "web"
-  );
-
-  useEffect(() => {
-    setUseDrawer(width >= 1024 || Platform.OS === "web");
-  }, [width]);
-
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <View style={{ flex: 1 }}>
-          <Slot />
-        </View>
-      </ThemeProvider>
-    </AuthProvider>
+    <AppProvider>
+      <RootLayout />
+    </AppProvider>
+  );
+}
+
+function RootLayout() {
+  const { theme } = useTheme();
+  const isWeb = Platform.OS === "web";
+
+  if (isWeb) {
+    return <Slot />;
+  }
+
+  // En móviles, usar Stack
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: theme.background },
+        headerTintColor: theme.textColor,
+      }}
+    >
+      <Stack.Screen name="index" />
+      <Stack.Screen name="partido/[id]" />
+    </Stack>
   );
 }

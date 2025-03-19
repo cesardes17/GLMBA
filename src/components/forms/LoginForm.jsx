@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Formik } from "formik";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import FormikInputValue from "../formik/FormikInputValue";
 import { loginSchema } from "../../schemas/ValidationSchemas";
 import { login } from "../../servicies/firebase/authService";
 import StyledButton from "../StyledButton";
+import StyledText from "../StyledText";
 
 const initialValues = {
   email: "",
@@ -41,7 +42,9 @@ export default function LoginForm() {
             secureTextEntry
           />
 
-          {authError ? <Text style={styles.errorText}>{authError}</Text> : null}
+          {authError ? (
+            <StyledText style={styles.errorText}>{authError}</StyledText>
+          ) : null}
 
           {loading ? (
             <ActivityIndicator size="large" color="#05C484" />

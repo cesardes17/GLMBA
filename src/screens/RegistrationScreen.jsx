@@ -1,12 +1,12 @@
 // /src/screens/LoginScreen.jsx
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { useTheme } from "../hooks/useTheme";
 import RegistrationForm from "../components/forms/RegistartionFrom";
 import Separator from "../components/Separator";
 import { useRouter } from "expo-router";
 import StyledButton from "../components/StyledButton";
-
+import StyledText from "../components/StyledText";
 export default function LoginScreen() {
   const { theme } = useTheme();
   const router = useRouter();
@@ -20,14 +20,16 @@ export default function LoginScreen() {
         justifyContent: "center",
       }}
     >
-      <Text style={{ color: theme.textColor, marginBottom: 10, fontSize: 34 }}>
+      <StyledText
+        style={{ color: theme.textColor, marginBottom: 10, fontSize: 34 }}
+      >
         Registro
-      </Text>
+      </StyledText>
       <RegistrationForm />
       <Separator />
-      <Text style={{ color: theme.textColor, marginBottom: 10 }}>
+      <StyledText style={{ color: theme.textColor, marginBottom: 10 }}>
         ¿Tienes una cuenta?
-      </Text>
+      </StyledText>
       <StyledButton
         title="Iniciar sesión"
         onPress={() => {
