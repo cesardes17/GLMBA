@@ -1,41 +1,30 @@
-// /src/screens/LoginScreen.jsx
+// /src/screens/RegistrationScreen.jsx
 import React from "react";
-import { View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { useTheme } from "../hooks/useTheme";
 import RegistrationForm from "../components/forms/RegistartionFrom";
 import Separator from "../components/Separator";
-import { useRouter } from "expo-router";
 import StyledButton from "../components/StyledButton";
 import StyledText from "../components/StyledText";
-export default function LoginScreen() {
+import { useRouter } from "expo-router";
+
+export default function RegistrationScreen() {
   const { theme } = useTheme();
   const router = useRouter();
 
   return (
-    <View
-      style={{
-        backgroundColor: theme.background,
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+    <ScrollView
+      style={{ flex: 1, width: "100%" }}
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled" // ✅ Cierra teclado al tocar fuera
     >
-      <StyledText
-        style={{ color: theme.textColor, marginBottom: 10, fontSize: 34 }}
-      >
-        Registro
-      </StyledText>
       <RegistrationForm />
-      <Separator />
-      <StyledText style={{ color: theme.textColor, marginBottom: 10 }}>
-        ¿Tienes una cuenta?
-      </StyledText>
-      <StyledButton
-        title="Iniciar sesión"
-        onPress={() => {
-          router.push("/login");
-        }}
-      />
-    </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    padding: 16, // ✅ Espaciado para evitar que el contenido quede pegado
+  },
+});

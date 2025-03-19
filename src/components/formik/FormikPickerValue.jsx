@@ -34,6 +34,8 @@ export default function FormikPickerValue({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
+    width: "75%",
+    alignSelf: "center",
   },
   errorText: {
     color: colors.errorText,

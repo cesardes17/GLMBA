@@ -1,6 +1,5 @@
 // /src/screens/GamesScreen.js
 import React from "react";
-import Screen from "../components/Screen";
 import MatchesList from "../components/MatchesList";
 
 const GamesScreen = () => {
@@ -64,11 +63,7 @@ const GamesScreen = () => {
     },
   ];
 
-  return (
-    <Screen>
-      <MatchesList matches={partidos} />
-    </Screen>
-  );
+  return <MatchesList matches={partidos} />;
 };
 
 export default GamesScreen;

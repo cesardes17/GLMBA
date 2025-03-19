@@ -1,24 +1,18 @@
 // /src/screens/LoginScreen.jsx
 import React from "react";
-import { View } from "react-native";
+import Screen from "../components/Screen";
 import { useTheme } from "../hooks/useTheme";
 import LoginForm from "../components/forms/LoginForm";
 import Separator from "../components/Separator";
 import StyledButton from "../components/StyledButton";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import StyledText from "../components/StyledText";
+
 export default function LoginScreen() {
   const { theme } = useTheme();
   const router = useRouter();
   return (
-    <View
-      style={{
-        backgroundColor: theme.background,
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <Screen>
       <StyledText
         style={{ color: theme.textColor, marginBottom: 10, fontSize: 34 }}
       >
@@ -29,12 +23,14 @@ export default function LoginScreen() {
       <StyledText style={{ color: theme.textColor, marginBottom: 10 }}>
         ¿No tienes una cuenta?
       </StyledText>
-      <StyledButton
-        title="Registrate"
-        onPress={() => {
-          router.push("/register");
-        }}
-      />
-    </View>
+      <Link href="/register" asChild>
+        <StyledButton
+          title="Regístrate"
+          onPress={() => {
+            console.log("Queriendo registrarse");
+          }}
+        />
+      </Link>
+    </Screen>
   );
 }

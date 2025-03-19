@@ -36,18 +36,22 @@ const MatchesList = ({ matches }) => {
   );
 
   return (
-    <FlatList
-      data={matches}
-      renderItem={renderMatch}
-      keyExtractor={(item) => item.id.toString()}
-      contentContainerStyle={styles.listContainer}
-    />
+    <View style={styles.listContainer}>
+      <FlatList
+        data={matches}
+        renderItem={renderMatch}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.listContainer}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   listContainer: {
+    width: "100%",
     padding: 16,
+    alignSelf: "center",
   },
   matchContainer: {
     padding: 16,
