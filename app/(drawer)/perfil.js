@@ -1,11 +1,7 @@
 import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native';
 import ProfileScreen from '../../src/screens/ProfileScreen';
 
-export default function ProfilePage() {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-        <ProfileScreen />
-    </SafeAreaView>
-  );
+export default function Profile() {
+  return <ProfileScreen />;
 }

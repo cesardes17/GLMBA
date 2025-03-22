@@ -1,6 +1,6 @@
 import { useRouter, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
-import { useAuth } from '../../src/hooks/useAuth';
+import { useAuth } from '../../src/hooks/auth/useAuth';
 
 export default function UserPanelRedirect() {
   const router = useRouter();

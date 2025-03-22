@@ -1,8 +1,8 @@
-import { useAuth } from '../../src/hooks/useAuth';
+import { useAuth } from '../../src/hooks/auth/useAuth';
 import { useRouter } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
-import { useTheme } from '../../src/hooks/useTheme';
-import StyledButton from '../../src/components/StyledButton';
+import { useTheme } from '../../src/hooks/theme/useTheme';
+import StyledButton from '../../src/components/common/StyledButton';
 import ProfileScreen from '../../src/screens/ProfileScreen';
 
 export default function Perfil() {

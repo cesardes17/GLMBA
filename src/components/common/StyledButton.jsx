@@ -1,9 +1,10 @@
 // /src/components/StyledButton.js
-import React from "react";
-import { Pressable, StyleSheet } from "react-native";
-import { colors } from "../theme/colors";
-import StyledText from "./StyledText"; // 🔹 Importamos StyledText
-import { useTheme } from "../hooks/useTheme";
+import React from 'react';
+import { Pressable, StyleSheet } from 'react-native';
+import { colors } from '../../theme/colors';
+import StyledText from './StyledText'; // 🔹 Importamos StyledText
+import { useTheme } from '../../hooks/theme/useTheme';
+
 export default function StyledButton({
   title,
   onPress,
@@ -43,15 +44,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     minWidth: 150,
     maxWidth: 250,
-    alignSelf: "center",
+    alignSelf: 'center',
     borderWidth: 2,
-    borderColor: "#000",
+    borderColor: '#000',
     elevation: 3,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 1, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
@@ -64,8 +65,8 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    fontWeight: "bold",
-    textTransform: "uppercase",
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   disabledButton: {
     backgroundColor: colors.color100,
@@ -75,10 +76,10 @@ const styles = StyleSheet.create({
     color: colors.color400,
   },
   dangerButton: {
-    backgroundColor: "red",
-    borderColor: "#000",
+    backgroundColor: 'red',
+    borderColor: '#000',
   },
   dangerText: {
-    color: "#fff",
+    color: '#fff',
   },
 });

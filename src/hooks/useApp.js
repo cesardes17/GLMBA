@@ -1,7 +1,7 @@
 // /src/hooks/useApp.js
-import React from "react";
-import { ThemeProvider, useTheme } from "./useTheme";
-import { AuthProvider, useAuth } from "./useAuth";
+import React from 'react';
+import { ThemeProvider, useTheme } from './theme/useTheme';
+import { AuthProvider, useAuth } from './auth/useAuth';
 
 // El AppProvider se encarga de envolver la aplicación con los providers de tema y autenticación.
 export const AppProvider = ({ children }) => {

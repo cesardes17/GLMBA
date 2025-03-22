@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Screen from '../../components/layout/Screen';
-import UsersList from '../../components/UsersList';
+import UsersList from '../../components/features/users/UsersList';
 
 const UserPanelScreen = () => {
   return (

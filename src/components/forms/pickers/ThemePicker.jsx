@@ -1,11 +1,11 @@
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from "../../../hooks/theme/useTheme";
 import { View, StyleSheet } from "react-native";
 import UniversalPicker from "./UniversalPicker";
-import StyledText from "./StyledText";
+import StyledText from "../../common/StyledText";
 const themeOptions = [
-  { key: "system", label: "Preferencias del Sistema" },
-  { key: "light", label: "Modo Claro" },
-  { key: "dark", label: "Modo Oscuro" },
+  { key: 'system', label: 'Preferencias del Sistema' },
+  { key: 'light', label: 'Modo Claro' },
+  { key: 'dark', label: 'Modo Oscuro' },
 ];
 
 export default function ThemePicker() {
@@ -25,18 +25,18 @@ export default function ThemePicker() {
 }
 const styles = StyleSheet.create({
   container: {
-    alignSelf: "center",
-    width: "75%",
+    alignSelf: 'center',
+    width: '75%',
     padding: 20,
   },
   title: {
     fontSize: 20,
     marginBottom: 10,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   info: {
     marginTop: 20,
     fontSize: 16,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
 });

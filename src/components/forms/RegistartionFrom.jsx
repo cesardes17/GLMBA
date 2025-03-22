@@ -1,10 +1,10 @@
 import { Formik } from 'formik';
 import { View, Alert } from 'react-native';
-import FormikInputValue from '../formik/FormikInputValue';
-import FormikPickerValue from '../formik/FormikPickerValue';
+import FormikInputValue from './inputs/FormikInputValue';
+import FormikPickerValue from './inputs/FormikPickerValue';
 import { registrationSchema } from '../../schemas/ValidationSchemas';
-import StyledButton from '../StyledButton';
-import { registerUser } from '../../servicies/userService';
+import StyledButton from '../common/StyledButton';
+import { registerUser } from '../../services/firebase/authService';
 
 const initialValues = {
   fullName: '',

@@ -1,10 +1,10 @@
 // services/firebase/authService.js
-import { auth } from "../../../firebase";
+import { auth } from '../../../firebase';
 import {
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
-} from "firebase/auth";
+} from 'firebase/auth';
 
 // Iniciar sesión
 export const login = async (email, password) => {
@@ -16,7 +16,7 @@ export const login = async (email, password) => {
     );
     return userCredential.user;
   } catch (error) {
-    console.error("Error en login:", error.message);
+    console.error('Error en login:', error.message);
     throw error;
   }
 };
@@ -31,7 +31,7 @@ export const register = async (email, password) => {
     );
     return userCredential.user;
   } catch (error) {
-    console.error("Error en register:", error.message);
+    console.error('Error en register:', error.message);
     throw error;
   }
 };
@@ -41,6 +41,6 @@ export const logout = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    console.error("Error en logout:", error.message);
+    console.error('Error en logout:', error.message);
   }
 };

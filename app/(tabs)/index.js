@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from "../../src/hooks/useTheme";
+import { useTheme } from '../../src/hooks/theme/useTheme';
 
 export default function TabsHome() {
   const { theme } = useTheme();

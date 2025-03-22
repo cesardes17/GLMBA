@@ -1,9 +1,9 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { useField } from "formik";
-import UniversalPicker from "../UniversalPicker";
-import { colors } from "../../theme/colors";
-import StyledText from "../StyledText";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useField } from 'formik';
+import UniversalPicker from '../pickers/UniversalPicker';
+import { colors } from '../../../theme/colors';
+import StyledText from '../../common/StyledText';
 
 export default function FormikPickerValue({
   name,
@@ -34,8 +34,8 @@ export default function FormikPickerValue({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
-    width: "75%",
-    alignSelf: "center",
+    width: '75%',
+    alignSelf: 'center',
   },
   errorText: {
     color: colors.errorText,

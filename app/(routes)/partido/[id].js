@@ -1,21 +1,21 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { useTheme } from "../../../src/hooks/useTheme";
-import { partidos } from "../../../src/data/partidos";
+import { useTheme } from '../../../src/hooks/theme/useTheme';
+import { partidos } from '../../../src/data/partidos';
 import { useEffect } from 'react';
 
 export default function PartidoDetalle() {
   const { id } = useLocalSearchParams();
   const { theme } = useTheme();
   const navigation = useNavigation();
-  
-  const partido = partidos.find(p => p.id === parseInt(id));
+
+  const partido = partidos.find((p) => p.id === parseInt(id));
 
   useEffect(() => {
     if (partido) {
       navigation.setOptions({
         title: `${partido.local} vs ${partido.visitante}`,
-        headerBackTitle: "Partidos"
+        headerBackTitle: 'Partidos',
       });
     }
   }, [partido, navigation]);
@@ -23,23 +23,37 @@ export default function PartidoDetalle() {
   if (!partido) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={[styles.text, { color: theme.textColor }]}>Partido no encontrado</Text>
+        <Text style={[styles.text, { color: theme.textColor }]}>
+          Partido no encontrado
+        </Text>
       </View>
     );
   }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.estado, { color: theme.primary }]}>{partido.estado}</Text>
+      <Text style={[styles.estado, { color: theme.primary }]}>
+        {partido.estado}
+      </Text>
       <View style={styles.equiposContainer}>
-        <Text style={[styles.equipo, { color: theme.textColor }]}>{partido.local}</Text>
+        <Text style={[styles.equipo, { color: theme.textColor }]}>
+          {partido.local}
+        </Text>
         <Text style={[styles.vs, { color: theme.textColor }]}>VS</Text>
-        <Text style={[styles.equipo, { color: theme.textColor }]}>{partido.visitante}</Text>
+        <Text style={[styles.equipo, { color: theme.textColor }]}>
+          {partido.visitante}
+        </Text>
       </View>
-      <Text style={[styles.resultado, { color: theme.textColor }]}>{partido.resultado}</Text>
+      <Text style={[styles.resultado, { color: theme.textColor }]}>
+        {partido.resultado}
+      </Text>
       <View style={styles.infoContainer}>
-        <Text style={[styles.info, { color: theme.textColor }]}>Fecha: {partido.fecha}</Text>
-        <Text style={[styles.info, { color: theme.textColor }]}>Hora: {partido.hora}</Text>
+        <Text style={[styles.info, { color: theme.textColor }]}>
+          Fecha: {partido.fecha}
+        </Text>
+        <Text style={[styles.info, { color: theme.textColor }]}>
+          Hora: {partido.hora}
+        </Text>
       </View>
     </View>
   );

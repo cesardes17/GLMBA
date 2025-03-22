@@ -1,6 +1,6 @@
 import { Drawer } from 'expo-router/drawer';
-import { useTheme } from '../../src/hooks/useTheme';
-import { useAuth } from '../../src/hooks/useAuth';
+import { useTheme } from '../../src/hooks/theme/useTheme';
+import { useAuth } from '../../src/hooks/auth/useAuth';
 import { useRouter } from 'expo-router';
 
 export default function DrawerLayout() {
@@ -68,9 +68,9 @@ export default function DrawerLayout() {
         options={{
           title: 'Panel de Usuarios',
           drawerLabel: 'Panel de Usuarios',
-          headerShown: user && userData.role === 'organizador',
+          headerShown: user && userData?.role === 'organizador',
           drawerItemStyle: {
-            display: user && userData.role === 'organizador' ? 'flex' : 'none',
+            display: user && userData?.role === 'organizador' ? 'flex' : 'none',
           },
         }}
       />

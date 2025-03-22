@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import StyledButton from '../src/components/StyledButton';
+import StyledButton from '../src/components/common/StyledButton';
 import Screen from '../src/components/layout/Screen';
-import StyledText from '../src/components/StyledText';
+import StyledText from '../src/components/common/StyledText';
 
 export default function Unauthorized() {
   const router = useRouter();

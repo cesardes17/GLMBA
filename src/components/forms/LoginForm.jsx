@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Formik } from 'formik';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import FormikInputValue from '../formik/FormikInputValue';
+import FormikInputValue from './inputs/FormikInputValue';
 import { loginSchema } from '../../schemas/ValidationSchemas';
-import { login } from '../../servicies/firebase/authService';
-import StyledButton from '../StyledButton';
-import StyledText from '../StyledText';
+import { login } from '../../services/firebase/authService';
+import StyledButton from '../common/StyledButton';
+import StyledText from '../common/StyledText';
 import { useRouter } from 'expo-router';
 
 const initialValues = {

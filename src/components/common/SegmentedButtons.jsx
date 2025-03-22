@@ -1,19 +1,19 @@
 import React from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import StyledButton from './StyledButton';
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/theme/useTheme';
 
-export default function SegmentedButtons({ 
-  options, 
-  selectedValue, 
+export default function SegmentedButtons({
+  options,
+  selectedValue,
   onValueChange,
-  containerStyle 
+  containerStyle,
 }) {
   const { theme } = useTheme();
 
   return (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={[styles.scrollContainer, containerStyle]}
     >

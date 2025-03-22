@@ -1,9 +1,9 @@
 // /app/_layout.js
-import React from "react";
-import { Platform } from "react-native";
-import { Stack } from "expo-router";
-import { AppProvider } from "../src/hooks/useApp";
-import { useTheme } from "../src/hooks/useTheme";
+import React from 'react';
+import { Platform } from 'react-native';
+import { Stack } from 'expo-router';
+import { AppProvider } from '../src/hooks/useApp';
+import { useTheme } from '../src/hooks/theme/useTheme';
 
 export default function Layout() {
   return (
@@ -26,24 +26,18 @@ function RootLayout() {
       }}
     >
       {isWeb ? (
-        <Stack.Screen
-          name="(drawer)"
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
       ) : (
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       )}
-      
+
       <Stack.Screen
         name="(routes)/(auth)/login"
-        options={{ headerTitle: "Inicia Sesión", headerBackTitle:"Volver" }}
+        options={{ headerTitle: 'Inicia Sesión', headerBackTitle: 'Volver' }}
       />
       <Stack.Screen
         name="(routes)/(auth)/register"
-        options={{ headerTitle: "Crea una Cuenta", headerBackTitle:"Volver"  }}
+        options={{ headerTitle: 'Crea una Cuenta', headerBackTitle: 'Volver' }}
       />
     </Stack>
   );

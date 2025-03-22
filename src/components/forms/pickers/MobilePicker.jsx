@@ -2,8 +2,7 @@
 import React from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { View, Platform, StyleSheet } from 'react-native';
-import { useTheme } from '../../hooks/useTheme';
-import { colors } from '../../theme/colors';
+import { useTheme } from '../../../hooks/theme/useTheme';
 
 export default function MobilePicker({ data, selectedValue, onValueChange }) {
   const { theme } = useTheme();

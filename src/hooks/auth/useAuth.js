@@ -6,9 +6,9 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import { auth } from '../../firebase';
+import { auth } from '../../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { getUserData } from '../servicies/userService';
+import { getUserData } from '../../services/userService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthContext = createContext();

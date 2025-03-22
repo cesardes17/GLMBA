@@ -7,20 +7,23 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { useAuth } from '../hooks/useAuth';
-import ThemePicker from '../components/ThemePicker';
-import Separator from '../components/Separator';
+import { useAuth } from '../hooks/auth/useAuth';
+import ThemePicker from '../components/forms/pickers/ThemePicker';
+import Separator from '../components/common/Separator';
 import Screen from '../components/layout/Screen';
+import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
 
 const ProfileScreen = () => {
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
-      await signOut();
+      await logout();
+      router.replace('/');
     } catch (error) {
       console.error('Error signing out:', error);
     }

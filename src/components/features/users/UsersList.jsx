@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { getManageableUsers } from '../../../services/api/userService';
+import { getManageableUsers } from '../../../services/userService';
 import { useAuth } from '../../../hooks/auth/useAuth';
 import StyledText from '../../common/StyledText';
 import UserCard from './UserCard';

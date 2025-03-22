@@ -1,6 +1,5 @@
-import React from "react";
-import { View, StyleSheet, SafeAreaView } from "react-native";
-import { useTheme } from "../../hooks/useTheme";
+import { useTheme } from '../../hooks/theme/useTheme';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
 
 export default function Screen({ children, style }) {
   const { theme } = useTheme();

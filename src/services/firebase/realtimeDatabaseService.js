@@ -1,5 +1,5 @@
-import { database } from "../../config/firebase";
-import { ref, set, get, update, remove } from "firebase/database";
+import { database } from '../../../firebase';
+import { ref, set, get, update, remove } from 'firebase/database';
 
 /**
  * Obtiene datos de una referencia en Firebase.

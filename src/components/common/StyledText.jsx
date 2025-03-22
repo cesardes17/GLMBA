@@ -1,7 +1,7 @@
 // /src/components/StyledText.js
-import React from "react";
-import { StyleSheet, Text } from "react-native";
-import { useTheme } from "../hooks/useTheme";
+import React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import { useTheme } from '../../hooks/theme/useTheme';
 
 // Componente de texto que usa los estilos del tema
 const StyledText = ({ children, style, ...props }) => {

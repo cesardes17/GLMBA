@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from "../../src/hooks/useTheme";
+import { useTheme } from '../../src/hooks/theme/useTheme';
 
 export default function Mas() {
   const { theme } = useTheme();
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.text, { color: theme.textColor }]}>Más opciones</Text>
+      <Text style={[styles.text, { color: theme.textColor }]}>
+        Más opciones
+      </Text>
     </View>
   );
 }

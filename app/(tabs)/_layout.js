@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { useTheme } from "../../src/hooks/useTheme";
+import { useTheme } from '../../src/hooks/theme/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function TabsLayout() {
@@ -17,11 +17,10 @@ export default function TabsLayout() {
         headerTitleAlign: 'center',
       }}
     >
-      
       <Tabs.Screen
         name="partidos"
         options={{
-          title: "Partidos",
+          title: 'Partidos',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="basketball" size={size} color={color} />
           ),
@@ -31,7 +30,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="clasificacion"
         options={{
-          title: "Clasificación",
+          title: 'Clasificación',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="trophy" size={size} color={color} />
           ),
@@ -41,7 +40,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Inicio",
+          title: 'Inicio',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -50,7 +49,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="perfil"
         options={{
-          title: "Perfil",
+          title: 'Perfil',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
@@ -60,7 +59,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="mas"
         options={{
-          title: "Más",
+          title: 'Más',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="menu" size={size} color={color} />
           ),

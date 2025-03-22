@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
-import { useTheme } from "../../src/hooks/useTheme";
-import { partidos } from "../../src/data/partidos";
+import { useTheme } from '../../src/hooks/theme/useTheme';
+import { partidos } from '../../src/data/partidos';
 import { useRouter } from 'expo-router';
 
 export default function Partidos() {
@@ -12,17 +12,29 @@ export default function Partidos() {
       style={[styles.partidoCard, { backgroundColor: theme.cardBackground }]}
       onPress={() => router.push(`/partido/${item.id}`)}
     >
-      <Text style={[styles.estado, { color: theme.primary }]}>{item.estado}</Text>
+      <Text style={[styles.estado, { color: theme.primary }]}>
+        {item.estado}
+      </Text>
       <View style={styles.equipos}>
-        <Text style={[styles.equipo, { color: theme.textColor }]}>{item.local}</Text>
+        <Text style={[styles.equipo, { color: theme.textColor }]}>
+          {item.local}
+        </Text>
         <Text style={[styles.vs, { color: theme.textColor }]}>vs</Text>
-        <Text style={[styles.equipo, { color: theme.textColor }]}>{item.visitante}</Text>
+        <Text style={[styles.equipo, { color: theme.textColor }]}>
+          {item.visitante}
+        </Text>
       </View>
       <View style={styles.infoContainer}>
-        <Text style={[styles.info, { color: theme.textColor }]}>{item.fecha}</Text>
-        <Text style={[styles.info, { color: theme.textColor }]}>{item.hora}</Text>
+        <Text style={[styles.info, { color: theme.textColor }]}>
+          {item.fecha}
+        </Text>
+        <Text style={[styles.info, { color: theme.textColor }]}>
+          {item.hora}
+        </Text>
       </View>
-      <Text style={[styles.resultado, { color: theme.textColor }]}>{item.resultado}</Text>
+      <Text style={[styles.resultado, { color: theme.textColor }]}>
+        {item.resultado}
+      </Text>
     </Pressable>
   );
 
@@ -31,7 +43,7 @@ export default function Partidos() {
       <FlatList
         data={partidos}
         renderItem={renderPartido}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
       />
     </View>
@@ -87,5 +99,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: 8,
-  }
+  },
 });
