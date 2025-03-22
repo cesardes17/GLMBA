@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useAuth } from '../hooks/useAuth';
-
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useAuth } from "../hooks/useAuth";
+import ThemePicker from "../components/ThemePicker";
+import Separator from "../components/Separator";
 const ProfileScreen = () => {
   const { signOut } = useAuth();
 
@@ -9,13 +10,14 @@ const ProfileScreen = () => {
     try {
       await signOut();
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
+      <ThemePicker />
+      <Separator />
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
@@ -26,26 +28,26 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
   },
   logoutButton: {
-    backgroundColor: '#ff4444',
+    backgroundColor: "#ff4444",
     padding: 15,
     borderRadius: 8,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
   },
   logoutText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 

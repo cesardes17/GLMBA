@@ -1,33 +1,33 @@
-import { Formik } from "formik";
-import { View, Alert } from "react-native";
-import FormikInputValue from "../formik/FormikInputValue";
-import FormikPickerValue from "../formik/FormikPickerValue";
-import { registrationSchema } from "../../schemas/ValidationSchemas";
-import StyledButton from "../StyledButton";
-import { registerUser } from "../../servicies/userService";
+import { Formik } from 'formik';
+import { View, Alert } from 'react-native';
+import FormikInputValue from '../formik/FormikInputValue';
+import FormikPickerValue from '../formik/FormikPickerValue';
+import { registrationSchema } from '../../schemas/ValidationSchemas';
+import StyledButton from '../StyledButton';
+import { registerUser } from '../../servicies/userService';
 
 const initialValues = {
-  fullName: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-  role: "espectador",
-  jerseyNumber: "",
-  height: "",
-  favPosition: "base",
+  fullName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  role: 'espectador',
+  jerseyNumber: '',
+  height: '',
+  favPosition: 'base',
 };
 
 const roleData = [
-  { key: "espectador", label: "Espectador" },
-  { key: "jugador", label: "Jugador" },
+  { key: 'espectador', label: 'Espectador' },
+  { key: 'jugador', label: 'Jugador' },
 ];
 
 const positionData = [
-  { key: "base", label: "Base" },
-  { key: "escolta", label: "Escolta" },
-  { key: "alero", label: "Alero" },
-  { key: "ala-pivot", label: "Ala-Pívot" },
-  { key: "pivot", label: "Pívot" },
+  { key: 'base', label: 'Base' },
+  { key: 'escolta', label: 'Escolta' },
+  { key: 'alero', label: 'Alero' },
+  { key: 'ala-pivot', label: 'Ala-Pívot' },
+  { key: 'pivot', label: 'Pívot' },
 ];
 
 export default function RegistrationForm() {
@@ -36,15 +36,15 @@ export default function RegistrationForm() {
       const success = await registerUser(values);
       if (success) {
         Alert.alert(
-          "Registro exitoso",
-          "El usuario ha sido creado correctamente."
+          'Registro exitoso',
+          'El usuario ha sido creado correctamente.'
         );
         resetForm(); // 🔹 Ahora sí se puede usar resetForm
       } else {
-        Alert.alert("Error", "No se pudo completar el registro.");
+        Alert.alert('Error', 'No se pudo completar el registro.');
       }
     } catch (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     }
   };
 
@@ -73,7 +73,7 @@ export default function RegistrationForm() {
           <FormikPickerValue name="role" data={roleData} />
 
           {/* Mostrar estos campos solo si el usuario es "jugador" */}
-          {values.role === "jugador" && (
+          {values.role === 'jugador' && (
             <>
               <FormikInputValue
                 name="jerseyNumber"

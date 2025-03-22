@@ -2,19 +2,32 @@
 import React from "react";
 import LoginForm from "../components/forms/LoginForm";
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Separator from "../components/Separator";
 import StyledButton from "../components/StyledButton";
+import Screen from "../components/layout/Screen";
+import { View } from "react-native";
 
 export default function LoginScreen() {
   const router = useRouter();
   return (
-    <SafeAreaView style={{flex:1, justifyContent:"center", alignItems:"center"}} >
-      <LoginForm />
-      <Separator color="#CCCCCC" width="90%" marginVertical={20} />
-      <StyledButton title="Crea una Cuenta" onPress={() => {
-        router.replace("/register")
-      }} />
-    </SafeAreaView>
+    <Screen>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          marginHorizontal: "auto",
+        }}
+      >
+        <LoginForm />
+        <Separator marginVertical={20} />
+        <StyledButton
+          title={"Crea una Cuenta"}
+          onPress={() => {
+            router.replace("/register");
+          }}
+        />
+      </View>
+    </Screen>
   );
 }

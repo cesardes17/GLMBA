@@ -1,25 +1,31 @@
 // /src/screens/RegistrationScreen.jsx
 import React from "react";
-import { Platform, ScrollView, StyleSheet } from "react-native";
-import { useTheme } from "../hooks/useTheme";
+import { ScrollView, StyleSheet, Platform } from "react-native";
 import RegistrationForm from "../components/forms/RegistartionFrom";
+import Screen from "../components/layout/Screen";
 
 export default function RegisterScreen() {
-  const { theme } = useTheme();
-
   return (
-    <ScrollView
-      style={{ flex: 1, width: Platform.OS ==="web"? "50%" : "100%", alignSelf: "center", backgroundColor: theme.background     }}
-      contentContainerStyle={styles.scrollContainer}
-      keyboardShouldPersistTaps="handled" // ✅ Cierra teclado al tocar fuera
-    >
-      <RegistrationForm />
-    </ScrollView>
+    <Screen>
+      <ScrollView
+        style={[styles.scrollView, Platform.OS === "web" && styles.webWidth]}
+        contentContainerStyle={styles.scrollContainer}
+      >
+        <RegistrationForm />
+      </ScrollView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    width: "100%",
+  },
+  webWidth: {
+    width: "50%",
+    alignSelf: "center",
+  },
   scrollContainer: {
-    padding: 16, // ✅ Espaciado para evitar que el contenido quede pegado
+    padding: 16,
   },
 });

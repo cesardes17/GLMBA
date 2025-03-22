@@ -8,7 +8,7 @@ export default function Register() {
 
   return(
     <View style={{flex: 1, backgroundColor: theme.background}}>
-      <WebBackHeader title="Crea una Cuenta" />
+      <WebBackHeader title="Crea una Cuenta" onBack="/login" />
       <RegisterScreen />
     </View>
   );
