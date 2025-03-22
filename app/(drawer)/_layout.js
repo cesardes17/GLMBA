@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 
 export default function DrawerLayout() {
   const { theme } = useTheme();
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const router = useRouter();
 
   return (
@@ -60,6 +60,17 @@ export default function DrawerLayout() {
           headerShown: !user,
           drawerItemStyle: {
             display: !user ? 'flex' : 'none',
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="userPanel-redirect"
+        options={{
+          title: 'Panel de Usuarios',
+          drawerLabel: 'Panel de Usuarios',
+          headerShown: user && userData.role === 'organizador',
+          drawerItemStyle: {
+            display: user && userData.role === 'organizador' ? 'flex' : 'none',
           },
         }}
       />
