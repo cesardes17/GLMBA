@@ -1,5 +1,6 @@
 // /app/_layout.js
 import React from "react";
+import { Platform } from "react-native";
 import { Stack } from "expo-router";
 import { AppProvider } from "../src/hooks/useApp";
 import { useTheme } from "../src/hooks/useTheme";
@@ -14,6 +15,7 @@ export default function Layout() {
 
 function RootLayout() {
   const { theme } = useTheme();
+  const isWeb = Platform.OS === 'web';
 
   return (
     <Stack
@@ -23,18 +25,25 @@ function RootLayout() {
         headerTintColor: theme.textColor,
       }}
     >
+      {isWeb ? (
+        <Stack.Screen
+          name="(drawer)"
+          options={{ headerShown: false }}
+        />
+      ) : (
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false }}
+        />
+      )}
+      
       <Stack.Screen
-        name="(tabs)"
-        options={{ title: "Volver", headerShown: false }}
+        name="(routes)/(auth)/login"
+        options={{ headerTitle: "Inicia Sesión", headerBackTitle:"Volver" }}
       />
-
-      <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="partido/[id]"
-        options={{
-          title: "Detalle Partido",
-          headerBackTitleStyle: false,
-        }}
+        name="(routes)/(auth)/register"
+        options={{ headerTitle: "Crea una Cuenta", headerBackTitle:"Volver"  }}
       />
     </Stack>
   );

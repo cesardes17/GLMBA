@@ -1,15 +1,17 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React from 'react';
+import { View } from 'react-native';
 
-export default function Separator() {
-  return <View style={styles.separator} />;
-}
+const Separator = ({ color = '#E0E0E0', width = '80%', height = 1, marginVertical = 10 }) => {
+  return (
+    <View
+      style={{
+        height: height,
+        width: width,
+        backgroundColor: color,
+        marginVertical: marginVertical,
+      }}
+    />
+  );
+};
 
-const styles = StyleSheet.create({
-  separator: {
-    height: 1, // Grosor del separador
-    width: "100%", // Ocupar todo el ancho disponible
-    backgroundColor: "#ccc", // Color gris por defecto
-    marginVertical: 10, // Espaciado arriba y abajo
-  },
-});
+export default Separator;

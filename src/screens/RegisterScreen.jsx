@@ -3,12 +3,9 @@ import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { useTheme } from "../hooks/useTheme";
 import RegistrationForm from "../components/forms/RegistartionFrom";
-import Separator from "../components/Separator";
-import StyledButton from "../components/StyledButton";
-import StyledText from "../components/StyledText";
 import { useRouter } from "expo-router";
 
-export default function RegistrationScreen() {
+export default function RegisterScreen() {
   const { theme } = useTheme();
   const router = useRouter();
 

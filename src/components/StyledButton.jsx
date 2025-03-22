@@ -3,7 +3,7 @@ import React from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { colors } from "../theme/colors";
 import StyledText from "./StyledText"; // 🔹 Importamos StyledText
-
+import { useTheme } from "../hooks/useTheme";
 export default function StyledButton({
   title,
   onPress,
@@ -11,6 +11,7 @@ export default function StyledButton({
   danger = false, // Para acciones peligrosas (ej. eliminar)
   style = {},
 }) {
+  const { theme } = useTheme(); // 🔹 Usamos el theme del hook useTheme
   return (
     <Pressable
       onPress={onPress}
@@ -26,7 +27,7 @@ export default function StyledButton({
       <StyledText
         style={[
           styles.text,
-          { color: colors.color950 },
+          { color: theme.buttonTextColor },
           disabled && styles.disabledText,
           danger && styles.dangerText,
         ]}
