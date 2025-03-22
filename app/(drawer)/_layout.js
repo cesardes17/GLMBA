@@ -1,11 +1,11 @@
 import { Drawer } from 'expo-router/drawer';
-import { useTheme } from "../../src/hooks/useTheme";
-import { useAuth } from "../../src/hooks/useAuth";
+import { useTheme } from '../../src/hooks/useTheme';
+import { useAuth } from '../../src/hooks/useAuth';
 import { useRouter } from 'expo-router';
 
 export default function DrawerLayout() {
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   return (
@@ -17,49 +17,49 @@ export default function DrawerLayout() {
         headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.textColor,
         headerTitleStyle: { fontWeight: 'bold' },
-        headerTitleAlign: 'center',        
+        headerTitleAlign: 'center',
       }}
     >
       <Drawer.Screen
         name="index"
         options={{
-          title: "Inicio",
-          drawerLabel: "Inicio",
+          title: 'Inicio',
+          drawerLabel: 'Inicio',
         }}
       />
       <Drawer.Screen
         name="partidos"
         options={{
-          title: "Jornada",
-          drawerLabel: "Jornada",
+          title: 'Jornada',
+          drawerLabel: 'Jornada',
         }}
       />
       <Drawer.Screen
         name="clasificacion"
         options={{
-          title: "Clasificación",
-          drawerLabel: "Clasificación",
+          title: 'Clasificación',
+          drawerLabel: 'Clasificación',
         }}
       />
       <Drawer.Screen
         name="perfil"
         options={{
-          title: "Perfil",
-          drawerLabel: "Perfil",
-          headerShown: isAuthenticated,
-          drawerItemStyle: { 
-            display: isAuthenticated ? 'flex' : 'none' 
-          }
+          title: 'Perfil',
+          drawerLabel: 'Perfil',
+          headerShown: user,
+          drawerItemStyle: {
+            display: user ? 'flex' : 'none',
+          },
         }}
       />
       <Drawer.Screen
         name="login-redirect"
         options={{
-          title: "Iniciar Sesión",
-          drawerLabel: "Iniciar Sesión",
-          headerShown: !isAuthenticated,
-          drawerItemStyle: { 
-            display: !isAuthenticated ? 'flex' : 'none' 
+          title: 'Iniciar Sesión',
+          drawerLabel: 'Iniciar Sesión',
+          headerShown: !user,
+          drawerItemStyle: {
+            display: !user ? 'flex' : 'none',
           },
         }}
       />

@@ -1,14 +1,15 @@
-import { useAuth } from "../../src/hooks/useAuth";
+import { useAuth } from '../../src/hooks/useAuth';
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from "../../src/hooks/useTheme";
-import StyledButton from "../../src/components/StyledButton";
+import { View, StyleSheet } from 'react-native';
+import { useTheme } from '../../src/hooks/useTheme';
+import StyledButton from '../../src/components/StyledButton';
+import ProfileScreen from '../../src/screens/ProfileScreen';
 
 export default function Perfil() {
   const { user } = useAuth();
   const { theme } = useTheme();
   const router = useRouter();
-  
+  console.log('user: ', user);
   if (!user) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -17,14 +18,10 @@ export default function Perfil() {
           onPress={() => router.push('/login')}
         />
       </View>
-    )
+    );
   }
 
-  return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.text, { color: theme.textColor }]}>Perfil</Text>
-    </View>
-  );
+  return <ProfileScreen />;
 }
 
 const styles = StyleSheet.create({

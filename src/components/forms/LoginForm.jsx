@@ -1,26 +1,29 @@
-import React, { useState } from "react";
-import { Formik } from "formik";
-import { View, ActivityIndicator, StyleSheet } from "react-native";
-import FormikInputValue from "../formik/FormikInputValue";
-import { loginSchema } from "../../schemas/ValidationSchemas";
-import { login } from "../../servicies/firebase/authService";
-import StyledButton from "../StyledButton";
-import StyledText from "../StyledText";
+import React, { useState } from 'react';
+import { Formik } from 'formik';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import FormikInputValue from '../formik/FormikInputValue';
+import { loginSchema } from '../../schemas/ValidationSchemas';
+import { login } from '../../servicies/firebase/authService';
+import StyledButton from '../StyledButton';
+import StyledText from '../StyledText';
+import { useRouter } from 'expo-router';
 
 const initialValues = {
-  email: "",
-  password: "",
+  email: '',
+  password: '',
 };
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
-  const [authError, setAuthError] = useState(""); // Estado para errores de autenticación
+  const [authError, setAuthError] = useState(''); // Estado para errores de autenticación
+  const router = useRouter();
 
   const handleLogin = async (values) => {
     setLoading(true);
-    setAuthError("");
+    setAuthError('');
     try {
       await login(values.email, values.password);
+      router.replace('/');
     } catch (error) {
       setAuthError(error.message);
     }
@@ -63,10 +66,10 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   errorText: {
-    color: "red",
+    color: 'red',
     fontSize: 14,
     marginTop: 10,
   },
