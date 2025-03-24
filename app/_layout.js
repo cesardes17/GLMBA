@@ -39,6 +39,13 @@ function RootLayout() {
         name="(routes)/(auth)/register"
         options={{ headerTitle: 'Crea una Cuenta', headerBackTitle: 'Volver' }}
       />
+      <Stack.Screen
+        name="(routes)/admin/user-panel"
+        options={{
+          headerTitle: 'Panel de Usuarios',
+          headerBackTitle: 'Volver',
+        }}
+      />
     </Stack>
   );
 }
