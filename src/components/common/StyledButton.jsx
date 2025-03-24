@@ -1,18 +1,18 @@
-// /src/components/StyledButton.js
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { colors } from '../../theme/colors';
-import StyledText from './StyledText'; // 🔹 Importamos StyledText
+import StyledText from './StyledText';
 import { useTheme } from '../../hooks/theme/useTheme';
 
 export default function StyledButton({
   title,
+  icon,
   onPress,
   disabled = false,
-  danger = false, // Para acciones peligrosas (ej. eliminar)
+  danger = false,
   style = {},
 }) {
-  const { theme } = useTheme(); // 🔹 Usamos el theme del hook useTheme
+  const { theme } = useTheme();
   return (
     <Pressable
       onPress={onPress}
@@ -21,20 +21,24 @@ export default function StyledButton({
         styles.button,
         disabled && styles.disabledButton,
         danger ? styles.dangerButton : styles.defaultButton,
-        pressed && styles.pressedButton, // 🔹 Efecto al presionar
+        pressed && styles.pressedButton,
         style,
       ]}
     >
-      <StyledText
-        style={[
-          styles.text,
-          { color: theme.buttonTextColor },
-          disabled && styles.disabledText,
-          danger && styles.dangerText,
-        ]}
-      >
-        {title}
-      </StyledText>
+      {icon ? (
+        <View style={styles.iconContainer}>{icon}</View>
+      ) : (
+        <StyledText
+          style={[
+            styles.text,
+            { color: theme.buttonTextColor },
+            disabled && styles.disabledText,
+            danger && styles.dangerText,
+          ]}
+        >
+          {title}
+        </StyledText>
+      )}
     </Pressable>
   );
 }
@@ -81,5 +85,9 @@ const styles = StyleSheet.create({
   },
   dangerText: {
     color: '#fff',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
