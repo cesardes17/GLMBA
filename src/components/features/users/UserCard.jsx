@@ -1,14 +1,16 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import StyledText from '../../common/StyledText';
 import StyledButton from '../../common/StyledButton';
+import EditUserForm from './EditSelectedUserForm';
 import { useTheme } from '../../../hooks/theme/useTheme';
 import { useRouter } from 'expo-router';
 
 const UserCard = ({ user }) => {
   const { theme } = useTheme();
   const router = useRouter();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const renderExtraInfo = () => {
     if (user.role === 'jugador') {
@@ -30,41 +32,73 @@ const UserCard = ({ user }) => {
   };
 
   const handleEditUser = () => {
-    console.log('Edit user:', user);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleSaveUser = (updatedUser) => {
+    console.log('Save updated user:', updatedUser);
+    setIsModalVisible(false);
   };
 
   return (
-    <View
-      style={[
-        styles.userCard,
-        {
-          backgroundColor: theme.background,
-          borderColor: theme.borderColor,
-          borderWidth: 1,
-        },
-      ]}
-    >
-      <View style={styles.mainContent}>
-        <StyledText style={styles.email}>{user.email}</StyledText>
-        <View style={styles.infoContainer}>
-          <View style={styles.roleSection}>
-            <StyledText style={styles.name}>{user.fullName}</StyledText>
-            <StyledText style={styles.role}>{user.role}</StyledText>
+    <>
+      <View
+        style={[
+          styles.userCard,
+          {
+            backgroundColor: theme.background,
+            borderColor: theme.borderColor,
+            borderWidth: 1,
+          },
+        ]}
+      >
+        <View style={styles.mainContent}>
+          <StyledText style={styles.email}>Correo: {user.email}</StyledText>
+          <View style={styles.infoContainer}>
+            <View style={styles.roleSection}>
+              <StyledText style={styles.name}>
+                Nombre: {user.fullName}
+              </StyledText>
+              <StyledText style={styles.role}>Rol: {user.role}</StyledText>
+            </View>
+            <View style={styles.extraInfoSection}>{renderExtraInfo()}</View>
           </View>
-          <View style={styles.extraInfoSection}>{renderExtraInfo()}</View>
+        </View>
+
+        <View style={styles.editSection}>
+          <StyledButton
+            icon={
+              <Ionicons name="pencil" size={24} color={theme.buttonTextColor} />
+            }
+            onPress={handleEditUser}
+            style={styles.editButton}
+          />
         </View>
       </View>
 
-      <View style={styles.editSection}>
-        <StyledButton
-          icon={
-            <Ionicons name="pencil" size={24} color={theme.buttonTextColor} />
-          }
-          onPress={handleEditUser}
-          style={styles.editButton}
-        />
-      </View>
-    </View>
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[styles.modalContent, { backgroundColor: theme.background }]}
+          >
+            <EditUserForm
+              user={user}
+              onSave={handleSaveUser}
+              onCancel={handleCloseModal}
+            />
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -102,12 +136,12 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   email: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
     marginBottom: 8,
   },
   name: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 4,
   },
@@ -125,6 +159,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginTop: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 500,
+    borderRadius: 8,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 

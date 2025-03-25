@@ -1,7 +1,12 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import WebBackHeader from '../../../src/components/navigation/WebBackHeader';
 import LoginScreen from '../../../src/screens/LoginScreen';
 
 export default function Login() {
-  return <LoginScreen />;
+  return (
+    <>
+      <WebBackHeader title={'Inicia Sesión'} />
+      <LoginScreen />
+    </>
+  );
 }

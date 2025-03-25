@@ -2,9 +2,10 @@ import { Formik } from 'formik';
 import { View, Alert } from 'react-native';
 import FormikInputValue from './inputs/FormikInputValue';
 import FormikPickerValue from './inputs/FormikPickerValue';
+import FormikImagePicker from './inputs/FormikImagePicker';
 import { registrationSchema } from '../../schemas/ValidationSchemas';
 import StyledButton from '../common/StyledButton';
-import { registerUser } from '../../services/firebase/authService';
+import { uploadProfileImage } from '../../services/imageService';
 
 const initialValues = {
   fullName: '',
@@ -15,6 +16,7 @@ const initialValues = {
   jerseyNumber: '',
   height: '',
   favPosition: 'base',
+  profileImage: null,
 };
 
 const roleData = [
@@ -33,16 +35,44 @@ const positionData = [
 export default function RegistrationForm() {
   const handleRegister = async (values, { resetForm }) => {
     try {
-      const success = await registerUser(values);
-      if (success) {
-        Alert.alert(
-          'Registro exitoso',
-          'El usuario ha sido creado correctamente.'
-        );
-        resetForm(); // 🔹 Ahora sí se puede usar resetForm
-      } else {
-        Alert.alert('Error', 'No se pudo completar el registro.');
+      console.log('Form values:', values);
+      let profileImageUrl = null;
+
+      //   // Step 1: Upload image if provided
+      if (values.profileImage) {
+        profileImageUrl = await uploadProfileImage(values.profileImage);
+        if (!profileImageUrl) {
+          throw new Error('Error al subir la imagen de perfil');
+        }
+        console.log('Image uploaded successfully:', profileImageUrl);
       }
+
+      // // Step 2: Create user account
+      // const userId = await registerUser(values);
+      // if (!userId) {
+      //   throw new Error('Error al crear la cuenta');
+      // }
+
+      // // Step 3: Save user data in Realtime Database
+      // const userData = {
+      //   fullName: values.fullName,
+      //   email: values.email,
+      //   role: values.role,
+      //   profileImage: profileImageUrl,
+      //   ...(values.role === 'jugador' && {
+      //     jerseyNumber: values.jerseyNumber,
+      //     height: values.height,
+      //     favPosition: values.favPosition,
+      //   }),
+      // };
+
+      // await saveUserData(userId, userData);
+
+      // Alert.alert(
+      //   'Registro exitoso',
+      //   'El usuario ha sido creado correctamente.'
+      // );
+      // resetForm();
     } catch (error) {
       Alert.alert('Error', error.message);
     }
@@ -52,12 +82,13 @@ export default function RegistrationForm() {
     <Formik
       initialValues={initialValues}
       validationSchema={registrationSchema}
-      onSubmit={handleRegister} // 🔹 Ahora pasamos la función corregida
+      onSubmit={handleRegister}
     >
       {({ handleSubmit, isValid, dirty, values }) => (
         <View>
           <FormikInputValue name="fullName" placeholder="Nombre completo" />
           <FormikInputValue name="email" placeholder="Correo electrónico" />
+          <FormikImagePicker name="profileImage" />
           <FormikInputValue
             name="password"
             placeholder="Contraseña"

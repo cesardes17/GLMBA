@@ -1,6 +1,6 @@
-import React from "react";
-import { TextInput, StyleSheet } from "react-native";
-import { colors } from "../../../theme/colors";
+import React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
+import { colors } from '../../../theme/colors';
 
 const StyledTextInput = ({ style = {}, error, isFocused, ...props }) => {
   return (

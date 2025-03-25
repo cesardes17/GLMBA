@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import StyledTextInput from './StyledTextInput';
-import { useField } from "formik";
-import { StyleSheet, View } from "react-native";
-import { colors } from "../../../theme/colors";
-import StyledText from "../../common/StyledText";
+import { useField } from 'formik';
+import { StyleSheet, View } from 'react-native';
+import { colors } from '../../../theme/colors';
+import StyledText from '../../common/StyledText';
 
 export default function FormikInputValue({ name, ...props }) {
   const [field, meta, helpers] = useField(name);

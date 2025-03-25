@@ -1,7 +1,13 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import WebBackHeader from '../../../src/components/navigation/WebBackHeader';
 import RegisterScreen from '../../../src/screens/RegisterScreen';
 
 export default function Register() {
-  return <RegisterScreen />;
+  return (
+    <>
+      <WebBackHeader title={'Crea una cuenta'} />
+
+      <RegisterScreen />
+    </>
+  );
 }
