@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { auth } from '../../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { getUserData } from '../../services/userService';
+import { getUserData, createUserProfile } from '../../services/userService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthContext = createContext();
@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
 
   const isMountedRef = useRef(true);
 
-  // Optimized fetchUserData with useCallback
   const fetchUserData = useCallback(async (uid) => {
     try {
       const cachedUserData = await AsyncStorage.getItem(USER_STORAGE_KEY);
@@ -31,7 +30,13 @@ export const AuthProvider = ({ children }) => {
 
       if (!userData || userData.uid !== uid) {
         userData = await getUserData(uid);
-        await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
+
+        if (userData) {
+          await AsyncStorage.setItem(
+            USER_STORAGE_KEY,
+            JSON.stringify(userData)
+          );
+        }
       }
 
       if (isMountedRef.current) {
@@ -39,11 +44,12 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
-      setAuthState((prev) => ({ ...prev, loading: false }));
+      if (isMountedRef.current) {
+        setAuthState((prev) => ({ ...prev, loading: false }));
+      }
     }
   }, []);
 
-  // Optimized logout with useCallback
   const logout = useCallback(async () => {
     try {
       await Promise.all([
@@ -52,11 +58,10 @@ export const AuthProvider = ({ children }) => {
       ]);
       setAuthState({ user: null, userData: null, loading: false });
     } catch (error) {
-      console.error('Logout error:', error.message);
+      console.error('Logout error:', error);
     }
   }, []);
 
-  // Optimized setUserData with useCallback
   const setUserData = useCallback((data) => {
     setAuthState((prev) => ({ ...prev, userData: data }));
     AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data)).catch(

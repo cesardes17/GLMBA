@@ -2,10 +2,12 @@ import { Formik } from 'formik';
 import { View, Alert } from 'react-native';
 import FormikInputValue from './inputs/FormikInputValue';
 import FormikPickerValue from './inputs/FormikPickerValue';
-import FormikImagePicker from './inputs/FormikImagePicker';
+// import FormikImagePicker from './inputs/FormikImagePicker';
 import { registrationSchema } from '../../schemas/ValidationSchemas';
 import StyledButton from '../common/StyledButton';
-import { uploadProfileImage } from '../../services/imageService';
+import { setUserData } from '../../services/userService';
+import { registerUser } from '../../services/authService';
+import { router } from 'expo-router';
 
 const initialValues = {
   fullName: '',
@@ -36,17 +38,34 @@ export default function RegistrationForm() {
   const handleRegister = async (values, { resetForm }) => {
     try {
       console.log('Form values:', values);
-      let profileImageUrl = null;
-
-      //   // Step 1: Upload image if provided
-      if (values.profileImage) {
-        profileImageUrl = await uploadProfileImage(values.profileImage);
-        if (!profileImageUrl) {
-          throw new Error('Error al subir la imagen de perfil');
-        }
-        console.log('Image uploaded successfully:', profileImageUrl);
+      const user = await registerUser(values.email, values.password);
+      if (!user) {
+        throw new Error('Error al crear la cuenta');
       }
+      console.log('User registered:', user);
+      const userData = {
+        uid: user.uid,
+        fullName: values.fullName,
+        email: values.email,
+        role: values.role,
+        ...(values.role === 'jugador' && {
+          jerseyNumber: values.jerseyNumber,
+          height: values.height,
+          favPosition: values.favPosition,
+        }),
+      };
+      console.log('User data:', userData);
+      const res = await setUserData(userData);
+      console.log('User data saved:', res);
+      // Guardar en Realtime Database
 
+      console.log('Registration response:', repsonse);
+      Alert.alert(
+        'Registro exitoso',
+        'El usuario ha sido creado correctamente.'
+      );
+      router.push('/');
+      resetForm();
       // // Step 2: Create user account
       // const userId = await registerUser(values);
       // if (!userId) {
@@ -88,7 +107,7 @@ export default function RegistrationForm() {
         <View>
           <FormikInputValue name="fullName" placeholder="Nombre completo" />
           <FormikInputValue name="email" placeholder="Correo electrónico" />
-          <FormikImagePicker name="profileImage" />
+
           <FormikInputValue
             name="password"
             placeholder="Contraseña"

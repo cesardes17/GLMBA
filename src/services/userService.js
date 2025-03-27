@@ -5,7 +5,7 @@ import {
   updateData,
   deleteData,
 } from './firebase/realtimeDatabaseService';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { register } from './firebase/authService';
 import { auth } from '../../firebase';
 
 const USERS_PATH = 'usuarios';
@@ -30,30 +30,12 @@ export const getUserData = async (uid) => {
  * Crea un nuevo usuario en Firebase.
  * @param {Object} userData - Datos del usuario.
  */
-export const registerUser = async (userData) => {
+export const setUserData = async (userData) => {
   try {
-    // Crear usuario en Firebase Auth
-    const { user } = await createUserWithEmailAndPassword(
-      auth,
-      userData.email,
-      userData.password
-    );
-
+    // Use auth service instead of direct Firebase auth
+    const result = await setData(`${USERS_PATH}/${userData.uid}`, userData);
+    return result;
     // Construir datos para la base de datos
-    const userToSave = {
-      uid: user.uid,
-      fullName: userData.fullName,
-      email: userData.email,
-      role: userData.role,
-      ...(userData.role === 'jugador' && {
-        jerseyNumber: userData.jerseyNumber,
-        height: userData.height,
-        favPosition: userData.favPosition,
-      }),
-    };
-
-    // Guardar en Realtime Database
-    return await setData(`${USERS_PATH}/${user.uid}`, userToSave);
   } catch (error) {
     console.error('Error registrando usuario:', error);
     throw error;
@@ -95,7 +77,7 @@ export const getManageableUsers = async (currentUserRole) => {
     }
 
     const managableRoles = ROLE_HIERARCHY[currentUserRole];
-    return Object.values(allUsers).filter(user => 
+    return Object.values(allUsers).filter((user) =>
       managableRoles.includes(user.role)
     );
   } catch (error) {
