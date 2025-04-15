@@ -1,0 +1,135 @@
+import { colors } from "./colors";
+
+// Light theme definition
+export const lightTheme = {
+  // Background colors
+  backgroundColor: colors.white,
+  surfaceColor: colors.gray100,
+  cardBackground: colors.white,
+  backgroundNavigation: colors.white,
+
+  // Text colors
+  textPrimary: colors.gray900,
+  textSecondary: colors.gray600,
+  textDisabled: colors.gray400,
+
+  // UI element colors
+  primary: colors.primary600,
+  primaryLight: colors.primary300,
+  primaryDark: colors.primary800,
+
+  // Button states
+  button: {
+    default: {
+      background: colors.primary200,
+      text: colors.gray900,
+      border: colors.primary300,
+    },
+    hover: {
+      background: colors.primary300,
+      text: colors.gray900,
+      border: colors.primary400,
+    },
+    active: {
+      background: colors.primary500,
+      text: colors.gray900,
+      border: colors.primary600,
+      shadow: colors.primary600,
+    },
+    disabled: {
+      background: colors.primary50,
+      text: colors.primary300,
+      border: colors.primary100,
+    },
+  },
+
+  // Border colors
+  border: colors.gray300,
+  divider: colors.gray200,
+
+  // Status colors
+  success: colors.success,
+  warning: colors.warning,
+  error: colors.error,
+  info: colors.info,
+
+  // Input fields
+  inputBackground: colors.white,
+  inputBorder: colors.gray300,
+  inputText: colors.gray900,
+  inputPlaceholder: colors.gray500,
+
+  // Active state
+  activeElement: colors.primary500,
+  inactiveElement: colors.primary300,
+};
+
+// Dark theme definition
+export const darkTheme = {
+  // Background colors
+  backgroundColor: colors.gray900,
+  surfaceColor: colors.gray800,
+  cardBackground: colors.gray800,
+  backgroundNavigation: colors.primary950,
+
+  // Text colors
+  textPrimary: colors.white,
+  textSecondary: colors.gray300,
+  textDisabled: colors.gray600,
+
+  // UI element colors
+  primary: colors.primary600,
+  primaryLight: colors.primary700,
+  primaryDark: colors.primary400,
+
+  // Button states
+  button: {
+    default: {
+      background: colors.primary200,
+      text: colors.gray900,
+      border: colors.primary300,
+    },
+    hover: {
+      background: colors.primary300,
+      text: colors.gray900,
+      border: colors.primary400,
+    },
+    active: {
+      background: colors.primary500,
+      text: colors.gray900,
+      border: colors.primary600,
+      shadow: colors.primary600,
+    },
+    disabled: {
+      background: colors.primary900,
+      text: colors.primary300,
+      border: colors.primary800,
+    },
+  },
+
+  // Border colors
+  border: colors.gray700,
+  divider: colors.gray700,
+
+  // Status colors
+  success: colors.success,
+  warning: colors.warning,
+  error: colors.error,
+  info: colors.info,
+
+  // Input fields
+  inputBackground: colors.gray800,
+  inputBorder: colors.gray700,
+  inputText: colors.white,
+  inputPlaceholder: colors.gray500,
+
+  // Active
+  activeElement: colors.primary300,
+  inactiveElement: colors.primary700,
+};
+
+// Create a type based on the theme structure
+export type Theme = typeof lightTheme;
+
+// Default theme
+export const defaultTheme = lightTheme;

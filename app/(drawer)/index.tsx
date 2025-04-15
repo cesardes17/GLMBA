@@ -1,29 +1,35 @@
-import { SafeAreaView, Text, Pressable } from "react-native";
+import { Text, Pressable, StyleSheet } from "react-native";
 import { router } from "expo-router";
+import PageContainer from "../../src/components/common/PageContainer";
+import { useTheme } from "../../src/theme/ThemeContext";
+import StyledButton from "../../src/components/common/StyledButton";
 
 export default function Home() {
+  const { theme } = useTheme();
+
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <PageContainer title="Home">
       <Text>Hello World</Text>
 
-      <Pressable
-        onPress={() => router.push("/login")}
-        style={{
-          marginTop: 20,
-          backgroundColor: "#007AFF",
-          paddingVertical: 12,
-          paddingHorizontal: 24,
-          borderRadius: 8,
+      <StyledButton
+        onPress={() => {
+          router.push("/login");
         }}
-      >
-        <Text style={{ color: "white", fontWeight: "bold" }}>Go to Login</Text>
-      </Pressable>
-    </SafeAreaView>
+        title="Ir a Login"
+      />
+    </PageContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+});

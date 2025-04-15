@@ -1,15 +1,10 @@
-import { SafeAreaView, Text } from "react-native";
+import { Text } from "react-native";
+import PageContainer from "../../src/components/common/PageContainer";
 
 export default function About() {
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <PageContainer title="About">
       <Text>About this app!</Text>
-    </SafeAreaView>
+    </PageContainer>
   );
 }
