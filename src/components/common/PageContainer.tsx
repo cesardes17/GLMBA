@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { HeaderConfig } from "./HeaderConfig";
 import { useTheme } from "../../context/ThemeContext";
+import { StatusBar } from "expo-status-bar";
 
 interface PageContainerProps {
   children: ReactNode;
@@ -16,7 +17,7 @@ export default function PageContainer({
   backTitle,
   showHeader = true,
 }: PageContainerProps) {
-  const { theme } = useTheme();
+  const { theme, currentThemeStyle } = useTheme();
 
   return (
     <SafeAreaView
@@ -26,6 +27,7 @@ export default function PageContainer({
         <HeaderConfig title={title} backTitle={backTitle} />
       )}
       <View style={styles.content}>{children}</View>
+      <StatusBar style={currentThemeStyle === "dark" ? "light" : "dark"} />
     </SafeAreaView>
   );
 }

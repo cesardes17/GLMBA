@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { useTheme } from "../../context/ThemeContext";
 
 interface HeaderConfigProps {
   title?: string;
@@ -11,6 +12,7 @@ export function HeaderConfig({
   showBackButton = true,
   backTitle = "Inicio",
 }: HeaderConfigProps) {
+  const { theme } = useTheme();
   return (
     <Stack.Screen
       options={{
@@ -19,6 +21,9 @@ export function HeaderConfig({
         headerBackVisible: showBackButton,
         headerBackTitle: backTitle,
         headerTitleAlign: "center",
+        headerStyle: {
+          backgroundColor: theme.backgroundColor,
+        },
       }}
     />
   );

@@ -62,6 +62,22 @@ export const lightTheme = {
   // Active state
   activeElement: colors.primary500,
   inactiveElement: colors.primary300,
+
+  selectableCard: {
+    default: {
+      background: colors.white,
+      border: colors.gray300,
+      title: colors.gray900,
+      description: colors.gray600,
+    },
+    selected: {
+      background: colors.primary50,
+      border: colors.primary600,
+      title: colors.primary800,
+      description: colors.primary700,
+      checkIcon: colors.primary600,
+    },
+  },
 };
 
 // Dark theme definition
@@ -126,6 +142,22 @@ export const darkTheme = {
   // Active
   activeElement: colors.primary300,
   inactiveElement: colors.primary700,
+
+  selectableCard: {
+    default: {
+      background: colors.gray800,
+      border: colors.gray700,
+      title: colors.white,
+      description: colors.gray300,
+    },
+    selected: {
+      background: colors.primary900,
+      border: colors.primary400,
+      title: colors.primary200,
+      description: colors.primary300,
+      checkIcon: colors.primary300,
+    },
+  },
 };
 
 // Create a type based on the theme structure

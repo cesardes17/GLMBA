@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Appearance, ColorSchemeName, useColorScheme } from "react-native";
 import { lightTheme, darkTheme, Theme } from "../theme/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ThemeContextType = {
   theme: Theme;
@@ -14,18 +15,34 @@ type ThemeContextType = {
   toggleTheme: () => void;
   setThemeMode: (mode: "light" | "dark" | "system") => void;
   themeMode: "light" | "dark" | "system";
+  currentThemeStyle: "light" | "dark"; // Add this new property
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  // Get the system color scheme
-  const systemColorScheme = useColorScheme();
+const THEME_STORAGE_KEY = "@app_theme_mode";
 
-  // Theme mode can be 'light', 'dark', or 'system'
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const systemColorScheme = useColorScheme();
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
     "system"
   );
+
+  // Load stored theme on mount
+  useEffect(() => {
+    const loadStoredTheme = async () => {
+      try {
+        const storedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        if (storedTheme) {
+          setThemeMode(storedTheme as "light" | "dark" | "system");
+        }
+      } catch (error) {
+        console.error("Error loading theme:", error);
+      }
+    };
+
+    loadStoredTheme();
+  }, []);
 
   // Determine if dark mode is active based on theme mode and system settings
   const isDarkMode =
@@ -33,26 +50,18 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       ? systemColorScheme === "dark"
       : themeMode === "dark";
 
-  // Set the active theme based on dark mode state
   const theme = isDarkMode ? darkTheme : lightTheme;
+  const currentThemeStyle = isDarkMode ? "dark" : "light";
 
-  // Toggle between light and dark mode
-  const toggleTheme = () => {
-    setThemeMode(isDarkMode ? "light" : "dark");
+  const toggleTheme = async () => {
+    const newTheme = isDarkMode ? "light" : "dark";
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme);
+      setThemeMode(newTheme);
+    } catch (error) {
+      console.error("Error saving theme:", error);
+    }
   };
-
-  // Listen for system theme changes if in 'system' mode
-  useEffect(() => {
-    if (themeMode !== "system") return;
-
-    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
-      // This will trigger a re-render with the new system theme
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [themeMode]);
 
   return (
     <ThemeContext.Provider
@@ -62,6 +71,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         toggleTheme,
         themeMode,
         setThemeMode,
+        currentThemeStyle,
       }}
     >
       {children}

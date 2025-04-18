@@ -42,6 +42,12 @@ export default function DrawerLayout() {
             title: "Sobre Nosotros",
           }}
         />
+        <Drawer.Screen
+          name="settings"
+          options={{
+            title: "Ajustes",
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );

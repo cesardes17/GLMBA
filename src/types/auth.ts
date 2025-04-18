@@ -1,11 +1,4 @@
-export type SignUpCredentials = {
-  email: string;
-  password: string;
-  nombre: string;
-  apellidos: string;
-};
-
-export type SignInCredentials = {
+export type authCredentials = {
   email: string;
   password: string;
 };
