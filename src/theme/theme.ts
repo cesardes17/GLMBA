@@ -41,6 +41,11 @@ export const lightTheme = {
       text: colors.primary300,
       border: colors.primary100,
     },
+    outline: {
+      background: 'transparent',
+      text: colors.primary600,
+      border: colors.primary600,
+    },
   },
 
   // Border colors
@@ -120,6 +125,11 @@ export const darkTheme = {
       background: colors.primary900,
       text: colors.primary300,
       border: colors.primary800,
+    },
+    outline: {
+      background: 'transparent',
+      text: colors.primary300,
+      border: colors.primary300,
     },
   },
 

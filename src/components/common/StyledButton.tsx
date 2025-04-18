@@ -6,7 +6,7 @@ interface StyledButtonProps {
   title: string;
   onPress: () => void;
   disabled?: boolean;
-  variant?: "default" | "hover" | "active" | "disabled";
+  variant?: "default" | "hover" | "active" | "disabled" | "outline";
 }
 
 export default function StyledButton({
@@ -19,8 +19,11 @@ export default function StyledButton({
   const [isPressed, setIsPressed] = useState(false);
 
   // Determine which style to use based on props and state
-  const buttonState =
-    variant || (disabled ? "disabled" : isPressed ? "active" : "default");
+  const buttonState = disabled
+    ? "disabled"
+    : isPressed
+      ? "active"
+      : variant || "default";
   const buttonStyle = theme.button[buttonState];
 
   return (
@@ -34,7 +37,7 @@ export default function StyledButton({
         {
           backgroundColor: buttonStyle.background,
           borderColor: buttonStyle.border,
-          borderWidth: 1,
+          borderWidth: variant === "outline" ? 2 : 1,
           // Add shadow for active state
           ...(buttonState === "active" && {
             shadowColor:

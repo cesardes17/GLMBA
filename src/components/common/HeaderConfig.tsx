@@ -24,6 +24,7 @@ export function HeaderConfig({
         headerStyle: {
           backgroundColor: theme.backgroundColor,
         },
+        headerTintColor: theme.textPrimary,
       }}
     />
   );
