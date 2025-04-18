@@ -1,6 +1,6 @@
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
-import { useTheme } from "../../src/theme/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 export default function DrawerLayout() {
@@ -33,7 +33,7 @@ export default function DrawerLayout() {
         <Drawer.Screen
           name="index"
           options={{
-            title: "Home",
+            title: "Inicio",
           }}
         />
         <Drawer.Screen

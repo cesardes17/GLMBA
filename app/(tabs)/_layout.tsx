@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useTheme } from "../../src/theme/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 import { View } from "react-native";
 
 // Función para obtener el icono según el nombre de la ruta
@@ -40,7 +40,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Inicio",
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />

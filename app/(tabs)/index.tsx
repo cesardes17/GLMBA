@@ -1,14 +1,14 @@
 import { Text, Pressable, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import PageContainer from "../../src/components/common/PageContainer";
-import { useTheme } from "../../src/theme/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 import StyledButton from "../../src/components/common/StyledButton";
 
 export default function Home() {
   const { theme } = useTheme();
 
   return (
-    <PageContainer title="Home">
+    <PageContainer title="Inicio">
       <Text>Hello World</Text>
 
       <StyledButton

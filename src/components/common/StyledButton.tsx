@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, Text, StyleSheet, View } from "react-native";
-import { useTheme } from "../../theme/ThemeContext";
+import { useTheme } from "../../context/ThemeContext";
 
 interface StyledButtonProps {
   title: string;

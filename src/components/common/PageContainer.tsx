@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { HeaderConfig } from "./HeaderConfig";
-import { useTheme } from "../../theme/ThemeContext";
+import { useTheme } from "../../context/ThemeContext";
 
 interface PageContainerProps {
   children: ReactNode;
