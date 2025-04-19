@@ -42,7 +42,7 @@ export const lightTheme = {
       border: colors.primary100,
     },
     outline: {
-      background: 'transparent',
+      background: "transparent",
       text: colors.primary600,
       border: colors.primary600,
     },
@@ -81,6 +81,32 @@ export const lightTheme = {
       title: colors.primary800,
       description: colors.primary700,
       checkIcon: colors.primary600,
+    },
+  },
+  input: {
+    default: {
+      background: colors.primary50,
+      border: colors.primary950,
+      text: colors.primary800,
+      placeholder: colors.primary800,
+    },
+    focused: {
+      background: colors.primary200,
+      border: colors.primary950,
+      text: colors.primary900,
+      placeholder: colors.primary900,
+    },
+    error: {
+      background: colors.errorStyle.background,
+      border: colors.errorStyle.border,
+      text: colors.errorStyle.text,
+      placeholder: colors.errorStyle.text,
+    },
+    disabled: {
+      background: colors.gray100,
+      border: colors.gray300,
+      text: colors.gray400,
+      placeholder: colors.gray400,
     },
   },
 };
@@ -127,7 +153,7 @@ export const darkTheme = {
       border: colors.primary800,
     },
     outline: {
-      background: 'transparent',
+      background: "transparent",
       text: colors.primary300,
       border: colors.primary300,
     },
@@ -166,6 +192,32 @@ export const darkTheme = {
       title: colors.primary200,
       description: colors.primary300,
       checkIcon: colors.primary300,
+    },
+  },
+  input: {
+    default: {
+      background: colors.gray800,
+      border: colors.gray700,
+      text: colors.white,
+      placeholder: colors.gray500,
+    },
+    focused: {
+      background: colors.gray800,
+      border: colors.primary600,
+      text: colors.white,
+      placeholder: colors.gray500,
+    },
+    error: {
+      background: colors.gray800,
+      border: colors.error,
+      text: colors.error,
+      placeholder: colors.gray500,
+    },
+    disabled: {
+      background: colors.gray700,
+      border: colors.gray600,
+      text: colors.gray500,
+      placeholder: colors.gray500,
     },
   },
 };

@@ -1,10 +1,10 @@
-import { supabase, handleSupabaseError } from './supabase';
-import { SignUpCredentials, SignInCredentials } from '../types/auth';
+import { supabase, handleSupabaseError } from "./supabase";
+import { authCredentials } from "../types/auth";
 
 // Authentication services
 export const authService = {
   // Sign up a new user
-  signUp: async ({ email, password, nombre, apellidos }: SignUpCredentials) => {
+  signUp: async ({ email, password }: authCredentials) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -12,22 +12,7 @@ export const authService = {
       });
 
       if (error) throw error;
-
-      // If signup successful, create user profile in the usuarios table
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('usuarios')
-          .insert({
-            id: data.user.id,
-            email,
-            nombre,
-            apellidos,
-            rol_id: '00000000-0000-0000-0000-000000000000', // Default role ID - update this
-            activo: true,
-          });
-
-        if (profileError) throw profileError;
-      }
+      if (!data.user) throw new Error("User not created");
 
       return { data, error: null };
     } catch (error) {
@@ -36,7 +21,7 @@ export const authService = {
   },
 
   // Sign in an existing user
-  signIn: async ({ email, password }: SignInCredentials) => {
+  signIn: async ({ email, password }: authCredentials) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -76,9 +61,9 @@ export const authService = {
   resetPassword: async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'yourapp://reset-password',
+        redirectTo: "yourapp://reset-password",
       });
-      
+
       if (error) throw error;
       return { error: null };
     } catch (error) {
@@ -92,7 +77,7 @@ export const authService = {
       const { error } = await supabase.auth.updateUser({
         password,
       });
-      
+
       if (error) throw error;
       return { error: null };
     } catch (error) {

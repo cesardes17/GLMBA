@@ -29,6 +29,13 @@ export const colors = {
   error: "#F5222D",
   info: "#1890FF",
 
+  //errors
+  errorStyle: {
+    text: "#D32F2F",
+    border: "#DC2626",
+    background: "#FFEBEB",
+  },
+
   // Base colors
   white: "#FFFFFF",
   black: "#000000",
