@@ -1,10 +1,17 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Usuario } from "../types/usuario";
 import { authService } from "../api/authSupabase";
+import { usuarioService } from "../services/usuarioService";
 
 interface UserContextType {
   user: Usuario | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{
+    error: Error | null;
+    info: boolean;
+  }>;
   register: (email: string, password: string) => Promise<Error | null>;
   logout: () => void;
 }
@@ -16,10 +23,33 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      throw new Error("Not implemented");
+      const { data, error } = await authService.signIn({
+        email,
+        password,
+      });
+      if (error) {
+        throw new Error(error);
+      }
+      if (!data || !data.user) {
+        throw new Error("No data returned");
+      }
+      if (!data.user.email) {
+        throw new Error("No email returned");
+      }
+      const { data: userData, error: userError } =
+        await usuarioService.getUserByEmail(data.user.email);
+      if (userError) {
+        throw new Error(userError.message);
+      }
+      if (!userData) {
+        return { error: null, info: true };
+      }
+
+      setUser(userData);
+      return { error: null, info: false }; // Added info: false here
     } catch (error) {
-      console.error("Login error:", error);
-      throw error;
+      await logout();
+      return { error: error as Error, info: false };
     }
   };
 
@@ -43,6 +73,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
+      setUser(null);
       await authService.signOut();
       return { data: null, error: null };
     } catch (error) {

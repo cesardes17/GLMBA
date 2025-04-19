@@ -9,11 +9,6 @@ export default function RegistroScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const { theme } = useTheme();
-  const [toast, setToast] = useState({
-    visible: false,
-    message: "",
-    type: "success",
-  });
 
   if (error) {
     return (

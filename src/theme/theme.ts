@@ -18,6 +18,9 @@ export const lightTheme = {
   primaryLight: colors.primary300,
   primaryDark: colors.primary800,
 
+  //separator
+  separator: colors.gray200,
+
   // Button states
   button: {
     default: {
@@ -128,6 +131,9 @@ export const darkTheme = {
   primary: colors.primary600,
   primaryLight: colors.primary700,
   primaryDark: colors.primary400,
+
+  //separator
+  separator: colors.gray200,
 
   // Button states
   button: {
