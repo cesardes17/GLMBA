@@ -14,11 +14,17 @@ export const authService = {
 
   // Logout the current user
   logout: async () => {
-    return await supabaseAuthService.signOut();
+    try {
+      const result = await supabaseAuthService.signOut();
+      // Supabase's signOut method already handles clearing the token
+      return result;
+    } catch (error) {
+      return { data: null, error: error as Error };
+    }
   },
 
   // Get the current session
-  getCurrentSession: async () => {
+  getSession: async () => {
     return await supabaseAuthService.getSession();
   },
 
@@ -38,7 +44,9 @@ export const authService = {
   },
 
   // Add this new method
-  initializeAuthStateChange: (callback: (event: string, session: any) => void) => {
+  initializeAuthStateChange: (
+    callback: (event: string, session: any) => void
+  ) => {
     return supabaseAuthService.initializeAuthStateChange(callback);
   },
 };

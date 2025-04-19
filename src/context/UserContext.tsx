@@ -23,8 +23,53 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<
     { email: string; id: string } | null | Usuario
   >(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Check current session on mount
+    const checkSession = async () => {
+      try {
+        const { data: sessionData, error: sessionError } =
+          await authService.getSession();
+
+        if (sessionError) {
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+        if (
+          !sessionData ||
+          !sessionData.session ||
+          !sessionData.session.user ||
+          !sessionData.session.user.email // Changed this condition
+        ) {
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+
+        const { data: userData, error: userError } =
+          await usuarioService.getUserByEmail(sessionData.session.user.email);
+
+        if (userError || !userData) {
+          setUser({
+            email: sessionData.session.user.email,
+            id: sessionData.session.user.id,
+          });
+        } else {
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Session check error:", error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkSession();
+
+    // Subscribe to auth changes
     const { data: subscription } = authService.initializeAuthStateChange(
       async (event, session) => {
         if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
@@ -47,7 +92,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // Cleanup subscription on unmount
     return () => {
       subscription?.unsubscribe();
     };

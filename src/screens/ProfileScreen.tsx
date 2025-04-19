@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useUser } from "../context/UserContext";
 import { useTheme } from "../context/ThemeContext";
 import { ThemeSelector } from "./theme/ThemeSelector";
@@ -12,7 +12,7 @@ export const ProfileScreen = () => {
   const handleLogout = async () => {
     const result = await logout();
     if (!result) {
-      router.replace("/(auth)/login");
+      router.replace("/");
     }
   };
 
@@ -21,7 +21,7 @@ export const ProfileScreen = () => {
   }
 
   return (
-    <View
+    <ScrollView
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
     >
       {/* User Info Section */}
@@ -66,7 +66,7 @@ export const ProfileScreen = () => {
       >
         <Text style={styles.logoutText}>Cerrar Sesión</Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 };
 

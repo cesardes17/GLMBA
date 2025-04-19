@@ -37,7 +37,9 @@ export const authService = {
   // Sign out the current user
   signOut: async () => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut({
+        scope: "global", // This ensures all devices/tabs are signed out
+      });
       if (error) throw error;
       return { error: null };
     } catch (error) {
@@ -96,13 +98,15 @@ export const authService = {
   },
 
   // Add this new method
-  initializeAuthStateChange: (callback: (event: string, session: any) => void) => {
+  initializeAuthStateChange: (
+    callback: (event: string, session: any) => void
+  ) => {
     try {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          callback(event, session);
-        }
-      );
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((event, session) => {
+        callback(event, session);
+      });
       return { data: subscription, error: null };
     } catch (error) {
       return handleSupabaseError(error as Error);
