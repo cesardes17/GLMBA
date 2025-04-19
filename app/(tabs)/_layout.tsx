@@ -49,7 +49,7 @@ export default function TabsLayout() {
 
     return {
       title: "Perfil",
-      href: "/(tabs)/profile",
+      href: "/profile",
       icon: "user", // This one is valid
     };
   };
@@ -99,22 +99,6 @@ export default function TabsLayout() {
               }
               color={color}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Ajustes",
-          tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="about"
-        options={{
-          title: "Sobre Nosotros",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="info-circle" color={color} />
           ),
         }}
       />

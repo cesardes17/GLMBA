@@ -1,22 +1,22 @@
-import { Text, Pressable, StyleSheet } from "react-native";
-import { router } from "expo-router";
+import { StyleSheet } from "react-native";
+
 import PageContainer from "../../src/components/common/PageContainer";
 import { useTheme } from "../../src/context/ThemeContext";
-import StyledButton from "../../src/components/common/StyledButton";
+import { useUser } from "../../src/context/UserContext";
+import { useEffect } from "react";
+import StyledText from "../../src/components/common/StyledText";
 
 export default function Home() {
   const { theme } = useTheme();
+  const { user } = useUser();
+
+  useEffect(() => {
+    console.log("user index.tsx: ", user);
+  }, [user]);
 
   return (
     <PageContainer title="Inicio">
-      <Text>Hello World</Text>
-
-      <StyledButton
-        onPress={() => {
-          router.push("/login");
-        }}
-        title="Ir a Login"
-      />
+      <StyledText>Hello World</StyledText>
     </PageContainer>
   );
 }

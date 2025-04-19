@@ -24,7 +24,7 @@ export default function FormikSetupProfileForm({
 }: FormikSetupProfileFormProps) {
   const [step, setStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState<string>("");
-  const { user, getCurrentUserAuth } = useUser();
+  const { user } = useUser();
   const [roles, setRoles] = useState<Option[]>([]);
 
   useEffect(() => {
@@ -74,14 +74,17 @@ export default function FormikSetupProfileForm({
       console.log("Form Values:", values);
       console.log("Selected Role:", selectedRole);
 
-      const { data, error } = await getCurrentUserAuth();
+      if (!user) {
+        throw new Error("no hay usuario");
+      }
+
+      const { data, error } = await usuarioService.getUserByEmail(user.email);
 
       if (error) {
         throw error;
       }
-
       if (!data) {
-        throw new Error("No user or user id or user email");
+        throw new Error("no hay datos");
       }
 
       const userData: setupUserInfo = {

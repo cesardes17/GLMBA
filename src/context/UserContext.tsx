@@ -2,26 +2,21 @@ import { createContext, useContext, useState, ReactNode } from "react";
 import { Usuario } from "../types/usuario";
 import { usuarioService } from "../services/usuarioService";
 import { authService } from "../services/authService";
-import { User } from "@supabase/supabase-js";
 
 interface UserContextType {
-  user: Usuario | null;
+  user: { email: string; id: string } | null;
   login: (
     email: string,
     password: string
   ) => Promise<{ error: Error | null; info: boolean }>;
   register: (email: string, password: string) => Promise<Error | null>;
   logout: () => void;
-  getCurrentUserAuth: () => Promise<{
-    data: { email: string; id: string } | null;
-    error: Error | null;
-  }>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<Usuario | null>(null);
+  const [user, setUser] = useState<{ email: string; id: string } | null>(null);
 
   const login = async (email: string, password: string) => {
     try {
@@ -32,7 +27,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (error) {
         throw new Error(error);
       }
-      if (!data || !data.user) {
+      if (!data || !data.user || !data.user.email || !data.user.id) {
         throw new Error("No data returned");
       }
       if (!data.user.email) {
@@ -47,7 +42,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return { error: null, info: true };
       }
 
-      setUser(userData);
+      setUser({ email: data.user.email, id: data.user.id });
       return { error: null, info: false }; // Added info: false here
     } catch (error) {
       return { error: error as Error, info: false };
@@ -82,39 +77,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const getCurrentUserAuth = async () => {
-    try {
-      const { data: authData, error } = await authService.getCurrentUser();
-      if (error) {
-        throw new Error(error);
-      }
-      if (!authData?.user?.email) {
-        return { data: null, error: null };
-      }
-      console.log("Auth Data:", authData);
-
-      // Ensure both email and id exist before returning
-      const email = authData.user.email;
-      const id = authData.user.id;
-
-      if (!email || !id) {
-        return { data: null, error: new Error("Invalid user data") };
-      }
-
-      return {
-        data: { email, id },
-        error: null,
-      };
-    } catch (error) {
-      console.error("Error getting current user:", error);
-      return { data: null, error: error as Error };
-    }
-  };
-
   return (
-    <UserContext.Provider
-      value={{ user, login, register, logout, getCurrentUserAuth }}
-    >
+    <UserContext.Provider value={{ user, login, register, logout }}>
       {children}
     </UserContext.Provider>
   );

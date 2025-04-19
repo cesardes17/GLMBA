@@ -24,7 +24,7 @@ const THEME_STORAGE_KEY = "@app_theme_mode";
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const systemColorScheme = useColorScheme();
-  const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
+  const [themeMode, setThemeModeState] = useState<"light" | "dark" | "system">(
     "system"
   );
 
@@ -33,11 +33,18 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     const loadStoredTheme = async () => {
       try {
         const storedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-        if (storedTheme) {
-          setThemeMode(storedTheme as "light" | "dark" | "system");
+        if (
+          storedTheme === "light" ||
+          storedTheme === "dark" ||
+          storedTheme === "system"
+        ) {
+          setThemeModeState(storedTheme);
+        } else {
+          setThemeModeState("system"); // Explicitly set to system if nothing is stored
         }
       } catch (error) {
         console.error("Error loading theme:", error);
+        setThemeModeState("system");
       }
     };
 
@@ -53,14 +60,19 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const theme = isDarkMode ? darkTheme : lightTheme;
   const currentThemeStyle = isDarkMode ? "dark" : "light";
 
-  const toggleTheme = async () => {
-    const newTheme = isDarkMode ? "light" : "dark";
+  // Persist theme mode to storage and update state
+  const setThemeMode = async (mode: "light" | "dark" | "system") => {
     try {
-      await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme);
-      setThemeMode(newTheme);
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
+      setThemeModeState(mode);
     } catch (error) {
       console.error("Error saving theme:", error);
     }
+  };
+
+  const toggleTheme = async () => {
+    const newTheme = isDarkMode ? "light" : "dark";
+    await setThemeMode(newTheme);
   };
 
   return (
