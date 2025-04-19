@@ -34,7 +34,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (!data) {
         throw new Error("No data returned");
       }
-      logout();
+      await logout();
       return null;
     } catch (error) {
       return error as Error;
