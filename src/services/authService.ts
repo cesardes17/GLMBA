@@ -1,15 +1,15 @@
-import { authService as supabaseAuthService } from '../api/authSupabase';
-import { SignUpCredentials, SignInCredentials } from '../types/auth';
+import { authService as supabaseAuthService } from "../api/authSupabase";
+import { authCredentials } from "../types/auth";
 
 // Authentication service that uses the Supabase implementation
 export const authService = {
   // Register a new user
-  register: async (credentials: SignUpCredentials) => {
+  register: async (credentials: authCredentials) => {
     return await supabaseAuthService.signUp(credentials);
   },
 
   // Login an existing user
-  login: async (credentials: SignInCredentials) => {
+  login: async (credentials: authCredentials) => {
     return await supabaseAuthService.signIn(credentials);
   },
 

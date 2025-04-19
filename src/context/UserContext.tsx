@@ -1,19 +1,21 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Usuario } from "../types/usuario";
-import { authService } from "../api/authSupabase";
 import { usuarioService } from "../services/usuarioService";
+import { authService } from "../services/authService";
+import { User } from "@supabase/supabase-js";
 
 interface UserContextType {
   user: Usuario | null;
   login: (
     email: string,
     password: string
-  ) => Promise<{
-    error: Error | null;
-    info: boolean;
-  }>;
+  ) => Promise<{ error: Error | null; info: boolean }>;
   register: (email: string, password: string) => Promise<Error | null>;
   logout: () => void;
+  getCurrentUserAuth: () => Promise<{
+    data: { email: string; id: string } | null;
+    error: Error | null;
+  }>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -23,7 +25,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const { data, error } = await authService.signIn({
+      const { data, error } = await authService.login({
         email,
         password,
       });
@@ -48,14 +50,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUser(userData);
       return { error: null, info: false }; // Added info: false here
     } catch (error) {
-      await logout();
       return { error: error as Error, info: false };
     }
   };
 
   const register = async (email: string, password: string) => {
     try {
-      const { data, error } = await authService.signUp({ email, password });
+      const { data, error } = await authService.register({ email, password });
 
       if (error) {
         throw new Error(error);
@@ -74,15 +75,46 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       setUser(null);
-      await authService.signOut();
+      await authService.logout();
       return { data: null, error: null };
     } catch (error) {
       return { data: null, error: error };
     }
   };
 
+  const getCurrentUserAuth = async () => {
+    try {
+      const { data: authData, error } = await authService.getCurrentUser();
+      if (error) {
+        throw new Error(error);
+      }
+      if (!authData?.user?.email) {
+        return { data: null, error: null };
+      }
+      console.log("Auth Data:", authData);
+
+      // Ensure both email and id exist before returning
+      const email = authData.user.email;
+      const id = authData.user.id;
+
+      if (!email || !id) {
+        return { data: null, error: new Error("Invalid user data") };
+      }
+
+      return {
+        data: { email, id },
+        error: null,
+      };
+    } catch (error) {
+      console.error("Error getting current user:", error);
+      return { data: null, error: error as Error };
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, login, register, logout }}>
+    <UserContext.Provider
+      value={{ user, login, register, logout, getCurrentUserAuth }}
+    >
       {children}
     </UserContext.Provider>
   );

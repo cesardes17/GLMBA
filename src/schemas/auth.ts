@@ -20,3 +20,49 @@ export const loginSchema = Yup.object().shape({
     .min(6, "La contraseña debe tener al menos 6 caracteres")
     .required("La contraseña es obligatoria"),
 });
+
+export const setupProfileSchema = Yup.object().shape({
+  // Basic user info (setupUserInfo)
+  rol_id: Yup.number().required("Debes seleccionar un rol"),
+  nombre: Yup.string()
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .required("El nombre es obligatorio"),
+  apellidos: Yup.string()
+    .min(2, "Los apellidos deben tener al menos 2 caracteres")
+    .required("Los apellidos son obligatorios"),
+
+  // Player specific info (setupPlayerInfo)
+  posicion_preferida: Yup.string().when("rol_id", {
+    is: 5,
+    then: (schema) => schema.required("La posición es obligatoria"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  altura_cm: Yup.number().when("rol_id", {
+    is: 5,
+    then: (schema) =>
+      schema
+        .min(100, "La altura debe ser mayor a 100cm")
+        .max(250, "La altura debe ser menor a 250cm")
+        .required("La altura es obligatoria"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  peso_kg: Yup.number().when("role", {
+    is: 5,
+    then: (schema) =>
+      schema
+        .min(30, "El peso debe ser mayor a 30kg")
+        .max(200, "El peso debe ser menor a 200kg")
+        .required("El peso es obligatorio"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  dorsal_preferido: Yup.number().when("role", {
+    is: 5,
+    then: (schema) =>
+      schema
+        .min(0, "El dorsal debe ser mayor a 0")
+        .max(99, "El dorsal debe ser menor a 99")
+        .required("El dorsal es obligatorio"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  descripcion: Yup.string().optional(),
+});

@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, Platform, useWindowDimensions } from "react-native";
 import { SelectableCard } from "./SelectableCard";
 
-interface Option {
+export interface Option {
   id: string;
   title: string;
   description: string;
