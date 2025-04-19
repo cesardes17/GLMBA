@@ -1,10 +1,21 @@
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
 import { useTheme } from "../../src/context/ThemeContext";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-
+import React, { useEffect, useState } from "react";
+import { useUser } from "../../src/context/UserContext";
+import { isUsuario } from "../../src/types/usuario";
 export default function DrawerLayout() {
   const { theme } = useTheme();
+  const { user } = useUser();
+  const [isUser, setIsUser] = useState<null | boolean>(null);
+
+  useEffect(() => {
+    if (user === null) {
+      setIsUser(null);
+    } else {
+      setIsUser(isUsuario(user));
+    }
+  }, [user]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -34,6 +45,23 @@ export default function DrawerLayout() {
           name="index"
           options={{
             title: "Inicio",
+          }}
+        />
+        <Drawer.Screen
+          name={
+            isUser === null
+              ? "/(auth)/login"
+              : isUser
+                ? "/profile"
+                : "/(auth)/setup-profile"
+          }
+          options={{
+            title:
+              isUser === null
+                ? "login"
+                : isUser
+                  ? "/profile"
+                  : "/(auth)/setup-profile",
           }}
         />
       </Drawer>

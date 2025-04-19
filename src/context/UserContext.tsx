@@ -1,51 +1,79 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-import { Usuario } from "../types/usuario";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+
 import { usuarioService } from "../services/usuarioService";
 import { authService } from "../services/authService";
+import { Usuario } from "../types/usuario";
 
 interface UserContextType {
-  user: { email: string; id: string } | null;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ error: Error | null; info: boolean }>;
+  user: { email: string; id: string } | null | Usuario;
+  login: (email: string, password: string) => Promise<Error | null>;
   register: (email: string, password: string) => Promise<Error | null>;
-  logout: () => void;
+  logout: () => Promise<Error | null>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<{ email: string; id: string } | null>(null);
+  const [user, setUser] = useState<
+    { email: string; id: string } | null | Usuario
+  >(null);
+
+  useEffect(() => {
+    const { data: subscription } = authService.initializeAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+          if (session?.user) {
+            const { data: userData, error: userError } =
+              await usuarioService.getUserByEmail(session.user.email);
+
+            if (userError || !userData) {
+              setUser({
+                email: session.user.email,
+                id: session.user.id,
+              });
+            } else {
+              setUser(userData);
+            }
+          }
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+        }
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      const { data, error } = await authService.login({
-        email,
-        password,
-      });
-      if (error) {
-        throw new Error(error);
-      }
-      if (!data || !data.user || !data.user.email || !data.user.id) {
-        throw new Error("No data returned");
-      }
-      if (!data.user.email) {
-        throw new Error("No email returned");
-      }
-      const { data: userData, error: userError } =
-        await usuarioService.getUserByEmail(data.user.email);
-      if (userError) {
-        throw new Error(userError.message);
-      }
-      if (!userData) {
-        return { error: null, info: true };
+      const { data, error } = await authService.login({ email, password });
+
+      if (error || !data || !data.user || !data.user.email || !data.user.id) {
+        setUser(null);
+        throw new Error(error || "error en el inicio de sesión");
       }
 
-      setUser({ email: data.user.email, id: data.user.id });
-      return { error: null, info: false }; // Added info: false here
+      const { data: userData, error: userError } =
+        await usuarioService.getUserByEmail(data.user.email);
+
+      if (userError || !userData) {
+        setUser({ email: data.user.email, id: data.user.id });
+        return null;
+      }
+
+      setUser(userData);
+      return null;
     } catch (error) {
-      return { error: error as Error, info: false };
+      return error as Error;
     }
   };
 
@@ -71,9 +99,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       setUser(null);
       await authService.logout();
-      return { data: null, error: null };
+      return null;
     } catch (error) {
-      return { data: null, error: error };
+      return error as Error;
     }
   };
 

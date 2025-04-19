@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik } from "formik";
 import { View } from "react-native";
 import StyledButton from "../../common/StyledButton";
@@ -6,6 +6,7 @@ import FormikTextInput from "../inputs/FormikTextInput";
 import { loginSchema } from "../../../schemas/auth";
 import { useUser } from "../../../context/UserContext";
 import { router } from "expo-router";
+import { isUsuario, Usuario } from "../../../types/usuario";
 
 interface FormikRegistroFormProps {
   setLoading: (loading: boolean) => void;
@@ -16,29 +17,29 @@ export default function FormikLoginForm({
   setLoading,
   setError,
 }: FormikRegistroFormProps) {
-  const { login } = useUser();
-  const [infoUser, setInfoUser] = useState<boolean>(false);
+  const { user, login } = useUser();
+  const [userInfo, setUserInfo] = useState<
+    null | { email: string; id: string } | Usuario
+  >();
   const initialValues = {
     email: "",
     password: "",
   };
-
+  useEffect(() => {}, [user]);
   const onSubmit = async (values: typeof initialValues) => {
     try {
       setLoading(true);
-      const { info, error } = await login(values.email, values.password);
+      const error = await login(values.email, values.password);
 
       if (error) {
+        setUserInfo(null);
         throw error;
       }
 
       setError(null);
-      setInfoUser(info);
       setLoading(false);
 
-      // Move navigation inside try block, before finally
-      const ruta = info ? "/(auth)/setup-profile" : "/";
-      router.replace(ruta);
+      router.replace("/");
     } catch (error) {
       setError(error as Error);
     }

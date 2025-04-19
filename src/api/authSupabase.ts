@@ -1,7 +1,6 @@
 import { supabase, handleSupabaseError } from "./supabase";
 import { authCredentials } from "../types/auth";
 
-// Authentication services
 export const authService = {
   // Sign up a new user
   signUp: async ({ email, password }: authCredentials) => {
@@ -91,6 +90,20 @@ export const authService = {
       const { data, error } = await supabase.auth.getUser();
       if (error) throw error;
       return { data, error: null };
+    } catch (error) {
+      return handleSupabaseError(error as Error);
+    }
+  },
+
+  // Add this new method
+  initializeAuthStateChange: (callback: (event: string, session: any) => void) => {
+    try {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          callback(event, session);
+        }
+      );
+      return { data: subscription, error: null };
     } catch (error) {
       return handleSupabaseError(error as Error);
     }

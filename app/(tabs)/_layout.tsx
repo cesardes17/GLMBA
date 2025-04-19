@@ -1,9 +1,9 @@
-import { Tabs } from "expo-router";
+import { Tabs, Redirect } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useTheme } from "../../src/context/ThemeContext";
 import { useUser } from "../../src/context/UserContext";
 import { useEffect, useState } from "react";
-
+import { isUsuario } from "../../src/types/usuario";
 function TabBarIcon({
   name,
   color,
@@ -17,44 +17,30 @@ function TabBarIcon({
 export default function TabsLayout() {
   const { theme } = useTheme();
   const { user } = useUser();
-  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
+  const [hasProfile, setHasProfile] = useState<boolean | null | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     async function checkUserProfile() {
+      if (user === undefined) {
+      }
       if (!user) {
         setHasProfile(null);
         return;
       }
+      setHasProfile(isUsuario(user));
     }
 
     checkUserProfile();
   }, [user]);
 
-  const getProfileScreenConfig = () => {
-    if (!user) {
-      return {
-        title: "Iniciar Sesión",
-        href: "/(auth)/login",
-        icon: "user-circle", // Changed from "sign-in" to "user-circle"
-      };
-    }
-
-    if (!hasProfile) {
-      return {
-        title: "Completar Perfil",
-        href: "/(auth)/setup-profile",
-        icon: "user-plus", // This one is valid
-      };
-    }
-
-    return {
-      title: "Perfil",
-      href: "/profile",
-      icon: "user", // This one is valid
-    };
-  };
-
-  const profileConfig = getProfileScreenConfig();
+  if (!user) {
+    return <Redirect href="/(auth)/login" />;
+  }
+  if (hasProfile === false) {
+    return <Redirect href="/(auth)/setup-profile" />;
+  }
 
   return (
     <Tabs
@@ -86,17 +72,10 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: profileConfig.title,
-          href: profileConfig.href,
+          title: "Perfil",
           tabBarIcon: ({ color }) => (
             <TabBarIcon
-              name={
-                hasProfile === null
-                  ? "user-circle"
-                  : hasProfile
-                    ? "user"
-                    : "user-plus"
-              }
+              name={hasProfile ? "user" : "user-plus"}
               color={color}
             />
           ),

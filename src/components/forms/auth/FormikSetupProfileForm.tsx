@@ -12,6 +12,7 @@ import { Option } from "../../SelectableCardGroup";
 import { setupPlayerInfo, setupUserInfo } from "../../../types/auth";
 import { usuarioService } from "../../../services/usuarioService";
 import { router } from "expo-router";
+import { isUsuario } from "../../../types/usuario";
 
 interface FormikSetupProfileFormProps {
   setLoading: (loading: boolean) => void;
@@ -78,18 +79,9 @@ export default function FormikSetupProfileForm({
         throw new Error("no hay usuario");
       }
 
-      const { data, error } = await usuarioService.getUserByEmail(user.email);
-
-      if (error) {
-        throw error;
-      }
-      if (!data) {
-        throw new Error("no hay datos");
-      }
-
       const userData: setupUserInfo = {
-        id: data.id,
-        email: data.email,
+        id: user.id,
+        email: user.email,
         nombre: values.nombre,
         apellidos: values.apellidos,
         rol_id: parseInt(selectedRole),

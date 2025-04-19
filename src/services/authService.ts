@@ -1,7 +1,6 @@
 import { authService as supabaseAuthService } from "../api/authSupabase";
 import { authCredentials } from "../types/auth";
 
-// Authentication service that uses the Supabase implementation
 export const authService = {
   // Register a new user
   register: async (credentials: authCredentials) => {
@@ -36,5 +35,10 @@ export const authService = {
   // Update user password
   updatePassword: async (newPassword: string) => {
     return await supabaseAuthService.updatePassword(newPassword);
+  },
+
+  // Add this new method
+  initializeAuthStateChange: (callback: (event: string, session: any) => void) => {
+    return supabaseAuthService.initializeAuthStateChange(callback);
   },
 };
