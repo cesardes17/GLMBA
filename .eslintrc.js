@@ -15,15 +15,9 @@ module.exports = {
   },
   settings: {
     'import/resolver': {
-      'babel-module': {
-        alias: {
-          '@components': './components',
-          '@screens': './app',
-          '@assets': './assets',
-          '@utils': './utils',
-          '@': '.',
-          '@src': './src',
-        },
+      typescript: {
+        alwaysTryTypes: true,
+        project: './tsconfig.json',
       },
     },
   },

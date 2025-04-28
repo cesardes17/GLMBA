@@ -3,10 +3,7 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-      // Soporte para transformaciones de React Native Reanimated
       'react-native-reanimated/plugin',
-
-      // Soporte para importaciones absolutas desde la raíz del proyecto
       [
         'module-resolver',
         {
@@ -17,8 +14,8 @@ module.exports = function (api) {
             '@screens': './app',
             '@assets': './assets',
             '@utils': './utils',
-            '@': '.', // Add this line to support @/src imports
-            '@src': './src', // Add this line as an alternative
+            '@': '.', // Supports @/src imports
+            '@src': './src', // Supports @src imports
           },
         },
       ],
