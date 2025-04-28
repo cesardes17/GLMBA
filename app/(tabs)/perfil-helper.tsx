@@ -12,9 +12,10 @@ export default function PerfilHelper() {
   const router = useRouter();
 
   useEffect(() => {
-    if (authloading || loading || logoutInProgress) return;
+    if (authloading || loading) return;
     console.log('authUser', authUser);
     if (!authUser) {
+      console.log('no authUser');
       return router.replace('/login');
     }
     if (!usuario) {
@@ -22,7 +23,7 @@ export default function PerfilHelper() {
     }
   }, [authUser, authloading, logoutInProgress, router, loading, usuario]);
 
-  if (authloading) {
+  if (authloading || loading) {
     return (
       <PageContainer>
         <StyledActivityIndicator />

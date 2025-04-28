@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, AccessibilityProps } from 'react-native';
 import StyledText from './StyledText';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 
-interface StyledButtonProps {
+interface StyledButtonProps
+  extends Pick<AccessibilityProps, 'accessibilityLabel' | 'accessibilityHint'> {
   title: string;
   onPress: () => void;
   disabled?: boolean;
   variant?: 'default' | 'outline' | 'danger';
-  size?: 'small' | 'default' | 'large'; // Nueva propiedad para el tamaño
+  size?: 'small' | 'default' | 'large';
 }
 
 export default function StyledButton({
@@ -16,7 +17,9 @@ export default function StyledButton({
   onPress,
   disabled = false,
   variant = 'default',
-  size = 'default', // Valor por defecto
+  size = 'default',
+  accessibilityLabel,
+  accessibilityHint,
 }: StyledButtonProps) {
   const { theme } = useThemeContext();
   const [isPressed, setIsPressed] = useState(false);
@@ -58,9 +61,11 @@ export default function StyledButton({
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       disabled={disabled}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       style={[
         styles.button,
-        sizeStyles[size], // Aplica estilos según el tamaño
+        sizeStyles[size],
         {
           backgroundColor: buttonStyle.background,
           borderColor: buttonStyle.border,

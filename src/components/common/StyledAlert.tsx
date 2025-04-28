@@ -1,16 +1,20 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, AccessibilityRole } from 'react-native';
 import StyledText from './StyledText';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 
 interface StyledAlertProps {
   children: React.ReactNode;
   variant?: 'error' | 'warning' | 'success' | 'info';
+  accessibilityRole?: AccessibilityRole;
+  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive';
 }
 
 export default function StyledAlert({
   children,
   variant = 'error',
+  accessibilityRole,
+  accessibilityLiveRegion,
 }: StyledAlertProps) {
   const { theme } = useThemeContext();
 
@@ -51,6 +55,8 @@ export default function StyledAlert({
           borderColor: variantStyles.borderColor,
         },
       ]}
+      accessibilityRole={accessibilityRole}
+      accessibilityLiveRegion={accessibilityLiveRegion}
     >
       <StyledText style={[styles.text, { color: variantStyles.textColor }]}>
         {children}

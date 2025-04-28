@@ -24,7 +24,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { authUser } = useAuth(); // Obtén el usuario autenticado del AuthContext
 
   const fetchUserData = useCallback(async () => {
-    if (!authUser) return;
+    if (!authUser) {
+      setUsuario(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       console.log('E', authUser.id);
@@ -36,7 +40,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }
       setUsuario(usuario);
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('Error al obtener datos del usuario:', error);
+      setLoading(false);
     } finally {
       setLoading(false);
     }

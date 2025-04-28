@@ -5,22 +5,20 @@ import { View } from 'react-native';
 import StyledButton from '../../common/StyledButton';
 import Separator from '../../common/Separator';
 
-const initialValues = {
-  email: '',
-  password: '',
-};
+interface FormikLoginFormProps {
+  onSubmit: (email: string, password: string) => Promise<void>;
+}
 
-export default function FormikLoginForm() {
-  const onSubmit = (values: any) => {
-    console.log(values);
-  };
+export default function FormikLoginForm({ onSubmit }: FormikLoginFormProps) {
   return (
     <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
+      initialValues={{ email: '', password: '' }}
       validationSchema={loginSchema}
+      validateOnChange
+      validateOnBlur
+      onSubmit={(values) => onSubmit(values.email, values.password)}
     >
-      {({ handleSubmit }) => (
+      {({ handleSubmit, isSubmitting }) => (
         <View style={{ paddingHorizontal: 16, gap: 12 }}>
           <FormikTextInput
             name='email'
@@ -32,12 +30,15 @@ export default function FormikLoginForm() {
           <FormikTextInput
             name='password'
             placeholder='Introduce tu contraseña'
-            secureTextEntry={true}
-            autoComplete='off'
+            secureTextEntry
             autoCapitalize='none'
-            textContentType='oneTimeCode' // This prevents the password suggestion
+            textContentType='password'
           />
-          <StyledButton title='Iniciar sesión' onPress={handleSubmit} />
+          <StyledButton
+            title='Iniciar sesión'
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+          />
           <Separator />
         </View>
       )}

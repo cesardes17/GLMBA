@@ -40,14 +40,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const login = async (email: string, password: string) => {
-    const res = await AuthService.login({ email, password });
-    if (!res.error) {
-      setAuthUser(res.data); // Change from res.user to res.data
+    try {
+      const res = await AuthService.login({ email, password });
+      if (res.error) {
+        throw new Error(res.error);
+      }
+
       const sessionRes = await AuthService.getSession();
-      setSession(sessionRes.data); // Change from sessionRes.session to sessionRes.data
-      await saveAuthData(res.data, sessionRes.data); // Change from res.user to res.data
+      if (sessionRes.error) {
+        throw new Error(sessionRes.error);
+      }
+
+      setAuthUser(res.data);
+      setSession(sessionRes.data);
+      await saveAuthData(res.data, sessionRes.data);
+      return res;
+    } catch (error) {
+      console.error('Error en login:', error);
+      return {
+        data: null,
+        error: (error as Error).message,
+      };
     }
-    return res;
   };
 
   const register = async (email: string, password: string) => {

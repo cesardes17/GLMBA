@@ -40,7 +40,7 @@ export const AuthService = {
     try {
       const { data, error } = await AuthSupabase.signIn(email, password);
       if (error) throw new Error(error.message);
-
+      if (!data) throw new Error('No data returned');
       return {
         data: data.user,
         error: null,
