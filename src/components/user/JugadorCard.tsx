@@ -5,7 +5,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import StyledText from '../common/StyledText';
 import { Jugador } from '@/src/interfaces/Jugador';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
-import { AlturaIcon, PesoIcon, PosicionIcon } from '../Icons';
+import { AlturaIcon, PesoIcon, PosicionIcon, RolIcon } from '../Icons';
 import { useResponsiveLayout } from '@/src/hooks/useResponsiveLayout';
 import { getRolesArray } from '@/src/constants/roles';
 export interface PlayerCardProps {
@@ -63,19 +63,24 @@ export default function JugadorCard({ jugador }: PlayerCardProps) {
         <StyledText style={styles.nombre}>
           {jugador.nombre + ' ' + jugador.apellidos}
         </StyledText>
-        <StyledText style={styles.apellidos}>{rol}</StyledText>
-        <StyledText style={styles.text}>
-          <PosicionIcon color={theme.textPrimary} />
-          Posición: {jugador.posicion_preferida}
-        </StyledText>
-        <StyledText style={styles.text}>
-          <AlturaIcon color={theme.textPrimary} />
-          Altura: {jugador.altura_cm} cm
-        </StyledText>
-        <StyledText style={styles.text}>
-          <PesoIcon color={theme.textPrimary} />
-          Peso: {jugador.peso_kg} kg
-        </StyledText>
+        <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+          <RolIcon color={theme.textPrimary} size={20} />
+          <StyledText size='large'>{rol}</StyledText>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <PosicionIcon color={theme.textPrimary} size={20} />
+          <StyledText style={styles.text}>
+            {jugador.posicion_preferida}
+          </StyledText>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <AlturaIcon color={theme.textPrimary} size={20} />
+          <StyledText style={styles.text}>{jugador.altura_cm} cm</StyledText>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <PesoIcon color={theme.textPrimary} size={20} />
+          <StyledText style={styles.text}>{jugador.peso_kg} kg</StyledText>
+        </View>
       </View>
     </View>
   );

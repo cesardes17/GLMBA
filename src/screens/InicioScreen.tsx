@@ -1,53 +1,36 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useThemeContext } from '@/src/contexts/ThemeContext';
-import CustomPicker from '@/src/components/common/CustomPicker';
+import { View, StyleSheet } from 'react-native';
 import PageContainer from '@/src/components/PageContainer';
-
-// Ensure ThemePreference type is correctly defined and imported
-type ThemePreference = 'light' | 'system' | 'dark';
-
-const ThemePicker: React.FC = () => {
-  const { themePreference, setThemePreference, theme } = useThemeContext();
-
-  const themeOptions = [
-    { id: 'light', titulo: 'Claro' },
-    { id: 'system', titulo: 'Sistema' },
-    { id: 'dark', titulo: 'Oscuro' },
-  ];
-
-  return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { color: theme.textPrimary }]}>
-        Selecciona el tema
-      </Text>
-      <CustomPicker
-        options={themeOptions}
-        selectedValue={themePreference}
-        setSelectedValue={(value) =>
-          setThemePreference(value as ThemePreference)
-        }
-      />
-    </View>
-  );
-};
+import StyledText from '@/src/components/common/StyledText';
+import { useThemeContext } from '@/src/contexts/ThemeContext';
 
 const InicioScreen: React.FC = () => {
+  const { theme } = useThemeContext();
+
   return (
     <PageContainer>
-      <ThemePicker />
+      <View style={styles.container}>
+        <StyledText
+          style={[styles.title, { color: theme.textPrimary }]}
+          size='large'
+          weight='bold'
+        >
+          Bienvenido a GLMBA
+        </StyledText>
+      </View>
     </PageContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 16,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    textAlign: 'center',
   },
 });
 

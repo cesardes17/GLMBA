@@ -32,15 +32,15 @@ export const ROLES = {
       puedeSancionar: false,
     },
   },
-  ESPECTADOR: {
-    id: 6,
-    nombre: 'Espectador',
-    descripcion: 'Usuario que observa partidos',
-    disponibleEnRegistro: true,
+  CAPITAN: {
+    id: 4,
+    nombre: 'Capitán',
+    descripcion: 'Jugador líder del equipo',
+    disponibleEnRegistro: false,
     permisos: {
       puedeSerBaneado: true,
-      puedeCambiarRol: true,
-      puedeSancionar: false,
+      puedeCambiarRol: false,
+      puedeSancionar: true,
     },
   },
   JUGADOR: {
@@ -54,15 +54,15 @@ export const ROLES = {
       puedeSancionar: true,
     },
   },
-  CAPITAN: {
-    id: 4,
-    nombre: 'Capitán',
-    descripcion: 'Jugador líder del equipo',
-    disponibleEnRegistro: false,
+  ESPECTADOR: {
+    id: 6,
+    nombre: 'Espectador',
+    descripcion: 'Usuario que observa partidos',
+    disponibleEnRegistro: true,
     permisos: {
       puedeSerBaneado: true,
-      puedeCambiarRol: false,
-      puedeSancionar: true,
+      puedeCambiarRol: true,
+      puedeSancionar: false,
     },
   },
 } as const;

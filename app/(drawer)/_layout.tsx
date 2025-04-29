@@ -21,10 +21,10 @@ export default function Layout() {
           headerTintColor: theme.textPrimary, // <- esto cambia el color del icono del Drawer
 
           drawerStyle: {
-            backgroundColor: theme.backgroundColor,
+            backgroundColor: theme.backgroundNavigation,
           },
           headerStyle: {
-            backgroundColor: theme.backgroundColor,
+            backgroundColor: theme.backgroundNavigation,
           },
           headerTitleStyle: {
             color: theme.textPrimary,

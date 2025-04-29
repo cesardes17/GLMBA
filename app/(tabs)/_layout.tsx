@@ -30,7 +30,7 @@ export default function TabsLayout() {
         tabBarActiveTintColor: theme.activeElement,
         tabBarInactiveTintColor: theme.inactiveElement,
         headerStyle: {
-          backgroundColor: theme.backgroundColor,
+          backgroundColor: theme.backgroundNavigation,
         },
         headerTitleStyle: {
           color: theme.textPrimary,

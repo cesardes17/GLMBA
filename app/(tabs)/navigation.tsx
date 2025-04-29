@@ -1,9 +1,10 @@
-import { Text, View } from 'react-native';
+import PageContainer from '@/src/components/PageContainer';
+import MasScreen from '@/src/screens/MasScreen';
 
 export default function CalendarioTabs() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Más</Text>
-    </View>
+    <PageContainer>
+      <MasScreen />
+    </PageContainer>
   );
 }

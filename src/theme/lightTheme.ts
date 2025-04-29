@@ -3,10 +3,10 @@ import { baseButtonStyles, baseInputStyles } from './baseStyles';
 import type { Theme } from './theme';
 
 export const lightTheme: Theme = {
-  backgroundColor: colors.white,
+  backgroundColor: colors.gray200,
   surfaceColor: colors.gray100,
   cardBackground: colors.white,
-  backgroundNavigation: colors.white,
+  backgroundNavigation: colors.gray100,
 
   textPrimary: colors.gray900,
   textSecondary: colors.gray600,
@@ -30,8 +30,8 @@ export const lightTheme: Theme = {
   error: colors.error,
   info: colors.info,
 
-  activeElement: colors.primary500,
-  inactiveElement: colors.primary300,
+  activeElement: colors.primary800,
+  inactiveElement: colors.primary500,
 
   backdrop: 'rgba(0, 0, 0, 0.5)',
   shadow: colors.gray900,

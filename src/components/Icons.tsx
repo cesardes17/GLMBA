@@ -5,6 +5,7 @@ import {
   FontAwesome,
   FontAwesome5,
   Ionicons,
+  MaterialCommunityIcons,
   MaterialIcons,
   SimpleLineIcons,
 } from '@expo/vector-icons';
@@ -91,4 +92,9 @@ export const ArrowBackIosIcon = ({ size = 24, color }: IconProps) => {
 
 export const ArrowBackIcon = ({ size = 24, color }: IconProps) => {
   return <Ionicons name='arrow-back' size={size} color={color} />;
+};
+export const RolIcon = ({ size = 24, color }: IconProps) => {
+  return (
+    <MaterialCommunityIcons name='badge-account' size={size} color={color} />
+  );
 };

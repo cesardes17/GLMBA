@@ -30,6 +30,7 @@ export default function HeaderConfig({
       options={{
         headerShown: true,
         title: title,
+        headerTitleAlign: 'center',
         headerStyle: {
           backgroundColor: theme.backgroundNavigation,
         },
