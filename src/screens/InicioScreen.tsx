@@ -4,7 +4,7 @@ import PageContainer from '@/src/components/PageContainer';
 import StyledText from '@/src/components/common/StyledText';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 
-const InicioScreen: React.FC = () => {
+export default function InicioScreen() {
   const { theme } = useThemeContext();
 
   return (
@@ -20,7 +20,7 @@ const InicioScreen: React.FC = () => {
       </View>
     </PageContainer>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -33,5 +33,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-export default InicioScreen;

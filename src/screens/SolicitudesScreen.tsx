@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import PageContainer from '@/src/components/PageContainer';
-import ThemeSelector from '@/src/components/settings/ThemeSelector';
 
-export default function AjustesScreen() {
+import StyledText from '../components/common/StyledText';
+
+export default function SolicitudesScreen() {
   return (
     <PageContainer>
       <View style={styles.container}>
-        <ThemeSelector />
+        <StyledText>Solicitudes Screen</StyledText>
       </View>
     </PageContainer>
   );

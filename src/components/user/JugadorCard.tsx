@@ -63,7 +63,7 @@ export default function JugadorCard({ jugador }: PlayerCardProps) {
         <StyledText style={styles.nombre}>
           {jugador.nombre + ' ' + jugador.apellidos}
         </StyledText>
-        <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+        <View style={{ flexDirection: 'row' }}>
           <RolIcon color={theme.textPrimary} size={20} />
           <StyledText size='large'>{rol}</StyledText>
         </View>
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   },
   contentMobile: {
     marginTop: 12,
+    gap: 8,
   },
   contentWeb: {
     padding: 12,

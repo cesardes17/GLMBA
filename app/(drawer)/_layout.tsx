@@ -6,10 +6,14 @@ import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function Layout() {
   const { theme } = useThemeContext();
-  const { usuario } = useUserContext();
+  const { usuario, loading } = useUserContext();
   const { authUser } = useAuth();
   const showLogin = !authUser;
   const showCompletarPerfil = authUser && !usuario;
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
