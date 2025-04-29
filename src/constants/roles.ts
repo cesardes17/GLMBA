@@ -33,7 +33,7 @@ export const ROLES = {
     },
   },
   ESPECTADOR: {
-    id: 4,
+    id: 6,
     nombre: 'Espectador',
     descripcion: 'Usuario que observa partidos',
     disponibleEnRegistro: true,
@@ -55,7 +55,7 @@ export const ROLES = {
     },
   },
   CAPITAN: {
-    id: 6,
+    id: 4,
     nombre: 'Capitán',
     descripcion: 'Jugador líder del equipo',
     disponibleEnRegistro: false,
@@ -74,3 +74,10 @@ export type Rol = (typeof ROLES)[RolKey];
 export const ROLES_DISPONIBLES_EN_REGISTRO = Object.values(ROLES).filter(
   (rol) => rol.disponibleEnRegistro
 );
+
+// Obtener array de roles con id y nombre
+export const getRolesArray = () =>
+  Object.values(ROLES).map((rol) => ({
+    id: rol.id,
+    nombre: rol.nombre,
+  }));

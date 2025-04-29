@@ -13,9 +13,8 @@ export default function PerfilHelper() {
 
   useEffect(() => {
     if (authloading || loading) return;
-    console.log('authUser', authUser);
+
     if (!authUser) {
-      console.log('no authUser');
       return router.replace('/login');
     }
     if (!usuario) {

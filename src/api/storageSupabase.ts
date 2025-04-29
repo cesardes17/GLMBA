@@ -66,6 +66,35 @@ class StorageSupabase {
       };
     }
   }
+
+  async getPublicUrl(
+    bucket: string,
+    fileName: string
+  ): Promise<StorageServiceResponse> {
+    try {
+      const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
+
+      if (!data) {
+        return {
+          data: null,
+          error: true,
+          mensaje: 'No se pudo obtener la URL pública',
+        };
+      }
+
+      return {
+        data: { publicUrl: data.publicUrl },
+        error: false,
+        mensaje: null,
+      };
+    } catch (err: any) {
+      return {
+        data: null,
+        error: true,
+        mensaje: err.message || 'Error obteniendo la URL pública',
+      };
+    }
+  }
 }
 
 export const storageSupabase = new StorageSupabase();

@@ -5,7 +5,7 @@ import ImagePicker from '../../common/ImagePicker';
 import StyledText from '../../common/StyledText';
 import { SelectableCardGroup } from '../../common/SelectableCardGroup';
 import FormikTextInput from '../inputs/FomrikTextInput';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ROLES_DISPONIBLES_EN_REGISTRO } from '@/src/constants/roles';
 import { CompletarPerfilSchema } from '@/src/schemas/auth';
 import { PosicionPreferida } from '@/src/types/enums/Posicion';
@@ -49,38 +49,46 @@ const POSICIONES_OPCIONES = [
 
 interface FormikSetupProfileFormProps {
   setLoading: (loading: boolean) => void;
+  initialValues: {
+    rol_id: string;
+    nombre: string;
+    apellidos: string;
+    posicion_preferida: string;
+    altura_cm: string;
+    peso_kg: string;
+    descripcion: string;
+    dorsal_preferido: string;
+    imagen_perfil: string;
+  };
+  isEditing?: boolean;
 }
 
 export default function FormikCompletarPerfilForm({
   setLoading,
+  initialValues,
+  isEditing = false,
 }: FormikSetupProfileFormProps) {
   const [step, setStep] = useState(1);
-  const [selectedRole, setSelectedRole] = useState<string>('');
-  const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
   const [isError, setIsError] = useState<string>('');
 
   const { authUser } = useAuth();
   const { fetchUserData } = useUserContext();
+
+  useEffect(() => {
+    // ⚡ Cada vez que cambien los initialValues, actualizamos selectedImage
+    if (initialValues.imagen_perfil) {
+      setSelectedImage(initialValues.imagen_perfil);
+    }
+  }, [initialValues.imagen_perfil]);
+
+  console.log('initialValues desde formulario', initialValues);
+
   const rolesOptions = ROLES_DISPONIBLES_EN_REGISTRO.map((rol) => ({
     id: rol.id.toString(),
     title: rol.nombre,
     description: rol.descripcion,
   }));
-
-  // Update initialValues to match the database fields
-  const initialValues = {
-    rol_id: '',
-    nombre: '',
-    apellidos: '',
-    posicion_preferida: '',
-    altura_cm: '',
-    peso_kg: '',
-    descripcion: '',
-    dorsal_preferido: '',
-    imagen_perfil: '',
-  };
 
   const onSubmit = async (values: typeof initialValues) => {
     setLoading(true);
@@ -92,29 +100,43 @@ export default function FormikCompletarPerfilForm({
         email: authUser.email,
         rol_id: Number(values.rol_id),
       };
+
       let jugadorData: CompletarPerfilJugador | null = null;
+
       if (userData.rol_id === 5) {
         jugadorData = {
           altura_cm: Number(values.altura_cm),
           descripcion: values.descripcion,
           dorsal_preferido: Number(values.dorsal_preferido),
-          foto_name: '',
+          foto_name: selectedImage ? selectedImage : values.imagen_perfil,
           peso_kg: Number(values.peso_kg),
           posicion_preferida: values.posicion_preferida,
           usuario_id: authUser.id,
         };
-        if (!selectedImage) throw new Error('Debe elegir una foto de perfil!');
-      }
-      const { error, mensaje, usuario } = await usuarioService.createUser(
-        userData,
-        jugadorData,
-        selectedImage
-      );
-      if (error || !usuario) {
-        throw new Error(mensaje || 'Error al completar el perfil');
+        if (!selectedImage) {
+          throw new Error('Debe elegir una foto de perfil!');
+        }
       }
 
-      console.log('usuarioDevulto', usuario);
+      const { error, mensaje, usuario } = isEditing
+        ? await usuarioService.updateUser(
+            authUser.id,
+            {
+              nombre: values.nombre,
+              apellidos: values.apellidos,
+              rol_id: Number(values.rol_id),
+            },
+            jugadorData,
+            selectedImage
+          )
+        : await usuarioService.createUser(userData, jugadorData, selectedImage);
+
+      if (error || !usuario) {
+        throw new Error(
+          mensaje ||
+            `Error al ${isEditing ? 'actualizar' : 'completar'} el perfil`
+        );
+      }
     } catch (e) {
       setIsError((e as Error).message);
     } finally {
@@ -124,8 +146,8 @@ export default function FormikCompletarPerfilForm({
     }
   };
 
-  const renderProgressIndicator = () => {
-    const totalSteps = selectedRole === '5' ? 5 : 2;
+  const renderProgressIndicator = (rol_id: string) => {
+    const totalSteps = rol_id === '5' ? 5 : 2;
     return (
       <View style={styles.progressContainer}>
         <View style={styles.progressBar}>
@@ -134,9 +156,7 @@ export default function FormikCompletarPerfilForm({
               key={index}
               style={[
                 styles.progressStep,
-                {
-                  backgroundColor: index + 1 <= step ? '#4CAF50' : '#E0E0E0',
-                },
+                { backgroundColor: index + 1 <= step ? '#4CAF50' : '#E0E0E0' },
               ]}
             />
           ))}
@@ -148,15 +168,7 @@ export default function FormikCompletarPerfilForm({
     );
   };
 
-  const renderFormContent = ({
-    setFieldValue,
-  }: {
-    setFieldValue: (
-      field: string,
-      value: any,
-      shouldValidate?: boolean
-    ) => void;
-  }) => {
+  const renderFormContent = ({ setFieldValue, values }: any) => {
     switch (step) {
       case 1:
         return (
@@ -164,11 +176,8 @@ export default function FormikCompletarPerfilForm({
             <StyledText style={styles.stepTitle}>Selecciona tu rol</StyledText>
             <SelectableCardGroup
               options={rolesOptions}
-              selectedId={selectedRole}
-              onSelect={(id) => {
-                setSelectedRole(id);
-                setFieldValue('rol_id', parseInt(id));
-              }}
+              selectedId={values.rol_id}
+              onSelect={(id) => setFieldValue('rol_id', id)}
             />
           </View>
         );
@@ -183,7 +192,7 @@ export default function FormikCompletarPerfilForm({
           </View>
         );
       case 3:
-        return selectedRole === '5' ? (
+        return values.rol_id === '5' ? (
           <View style={styles.formContent}>
             <StyledText style={styles.stepTitle}>
               Información del jugador
@@ -218,11 +227,8 @@ export default function FormikCompletarPerfilForm({
             </StyledText>
             <SelectableCardGroup
               options={POSICIONES_OPCIONES}
-              selectedId={selectedPosition}
-              onSelect={(id) => {
-                setSelectedPosition(id);
-                setFieldValue('posicion_preferida', id as PosicionPreferida);
-              }}
+              selectedId={values.posicion_preferida}
+              onSelect={(id) => setFieldValue('posicion_preferida', id)}
             />
           </View>
         );
@@ -233,32 +239,11 @@ export default function FormikCompletarPerfilForm({
               Selecciona tu imagen de perfil
             </StyledText>
             <View style={styles.imagePickerContainer}>
-              {selectedImage ? (
-                <View style={styles.imagePreviewContainer}>
-                  <Image
-                    source={{ uri: selectedImage }}
-                    style={styles.imagePreview}
-                    resizeMode='cover'
-                  />
-                  <ImagePicker
-                    onImageSelected={(uri) => {
-                      setSelectedImage(uri);
-                      setFieldValue('imagen_perfil', uri);
-                    }}
-                    size='small'
-                    variant='outline'
-                  />
-                </View>
-              ) : (
-                <ImagePicker
-                  onImageSelected={(uri) => {
-                    setSelectedImage(uri);
-                    setFieldValue('imagen_perfil', uri);
-                  }}
-                  size='large'
-                  variant='outline'
-                />
-              )}
+              <ImagePicker
+                onImageSelected={(uri) => setSelectedImage(uri)}
+                size='large'
+                variant='outline'
+              />
               {selectedImage && (
                 <StyledText style={styles.successText}>
                   Imagen seleccionada correctamente
@@ -272,12 +257,8 @@ export default function FormikCompletarPerfilForm({
     }
   };
 
-  const renderNavigationButtons = ({
-    handleSubmit,
-  }: {
-    handleSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
-  }) => {
-    const isLastStep = step === (selectedRole === '5' ? 5 : 2);
+  const renderNavigationButtons = ({ handleSubmit, values }: any) => {
+    const isLastStep = step === (values.rol_id === '5' ? 5 : 2);
 
     return (
       <View style={styles.navigationButtons}>
@@ -291,16 +272,12 @@ export default function FormikCompletarPerfilForm({
         <StyledButton
           title={isLastStep ? 'Finalizar' : 'Siguiente'}
           onPress={() => {
-            if (isLastStep) {
-              handleSubmit();
-            } else {
-              setStep(step + 1);
-            }
+            if (isLastStep) handleSubmit();
+            else setStep(step + 1);
           }}
           disabled={
-            (step === 1 && !selectedRole) ||
-            (step === 4 && !selectedPosition) ||
-            (step === 5 && !selectedImage)
+            (step === 1 && !values.rol_id) ||
+            (step === 4 && !values.posicion_preferida)
           }
         />
       </View>
@@ -312,10 +289,11 @@ export default function FormikCompletarPerfilForm({
       initialValues={initialValues}
       onSubmit={onSubmit}
       validationSchema={CompletarPerfilSchema}
+      enableReinitialize
     >
       {(formikProps) => (
         <View style={styles.container}>
-          {renderProgressIndicator()}
+          {renderProgressIndicator(formikProps.values.rol_id)}
           {renderFormContent(formikProps)}
           {renderNavigationButtons(formikProps)}
           {isError && (
@@ -328,57 +306,28 @@ export default function FormikCompletarPerfilForm({
     </Formik>
   );
 }
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  progressContainer: {
-    marginBottom: 24,
-  },
+  container: { flex: 1, padding: 16 },
+  progressContainer: { marginBottom: 24 },
   progressBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  progressStep: {
-    flex: 1,
-    height: 4,
-    marginHorizontal: 2,
-    borderRadius: 2,
-  },
-  progressText: {
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  stepTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  formContent: {
-    flex: 1,
-
-    marginVertical: 24,
-  },
-  imagePickerContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  successText: {
-    marginTop: 8,
-    color: '#4CAF50',
-  },
+  progressStep: { flex: 1, height: 4, marginHorizontal: 2, borderRadius: 2 },
+  progressText: { textAlign: 'center', marginTop: 8 },
+  stepTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
+  formContent: { flex: 1, marginVertical: 24 },
+  imagePickerContainer: { alignItems: 'center', marginVertical: 20 },
+  successText: { marginTop: 8, color: '#4CAF50' },
   navigationButtons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     gap: 8,
     marginTop: 'auto',
   },
-  imagePreviewContainer: {
-    alignItems: 'center',
-    gap: 16,
-  },
+  imagePreviewContainer: { alignItems: 'center', gap: 16 },
   imagePreview: {
     width: 200,
     height: 200,

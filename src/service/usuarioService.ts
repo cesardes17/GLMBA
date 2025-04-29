@@ -33,7 +33,7 @@ export class UsuarioService {
 
   async getUser(userId: string): Promise<UsuarioServiceResponse> {
     try {
-      const { data, error } = await this.dbService.getById<any>(
+      const { data, error } = await this.dbService.getById<Usuario>(
         this.tabla,
         this.columnID,
         userId
@@ -46,7 +46,38 @@ export class UsuarioService {
           mensaje: error || 'No user found with the given ID',
         };
       }
-      console.log('User fetched:', data); // Agrega este consol
+
+      // Si el usuario es un jugador (rol_id === 5), obtener la información adicional
+      if (data.rol_id === 5) {
+        const {
+          jugador,
+          error: jugadorError,
+          mensaje,
+        } = await this.jugadorService.getJugadorByUserId(userId);
+
+        if (jugadorError || !jugador) {
+          console.error('Error fetching player:', mensaje);
+          return {
+            usuario: null,
+            error: true,
+            mensaje:
+              mensaje ||
+              'No se encontró el jugador con el ID de usuario proporcionado',
+          };
+        }
+
+        // Combinar la información del usuario con la del jugador
+        const jugadorCompleto: Jugador = {
+          ...data,
+          ...jugador,
+        };
+
+        return {
+          usuario: jugadorCompleto,
+          error: false,
+          mensaje: null,
+        };
+      }
 
       return {
         usuario: data,
@@ -67,11 +98,45 @@ export class UsuarioService {
 
   async updateUser(
     userId: string,
-    userData: Partial<Usuario>
+    userData: Partial<Usuario>,
+    jugadorData: null | CompletarPerfilJugador,
+    imageUri: string | null
   ): Promise<UsuarioServiceResponse> {
     try {
-      // Aquí iría la lógica real para actualizar el usuario
-      throw new Error('Method not implemented.');
+      console.log('updateUser');
+
+      const { data, error } = await this.dbService.updateById(
+        this.tabla,
+        userId,
+        userData
+      );
+      if (error || !data) {
+        throw new Error(error || 'No se pudo actualizar el usuario');
+      }
+
+      if (userData.rol_id === 5 && jugadorData && imageUri) {
+        const {
+          error: errorJugador,
+          jugador,
+          mensaje,
+        } = await this.jugadorService.crearJugador(jugadorData, imageUri);
+        if (errorJugador || !jugador) {
+          // Si falla la creación del jugador, intentar eliminar el usuario creado
+          await this.dbService.deleteById(this.tabla, userId);
+          throw new Error(mensaje || 'Error al crear el jugador');
+        }
+        return {
+          usuario: { ...data, ...jugador },
+          error: false,
+          mensaje: null,
+        };
+      }
+
+      return {
+        usuario: data,
+        error: false,
+        mensaje: null,
+      };
     } catch (error) {
       return {
         usuario: null,

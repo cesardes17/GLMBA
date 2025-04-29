@@ -12,12 +12,15 @@ export default function PerfilHelper() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/(auth)/registro');
-  }, [router]);
+    if (authloading || loading) return;
 
-  if (!authUser || !usuario) {
-    return null;
-  }
+    if (!authUser) {
+      return router.replace('/login');
+    }
+    if (!usuario) {
+      return router.replace('/completar-perfil');
+    }
+  }, [authUser, authloading, logoutInProgress, router, loading, usuario]);
 
   if (authloading || loading) {
     return (

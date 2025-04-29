@@ -42,6 +42,23 @@ class StorageService {
       };
     }
   }
+
+  async getPublicUrl(
+    bucket: string,
+    fileName: string
+  ): Promise<StorageServiceResponse> {
+    try {
+      return storageSupabase.getPublicUrl(bucket, fileName);
+    } catch (error) {
+      console.error('Error getting public URL:', error);
+      return {
+        data: null,
+        error: true,
+        mensaje:
+          (error as Error).message || 'No se pudo obtener la URL pública',
+      };
+    }
+  }
 }
 
 export const storageService = new StorageService();

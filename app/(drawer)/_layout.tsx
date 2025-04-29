@@ -35,11 +35,11 @@ export default function Layout() {
         }}
       >
         <Drawer.Screen name='index' options={{ title: 'Inicio' }} />
-        {/* <Drawer.Screen name='partidos' options={{ title: 'Partidos' }} />
+        <Drawer.Screen name='partidos' options={{ title: 'Partidos' }} />
         <Drawer.Screen
           name='clasificacion'
           options={{ title: 'Clasificación' }}
-        /> */}
+        />
         <Drawer.Screen
           name='perfil-helper'
           options={{

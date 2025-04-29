@@ -75,6 +75,60 @@ export class JugadorService {
       };
     }
   }
+
+  async getJugadorByUserId(userId: string): Promise<{
+    jugador: Jugador | null;
+    error: boolean;
+    mensaje: string | null;
+  }> {
+    try {
+      const { data, error } = await this.dbService.getByField<Jugador>(
+        this.tabla,
+        'usuario_id',
+        userId
+      );
+
+      if (error || !data || data.length === 0) {
+        return {
+          jugador: null,
+          error: true,
+          mensaje:
+            error ||
+            'No se encontró el jugador con el ID de usuario proporcionado',
+        };
+      }
+
+      // Obtener la URL pública de la imagen
+      const { data: urlData, error: urlError } =
+        await this.storageService.getPublicUrl(this.bucket, data[0].foto_name);
+
+      if (urlError || !urlData) {
+        console.error(
+          'Error obteniendo la URL pública de la imagen:',
+          urlError
+        );
+        // Continuamos aunque no se pueda obtener la URL
+      } else {
+        // Asignamos la URL pública al mismo campo que contenía el nombre
+        data[0].foto_name = urlData.publicUrl;
+      }
+
+      return {
+        jugador: data[0],
+        error: false,
+        mensaje: null,
+      };
+    } catch (error) {
+      return {
+        jugador: null,
+        error: true,
+        mensaje:
+          error instanceof Error
+            ? error.message
+            : 'Error al obtener el jugador',
+      };
+    }
+  }
 }
 
 // Exportar una instancia única

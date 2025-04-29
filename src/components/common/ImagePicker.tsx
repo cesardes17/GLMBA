@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Platform } from 'react-native';
+import { Pressable, StyleSheet, Platform, Alert } from 'react-native';
 import * as ExpoImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { SubirImagenIcon } from '../Icons';
 
@@ -10,6 +12,10 @@ interface ImagePickerProps {
   variant?: 'default' | 'outline' | 'danger';
   size?: 'small' | 'default' | 'large';
 }
+
+const MAX_SIZE_MB = 4;
+const RESIZE_WIDTH = 800;
+const COMPRESSION = 0.7;
 
 export default function ImagePicker({
   onImageSelected,
@@ -53,9 +59,41 @@ export default function ImagePicker({
         quality: 1,
       });
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const assetUri = result.assets[0].uri;
-        onImageSelected(assetUri);
+      if (!result.canceled && result.assets.length > 0) {
+        const asset = result.assets[0];
+
+        let finalUri = asset.uri;
+
+        if (Platform.OS !== 'web') {
+          // 🖼 Redimensiona y comprime
+          const manipulated = await ImageManipulator.manipulateAsync(
+            asset.uri,
+            [{ resize: { width: RESIZE_WIDTH } }],
+            { compress: COMPRESSION, format: ImageManipulator.SaveFormat.JPEG }
+          );
+
+          const info = await FileSystem.getInfoAsync(manipulated.uri);
+          if (!info.exists) {
+            Alert.alert(
+              'Error',
+              'No se pudo acceder a la imagen seleccionada.'
+            );
+            return;
+          }
+          const sizeInMB = info.size / (1024 * 1024);
+
+          if (sizeInMB > MAX_SIZE_MB) {
+            Alert.alert(
+              'Imagen demasiado grande',
+              'Por favor selecciona una imagen de menos de 4 MB.'
+            );
+            return;
+          }
+
+          finalUri = manipulated.uri;
+        }
+
+        onImageSelected(finalUri);
       }
     } catch (error) {
       console.error('Error al seleccionar imagen:', error);

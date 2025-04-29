@@ -41,6 +41,7 @@ export default function AuthLayout() {
         name='completar-perfil'
         options={{ title: 'Completar Perfil' }}
       />
+      <Stack.Screen name='editar-perfil' options={{ title: 'Editar Perfil' }} />
       {/* Agrega más pantallas según sea necesario */}
     </Stack>
   );

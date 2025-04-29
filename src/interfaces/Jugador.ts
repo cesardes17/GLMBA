@@ -11,3 +11,11 @@ export interface Jugador extends Usuario {
   foto_name: string;
   sancionado: boolean; // Cambiado de 'sancion' a 'sancionado' para coincidir con la base de datos
 }
+
+export function isJugador(usuario: Usuario | Jugador): usuario is Jugador {
+  return (
+    usuario.rol_id === 5 &&
+    'foto_name' in usuario &&
+    'posicion_preferida' in usuario
+  );
+}

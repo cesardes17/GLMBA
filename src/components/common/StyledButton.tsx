@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    marginVertical: 8,
   },
   text: {
     fontSize: 16,

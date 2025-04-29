@@ -1,5 +1,5 @@
 import { AuthSupabase } from '@/src/api/authSupabase';
-import { usuarioService, UsuarioService } from '../usuarioService';
+import { usuarioService } from '../usuarioService';
 
 export type AuthResponse<T> = {
   data: T | null;
