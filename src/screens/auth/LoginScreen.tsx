@@ -21,7 +21,8 @@ export default function LoginScreen() {
     setError(null);
     try {
       const { data, error } = await login(email, password);
-
+      console.log('data', data);
+      console.log('error', error);
       if (error) {
         throw new Error(error);
       }
@@ -29,17 +30,19 @@ export default function LoginScreen() {
         throw new Error('No se recibieron datos del servidor');
       }
       await fetchUserData();
+      router.replace('/');
     } catch (err) {
       if ((err as Error).message.includes('Invalid login credentials')) {
         setError('El email o la contraseña son incorrectos.');
       } else if ((err as Error).message.includes('network')) {
         setError('Error de conexión. Verifica tu conexión a internet.');
+      } else if ((err as Error).message.includes('baneado')) {
+        setError('Su cuenta ha sido baneada, no puede inicar sesión.');
       } else {
         setError('Ha ocurrido un error. Inténtalo más tarde.');
       }
     } finally {
       setLoading(false);
-      router.replace('/'); // Redirige al usuario a la página de inicio o a la página de perfiles de us
     }
   };
 

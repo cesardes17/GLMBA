@@ -1,4 +1,5 @@
 import { AuthSupabase } from '@/src/api/authSupabase';
+import { usuarioService, UsuarioService } from '../usuarioService';
 
 export type AuthResponse<T> = {
   data: T | null;
@@ -40,10 +41,20 @@ export const AuthService = {
     try {
       const { data, error } = await AuthSupabase.signIn(email, password);
       if (error) throw new Error(error.message);
-      if (!data) throw new Error('No data returned');
+      if (!data || !data.user) throw new Error('No data returned');
+      const { usuario } = await usuarioService.getUser(data.user.id);
+      if (!usuario) throw new Error('No user returned');
+      console.log(usuario);
+      if (usuario.activo) {
+        return {
+          data: data.user,
+          error: null,
+        };
+      }
+      this.logout();
       return {
-        data: data.user,
-        error: null,
+        data: null,
+        error: 'Usuario baneado',
       };
     } catch (error) {
       return {
