@@ -1,5 +1,6 @@
 import { DatabaseService } from './core/databaseService';
 import { Solicitud } from '../interfaces/Solicitudes';
+import { storageService } from './core/storageService';
 
 export type SolicitudServiceResponse = {
   solicitud: Solicitud | null;
@@ -18,11 +19,15 @@ export class SolicitudService {
   private dbService: typeof DatabaseService;
   private tabla: string;
   private columnID: string;
+  private storageService: typeof storageService;
+  private bucket: string;
 
   private constructor() {
     this.dbService = DatabaseService;
     this.tabla = 'solicitudes';
     this.columnID = 'id';
+    this.storageService = storageService;
+    this.bucket = 'escudosequipos';
   }
 
   public static getInstance(): SolicitudService {
@@ -68,9 +73,32 @@ export class SolicitudService {
   }
 
   async createSolicitud(
-    solicitudData: Omit<Solicitud, 'id'>
+    solicitudData: Omit<Solicitud, 'id' | 'fecha_creacion'>
   ): Promise<SolicitudServiceResponse> {
     try {
+      // Si hay una imagen en la solicitud, subirla primero
+      if (solicitudData.escudo_url) {
+        const {
+          data: dataStorage,
+          error: errorStorage,
+          mensaje,
+        } = await this.storageService.uploadImage(
+          this.bucket,
+          solicitudData.escudo_url
+        );
+
+        if (!dataStorage || errorStorage) {
+          throw new Error(mensaje || 'Error al subir la imagen del escudo');
+        }
+
+        // Actualizar la URL del escudo con la ruta del almacenamiento
+        solicitudData = {
+          ...solicitudData,
+          escudo_url: dataStorage.path,
+        };
+      }
+
+      console.log('Datos recibidos en createSolicitud:', solicitudData);
       const { data: solicitudCreada, error } = await this.dbService.insert(
         this.tabla,
         solicitudData
@@ -153,6 +181,36 @@ export class SolicitudService {
           error instanceof Error
             ? error.message
             : 'Error al eliminar la solicitud',
+      };
+    }
+  }
+
+  async getSolicitudesUsuario(
+    usuarioId: string
+  ): Promise<SolicitudesServiceResponse> {
+    try {
+      if (error) {
+        console.error('Error obteniendo solicitudes:', error);
+        return {
+          solicitudes: [],
+          error: true,
+          mensaje: error,
+        };
+      }
+
+      return {
+        solicitudes: data || [],
+        error: false,
+        mensaje: null,
+      };
+    } catch (error) {
+      return {
+        solicitudes: [],
+        error: true,
+        mensaje:
+          error instanceof Error
+            ? error.message
+            : 'Error al obtener las solicitudes',
       };
     }
   }

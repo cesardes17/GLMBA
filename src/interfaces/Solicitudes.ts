@@ -1,13 +1,24 @@
 export interface Solicitud {
   id: number;
-  estado: string;
-  tipo: 'crear_equipo' | 'disolver_equipo' | 'unirse_equipo' | 'salirse_equipo'; // Puedes extender más tipos si quieres
+  estado: 'pendiente' | 'aceptada' | 'rechazada';
+  tipo:
+    | 'crear_equipo'
+    | 'unirse_equipo'
+    | 'baja_equipo'
+    | 'disolver_equipo'
+    | 'expulsar_jugador';
+  equipo_id?: string;
   nombre_equipo?: string;
   escudo_url?: string;
-  equipo_id?: string;
   motivo?: string;
   respuesta_admin?: string;
-  usuario_id: string;
+  iniciada_por_id: string;
   fecha_creacion: string;
   fecha_respuesta?: string;
+  jugador_objetivo_id?: string;
+  capitan_objetivo_id?: string;
+  admin_aprobador_id?: string;
+  aprobado_jugador?: boolean;
+  aprobado_capitan?: boolean;
+  aprobado_admin?: boolean;
 }

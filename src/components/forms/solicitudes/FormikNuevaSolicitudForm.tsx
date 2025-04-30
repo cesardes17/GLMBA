@@ -11,35 +11,9 @@ import StyledAlert from '../../common/StyledAlert';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { Solicitud } from '@/src/interfaces/Solicitudes';
 import { useUserContext } from '@/src/contexts/UserContext';
-
-/**
- * Funcionamiento:
- * Hay 4 tipos de solicitudes:
- * 1. Crear un equipo
- * 2. Disolver/Eliminar un equipo
- * 3. Unirse a un equipo
- * 4. Salir de un equipo
- *
- * Pasos para crear un equipo:
- * 1º elegir el tipo de solicitud "Crear un equipo" -> 'crear_equipo'
- * 2º Rellenar el formulario
- *  - Nombre del equipo (Obligatorio)
- *  - Motivo (Opcional)
- *  - Añadir Escudo de equipo(Obligatorio) - si es necesario se puede crear un paso adicional para añadir el escudo
- *
- * Pasos para crear un equipo:
- * 1º elegir el tipo de solicitud "Eliminar equipo" -> 'disolver_equipo'
- * 2º Rellenar el formulario:
- *  - Motivo (Opcional)
- *
- * Pasos para darse de baja de un equipo(lo inicia el jugador):
- * 1º elegir el tipo de solicitud "Salir de un equipo" -> 'salir_equipo'
- * 2º Rellenar el formulario:
- *  - Motivo (Opcional)
- *
- * Para unirse a un equipo(lo inicia el capitan desde la pagina de bolsa de jugadores):
- *
- */
+import { solicitudService } from '@/src/service/solicitudService';
+import * as Yup from 'yup';
+import { isJugador } from '@/src/interfaces/Jugador';
 
 const TIPOS_SOLICITUD = [
   {
@@ -72,7 +46,7 @@ export default function FormikNuevaSolicitudForm({
   const { theme } = useThemeContext();
   const { usuario } = useUserContext();
 
-  if (!usuario) {
+  if (!usuario || !isJugador(usuario)) {
     return null;
   }
 
@@ -86,10 +60,43 @@ export default function FormikNuevaSolicitudForm({
   const onSubmit = async (values: typeof initialValues) => {
     setLoading(true);
     try {
+      console.log('ID del usuario:', usuario);
+      let solicitudData: Omit<Solicitud, 'id' | 'fecha_creacion'> = {
+        estado: 'pendiente',
+        tipo: values.tipo as Solicitud['tipo'],
+        equipo_id: undefined,
+        nombre_equipo: undefined,
+        escudo_url: undefined,
+        motivo: undefined,
+        respuesta_admin: undefined,
+        iniciada_por_id: usuario.usuario_id,
+        fecha_respuesta: undefined,
+        jugador_objetivo_id: undefined,
+        capitan_objetivo_id: undefined,
+        admin_aprobador_id: undefined,
+        aprobado_jugador: undefined,
+        aprobado_capitan: undefined,
+        aprobado_admin: undefined,
+      };
       if (values.tipo === 'crear_equipo') {
         if (!selectedImage) {
           throw new Error('Debe seleccionar un escudo para el equipo');
         }
+        solicitudData = {
+          ...solicitudData,
+          tipo: 'crear_equipo',
+          nombre_equipo: values.nombre_equipo,
+          escudo_url: selectedImage,
+          motivo: values.motivo,
+        };
+        const { solicitud, error, mensaje } =
+          await solicitudService.createSolicitud(solicitudData);
+
+        if (error || !solicitud) {
+          throw new Error(mensaje || 'Error al crear la solicitud');
+        }
+        setLoading(false);
+        return router.back();
       }
 
       console.log('Valores del formulario:', values);
@@ -233,7 +240,11 @@ export default function FormikNuevaSolicitudForm({
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validationSchema={validationSchema}
+    >
       {(formikProps) => (
         <View
           style={[
@@ -306,4 +317,29 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
   },
+});
+
+const validationSchema = Yup.object().shape({
+  tipo: Yup.string()
+    .required('Debe seleccionar un tipo de solicitud')
+    .oneOf(
+      ['crear_equipo', 'disolver_equipo', 'salir_equipo'],
+      'Tipo de solicitud no válido'
+    ),
+  nombre_equipo: Yup.string().when('tipo', {
+    is: 'crear_equipo',
+    then: (schema) =>
+      schema
+        .required('El nombre del equipo es obligatorio')
+        .min(3, 'El nombre debe tener al menos 3 caracteres')
+        .max(50, 'El nombre no puede exceder los 50 caracteres'),
+  }),
+  motivo: Yup.string()
+    .optional()
+    .max(500, 'El motivo no puede exceder los 500 caracteres'),
+  escudo_url: Yup.string().when('tipo', {
+    is: 'crear_equipo',
+    then: (schema) =>
+      schema.required('Debe seleccionar un escudo para el equipo'),
+  }),
 });
