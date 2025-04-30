@@ -2,16 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { UserIcon, UsersIcon, CalendarIcon, LogOutIcon } from '../Icons';
+import { LeaveTeamRequest } from '@/src/types/requests';
 
 interface LeaveTeamRequestProps {
-  request: {
-    tipo: 'baja_equipo';
-    jugador_objetivo: string;
-    equipo: string;
-    fecha_creacion: string;
-    estado: 'pendiente' | 'aceptada' | 'rechazada';
-    motivo: string;
-  };
+  request: LeaveTeamRequest;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
   id: string;

@@ -2,17 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, Button } from 'react-native';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { ShieldIcon } from '../Icons';
+import { CreateTeamRequest } from '@/src/types/requests';
 
 interface CreateTeamSolicitudCardProps {
-  request: {
-    tipo: 'crear_equipo';
-    nombre_equipo: string;
-    escudo_url: string;
-    iniciada_por: string;
-    fecha_creacion: string;
-    estado: 'pendiente' | 'aceptada' | 'rechazada';
-    motivo: string;
-  };
+  request: CreateTeamRequest;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
   id: string;

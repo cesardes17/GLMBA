@@ -11,55 +11,7 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
 
-type CreateTeamRequest = {
-  tipo: 'crear_equipo';
-  nombre_equipo: string;
-  escudo_url: string;
-  iniciada_por: string;
-  fecha_creacion: string;
-  estado: 'pendiente' | 'aceptada' | 'rechazada';
-  motivo: string;
-};
-
-type JoinTeamRequest = {
-  tipo: 'unirse_equipo';
-  jugador_objetivo: string;
-  equipo: string;
-  capitan_objetivo: string;
-  fecha_creacion: string;
-  aprobado_jugador: boolean;
-  aprobado_capitan: boolean;
-  estado: 'pendiente' | 'aceptada' | 'rechazada';
-};
-
-type LeaveTeamRequest = {
-  tipo: 'baja_equipo';
-  jugador_objetivo: string;
-  equipo: string;
-  fecha_creacion: string;
-  estado: 'pendiente' | 'aceptada' | 'rechazada';
-  motivo: string;
-};
-
-type DissolveTeamRequest = {
-  tipo: 'disolver_equipo';
-  capitan_objetivo: string;
-  equipo: string;
-  fecha_creacion: string;
-  estado: 'pendiente' | 'aceptada' | 'rechazada';
-  motivo: string;
-};
-
-type Request =
-  | CreateTeamRequest
-  | JoinTeamRequest
-  | LeaveTeamRequest
-  | DissolveTeamRequest;
-
-interface RequestWithId {
-  id: string;
-  data: Request;
-}
+import { RequestWithId } from '@/src/types/requests';
 
 export default function SolicitudesScreen() {
   const { theme } = useThemeContext();
@@ -229,19 +181,21 @@ const styles = StyleSheet.create({
     padding: 12,
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 12, // Añadimos margen inferior para separar del ScrollView
+    marginBottom: 12,
+    alignItems: 'center', // Añadimos esta propiedad para centrar verticalmente
   },
   headerMobile: {
     flexDirection: 'column',
-    paddingBottom: 0, // Reduce el padding inferior en móvil
+    paddingBottom: 0,
   },
   searchContainer: {
     flex: 3,
+    justifyContent: 'center', // Centramos el contenido del contenedor de búsqueda
   },
   searchContainerMobile: {
-    flex: undefined, // Eliminamos el flex en móvil
+    flex: undefined,
     width: '100%',
-    marginBottom: 12, // Añadimos margen inferior para separar del botón
+    marginBottom: 12,
   },
   searchInput: {
     borderRadius: 8,
@@ -257,6 +211,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     padding: 12,
     height: 48, // Altura fija para mantener consistencia
+    alignItems: 'center', // Centramos verticalmente el contenido
   },
   createButtonMobile: {
     flex: undefined,

@@ -8,18 +8,10 @@ import {
   CalendarIcon,
 } from '../Icons';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
+import { JoinTeamRequest } from '@/src/types/requests';
 
 interface JoinTeamRequestProps {
-  request: {
-    tipo: 'unirse_equipo';
-    jugador_objetivo: string;
-    equipo: string;
-    capitan_objetivo: string;
-    fecha_creacion: string;
-    aprobado_jugador: boolean;
-    aprobado_capitan: boolean;
-    estado: 'pendiente' | 'aceptada' | 'rechazada';
-  };
+  request: JoinTeamRequest;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
   id: string;
