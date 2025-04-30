@@ -14,54 +14,174 @@ import { solicitudService } from '@/src/service/solicitudService';
 import { RequestWithId } from '@/src/types/requests';
 import { useAuth } from '@/src/contexts/AuthContext';
 import StyledAlert from '@/src/components/common/StyledAlert';
+import { useUserContext } from '@/src/contexts/UserContext';
+import StyledModal from '@/src/components/common/StyledModal';
 
 export default function SolicitudesScreen() {
   const { theme } = useThemeContext();
   const { isMobile } = useResponsiveLayout();
   const { authUser } = useAuth();
+  const { usuario } = useUserContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [requests, setRequests] = useState<RequestWithId[]>([]);
 
-  const handleAccept = (id: string) => {
-    setRequests((prev) =>
-      prev.map((req) =>
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalSolicitudId, setModalSolicitudId] = useState<string | null>(null);
+  const [modalTipo, setModalTipo] = useState<'aceptada' | 'rechazada' | null>(
+    null
+  );
+  const [motivoRechazo, setMotivoRechazo] = useState('');
+  const [callbackTipo, setCallbackTipo] = useState<string>('');
+
+  const abrirModal = (
+    id: string,
+    estado: 'aceptada' | 'rechazada',
+    tipo: string
+  ) => {
+    setModalSolicitudId(id);
+    setModalTipo(estado);
+    setCallbackTipo(tipo);
+    setMotivoRechazo('');
+    setModalVisible(true);
+  };
+
+  const confirmarModal = () => {
+    if (!modalSolicitudId || !modalTipo || !authUser?.id) return;
+
+    const id = modalSolicitudId;
+    const estado = modalTipo;
+    const mensaje = motivoRechazo;
+
+    switch (callbackTipo) {
+      case 'crear_equipo':
+        handleCrearEquipo(id, estado, mensaje, authUser.id);
+        break;
+      case 'unirse_equipo':
+        handleUnirseEquipo(id, estado, mensaje);
+        break;
+      case 'baja_equipo':
+        handleBajaEquipo(id, estado, mensaje);
+        break;
+      case 'disolver_equipo':
+        handleDisolverEquipo(id, estado, mensaje);
+        break;
+    }
+    setModalVisible(false);
+  };
+
+  const handleCrearEquipo = async (
+    id: string,
+    nuevoEstado: 'aceptada' | 'rechazada',
+    respuesta_admin: string,
+    userID: string
+  ) => {
+    const fecha_respuesta = new Date().toISOString();
+
+    const { solicitud, error, mensaje } =
+      await solicitudService.updateSolicitud(id, {
+        estado: nuevoEstado,
+        respuesta_admin,
+        fecha_respuesta,
+        admin_aprobador_id: userID,
+      });
+
+    if (error || !solicitud) {
+      console.error('Error al actualizar solicitud:', mensaje);
+      return;
+    }
+
+    setRequests((prevRequests) =>
+      prevRequests.map((req) =>
         req.id === id
-          ? { ...req, data: { ...req.data, estado: 'aceptada' } }
+          ? {
+              ...req,
+              data: {
+                ...req.data,
+                estado: nuevoEstado,
+                respuesta_admin,
+                fecha_respuesta,
+                admin_aprobador: authUser.email,
+              },
+            }
           : req
       )
     );
   };
 
-  const handleReject = (id: string) => {
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === id
-          ? { ...req, data: { ...req.data, estado: 'rechazada' } }
-          : req
-      )
-    );
+  const handleUnirseEquipo = async (
+    id: string,
+    estado: 'aceptada' | 'rechazada',
+    respuesta_admin: string
+  ) => {
+    const result = await solicitudService.updateSolicitud(id, {
+      estado,
+      respuesta_admin,
+      admin_aprobador_id: usuario?.id,
+      fecha_respuesta: new Date().toISOString(),
+    });
+
+    if (result.error) {
+      console.error('Error gestionando la solicitud:', result.mensaje);
+      return;
+    }
+  };
+
+  const handleBajaEquipo = async (
+    id: string,
+    estado: 'aceptada' | 'rechazada',
+    respuesta_admin: string
+  ) => {
+    const result = await solicitudService.updateSolicitud(id, {
+      estado,
+      respuesta_admin,
+      admin_aprobador_id: usuario?.id,
+      fecha_respuesta: new Date().toISOString(),
+    });
+
+    if (result.error) {
+      console.error('Error gestionando la solicitud:', result.mensaje);
+      return;
+    }
+  };
+
+  const handleDisolverEquipo = async (
+    id: string,
+    estado: 'aceptada' | 'rechazada',
+    respuesta_admin: string
+  ) => {
+    const result = await solicitudService.updateSolicitud(id, {
+      estado,
+      respuesta_admin,
+      admin_aprobador_id: usuario?.id,
+      fecha_respuesta: new Date().toISOString(),
+    });
+
+    if (result.error) {
+      console.error('Error gestionando la solicitud:', result.mensaje);
+      return;
+    }
   };
 
   const cargarSolicitudes = useCallback(async () => {
     try {
-      if (!authUser?.id) {
+      if (!authUser?.id || !usuario) {
         console.error('No hay usuario autenticado');
         return;
       }
 
-      const { solicitudes, error, mensaje } =
-        await solicitudService.getSolicitudesUsuario(authUser.id);
+      const esAdmin = usuario.rol_id === 1 || usuario.rol_id === 2;
+
+      const { solicitudes, error, mensaje } = esAdmin
+        ? await solicitudService.getSolicitudesAdministrador()
+        : await solicitudService.getSolicitudesUsuario(authUser.id);
+
       if (error) {
         console.error('Error al cargar solicitudes:', mensaje);
         return;
       }
+
       if (solicitudes) {
         const mappedRequests = solicitudes.map((solicitud) => {
-          console.log(
-            'Solicitud completa:',
-            JSON.stringify(solicitud, null, 2)
-          );
-
           const getUsuarioNombre = (usuario: any) => {
             if (!usuario) return '';
             if (typeof usuario === 'object' && usuario !== null) {
@@ -87,6 +207,11 @@ export default function SolicitudesScreen() {
                   nombre_equipo: solicitud.nombre_equipo || '',
                   escudo_url: solicitud.escudo_url || '',
                   motivo: solicitud.motivo || '',
+                  respuesta_admin: solicitud.respuesta_admin || '',
+                  admin_aprobador: getUsuarioNombre(
+                    solicitud.admin_aprobador_id
+                  ),
+                  fecha_respuesta: solicitud.fecha_respuesta || '',
                 },
               };
             case 'unirse_equipo':
@@ -146,7 +271,7 @@ export default function SolicitudesScreen() {
     } catch (error) {
       console.error('Error al cargar solicitudes:', error);
     }
-  }, [authUser?.id]);
+  }, [authUser?.id, usuario]);
 
   useEffect(() => {
     cargarSolicitudes();
@@ -154,6 +279,16 @@ export default function SolicitudesScreen() {
 
   return (
     <>
+      <StyledModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={confirmarModal}
+        value={motivoRechazo}
+        onChangeText={setMotivoRechazo}
+        confirmLabel={
+          modalTipo === 'aceptada' ? 'Aceptar solicitud' : 'Rechazar solicitud'
+        }
+      />
       <View style={[styles.header, isMobile && styles.headerMobile]}>
         <View
           style={[
@@ -194,14 +329,19 @@ export default function SolicitudesScreen() {
           </StyledAlert>
         ) : (
           requests.map((request) => {
+            const aceptar = () =>
+              abrirModal(request.id, 'aceptada', request.data.tipo);
+            const rechazar = () =>
+              abrirModal(request.id, 'rechazada', request.data.tipo);
+
             switch (request.data.tipo) {
               case 'crear_equipo':
                 return (
                   <CreateTeamSolicitudCard
                     key={request.id}
                     request={request.data}
-                    onAccept={handleAccept}
-                    onReject={handleReject}
+                    onAccept={aceptar}
+                    onReject={rechazar}
                     id={request.id}
                     currentUserEmail={authUser.email}
                   />
@@ -211,8 +351,8 @@ export default function SolicitudesScreen() {
                   <JoinTeamSolicitudCard
                     key={request.id}
                     request={request.data}
-                    onAccept={handleAccept}
-                    onReject={handleReject}
+                    onAccept={aceptar}
+                    onReject={rechazar}
                     id={request.id}
                   />
                 );
@@ -221,8 +361,8 @@ export default function SolicitudesScreen() {
                   <LeaveTeamSolicitudCard
                     key={request.id}
                     request={request.data}
-                    onAccept={handleAccept}
-                    onReject={handleReject}
+                    onAccept={aceptar}
+                    onReject={rechazar}
                     id={request.id}
                   />
                 );
@@ -231,8 +371,8 @@ export default function SolicitudesScreen() {
                   <DissolveTeamSolicitudCard
                     key={request.id}
                     request={request.data}
-                    onAccept={handleAccept}
-                    onReject={handleReject}
+                    onAccept={aceptar}
+                    onReject={rechazar}
                     id={request.id}
                   />
                 );
@@ -255,7 +395,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     marginBottom: 12,
-    alignItems: 'center', // Añadimos esta propiedad para centrar verticalmente
+    alignItems: 'center',
   },
   headerMobile: {
     flexDirection: 'column',
@@ -263,7 +403,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flex: 3,
-    justifyContent: 'center', // Centramos el contenido del contenedor de búsqueda
+    justifyContent: 'center',
   },
   searchContainerMobile: {
     flex: undefined,
@@ -275,7 +415,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     padding: 12,
-    height: 48, // Altura fija para el input
+    height: 48,
   },
   createButton: {
     flex: 1,
@@ -283,8 +423,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     padding: 12,
-    height: 48, // Altura fija para mantener consistencia
-    alignItems: 'center', // Centramos verticalmente el contenido
+    height: 48,
+    alignItems: 'center',
   },
   createButtonMobile: {
     flex: undefined,

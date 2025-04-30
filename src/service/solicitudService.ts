@@ -277,6 +277,66 @@ export class SolicitudService {
       };
     }
   }
+  async getSolicitudesAdministrador(): Promise<SolicitudesServiceResponse> {
+    try {
+      const query = `
+        *,
+        equipo_id ( id, nombre, escudo_url ),
+        jugador_objetivo_id ( id, nombre, email ),
+        capitan_objetivo_id ( id, nombre, email ),
+        iniciada_por_id ( id, nombre, email ),
+        admin_aprobador_id ( id, nombre, email )
+      `;
+
+      const { data, error } = await this.dbService.getWithRelations<Solicitud>(
+        'solicitudes',
+        query
+      );
+      console.log('Data:', data);
+      if (error || !data) {
+        throw new Error(error || 'Error al obtener solicitudes');
+      }
+      // Obtener las public URL de los escudos si es tipo "crear_equipo"
+      const solicitudesConImagen = await Promise.all(
+        data.map(async (solicitud) => {
+          if (
+            solicitud.tipo === 'crear_equipo' &&
+            solicitud.escudo_url &&
+            !solicitud.escudo_url.startsWith('http')
+          ) {
+            const { data: publicURLData, error: publicURLError } =
+              await this.storageService.getPublicUrl(
+                this.bucket,
+                solicitud.escudo_url
+              );
+
+            return {
+              ...solicitud,
+              escudo_url: publicURLError
+                ? solicitud.escudo_url
+                : publicURLData.publicUrl,
+            };
+          }
+
+          return solicitud;
+        })
+      );
+      return {
+        solicitudes: solicitudesConImagen || [],
+        error: false,
+        mensaje: 'Solicitudes obtenidas correctamente',
+      };
+    } catch (error) {
+      return {
+        solicitudes: [],
+        error: true,
+        mensaje:
+          error instanceof Error
+            ? error.message
+            : 'Error inesperado al obtener las solicitudes',
+      };
+    }
+  }
 }
 // Exportar una instancia única
 export const solicitudService = SolicitudService.getInstance();

@@ -6,6 +6,9 @@ export type CreateTeamRequest = {
   fecha_creacion: string;
   estado: 'pendiente' | 'aceptada' | 'rechazada';
   motivo: string;
+  respuesta_admin?: string;
+  fecha_respuesta?: string;
+  admin_aprobador?: string;
 };
 
 export type JoinTeamRequest = {

@@ -6,8 +6,8 @@ import { LeaveTeamRequest } from '@/src/types/requests';
 
 interface LeaveTeamRequestProps {
   request: LeaveTeamRequest;
-  onAccept: (id: string) => void;
-  onReject: (id: string) => void;
+  onAccept: (id: string, respuesta_admin: string) => void;
+  onReject: (id: string, respuesta_admin: string) => void;
   id: string;
 }
 
@@ -115,13 +115,13 @@ export function LeaveTeamSolicitudCard({
       <View style={styles.actions}>
         <Button
           title='Rechazar'
-          onPress={() => onReject(id)}
+          onPress={() => onReject(id, '')}
           disabled={estado !== 'pendiente'}
           color={theme.error}
         />
         <Button
           title='Aceptar'
-          onPress={() => onAccept(id)}
+          onPress={() => onAccept(id, '')}
           disabled={estado !== 'pendiente'}
           color={theme.success}
         />
