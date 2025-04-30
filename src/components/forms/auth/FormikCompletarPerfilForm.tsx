@@ -1,5 +1,5 @@
 import { Formik } from 'formik';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import StyledButton from '../../common/StyledButton';
 import ImagePicker from '../../common/ImagePicker';
 import StyledText from '../../common/StyledText';

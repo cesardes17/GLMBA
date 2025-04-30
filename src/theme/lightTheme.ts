@@ -52,4 +52,32 @@ export const lightTheme: Theme = {
       checkIcon: colors.primary600,
     },
   },
+
+  requestCard: {
+    card: {
+      background: colors.white,
+      border: colors.gray300,
+      leftBorder: colors.primary600,
+    },
+    text: {
+      title: colors.gray900,
+      label: colors.gray600,
+      content: colors.gray900,
+      info: colors.gray700,
+    },
+    status: {
+      pending: {
+        background: colors.warning + '20',
+        text: colors.warning,
+      },
+      accepted: {
+        background: colors.success + '20',
+        text: colors.success,
+      },
+      rejected: {
+        background: colors.error + '20',
+        text: colors.error,
+      },
+    },
+  },
 };

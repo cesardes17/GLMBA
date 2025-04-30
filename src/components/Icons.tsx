@@ -2,6 +2,7 @@ import React from 'react';
 import {
   AntDesign,
   Entypo,
+  Feather,
   FontAwesome,
   FontAwesome5,
   Ionicons,
@@ -62,8 +63,24 @@ export const ShieldIcon = ({ size = 24, color }: IconProps) => {
   return <FontAwesome5 name='shield-alt' size={size} color={color} />;
 };
 
+export const UserPlusIcon = ({ size = 24, color }: IconProps) => {
+  return <Feather name='user-plus' size={size} color={color} />;
+};
+
 export const UserIcon = ({ size = 24, color }: IconProps) => {
-  return <FontAwesome name='user' size={size} color={color} />;
+  return <Feather name='user' size={size} color={color} />;
+};
+
+export const UsersIcon = ({ size = 24, color }: IconProps) => {
+  return <Feather name='users' size={size} color={color} />;
+};
+
+export const RibbonOutlineIcon = ({ size = 24, color }: IconProps) => {
+  return <Ionicons name='ribbon-outline' size={size} color={color} />;
+};
+
+export const CalendarIcon = ({ size = 24, color }: IconProps) => {
+  return <Feather name='calendar' size={size} color={color} />;
 };
 
 export const ChevronDownIcon = ({ size = 24, color }: IconProps) => {
@@ -108,4 +125,20 @@ export const UpIcon = ({ size = 24, color }: IconProps) => {
 
 export const InfoIcon = ({ size = 24, color }: IconProps) => {
   return <AntDesign name='infocirlceo' size={size} color={color} />;
+};
+
+export const PlusIcon = ({ size = 24, color }: IconProps) => {
+  return <AntDesign name='plus' size={size} color={color} />;
+};
+
+export const LogOutIcon = ({ size = 24, color }: IconProps) => {
+  return <MaterialIcons name='logout' size={size} color={color} />;
+};
+
+export const TrashIcon = ({ size = 24, color }: IconProps) => {
+  return <Feather name='trash-2' size={size} color={color} />;
+};
+
+export const AwardIcon = ({ size = 24, color }: IconProps) => {
+  return <Feather name='award' size={size} color={color} />;
 };

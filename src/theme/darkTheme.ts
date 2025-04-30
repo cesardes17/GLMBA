@@ -51,6 +51,33 @@ export const darkTheme = {
       checkIcon: colors.primary300,
     },
   },
+  requestCard: {
+    card: {
+      background: colors.gray800,
+      border: colors.gray700,
+      leftBorder: colors.primary400,
+    },
+    text: {
+      title: colors.white,
+      label: colors.gray400,
+      content: colors.gray200,
+      info: colors.gray300,
+    },
+    status: {
+      pending: {
+        background: colors.warning + '40',
+        text: colors.warning,
+      },
+      accepted: {
+        background: colors.success + '40',
+        text: colors.success,
+      },
+      rejected: {
+        background: colors.error + '40',
+        text: colors.error,
+      },
+    },
+  },
 };
 
 export type Theme = typeof darkTheme;

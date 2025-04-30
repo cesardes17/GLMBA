@@ -18,6 +18,34 @@ export type SelectableCardStyles = {
   };
 };
 
+export type RequestCardStyles = {
+  card: {
+    background: string;
+    border: string;
+    leftBorder: string;
+  };
+  text: {
+    title: string;
+    label: string;
+    content: string;
+    info: string;
+  };
+  status: {
+    pending: {
+      background: string;
+      text: string;
+    };
+    accepted: {
+      background: string;
+      text: string;
+    };
+    rejected: {
+      background: string;
+      text: string;
+    };
+  };
+};
+
 export type Theme = {
   backgroundColor: string;
   surfaceColor: string;
@@ -52,6 +80,7 @@ export type Theme = {
   backdrop: string;
   shadow: string;
   selectableCard: SelectableCardStyles;
+  requestCard: RequestCardStyles;
 };
 
 export const defaultTheme = lightTheme;

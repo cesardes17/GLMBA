@@ -10,7 +10,7 @@ export default function NotFoundScreen() {
     <View
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
     >
-      <HeaderConfig title='Pagina No Encontrada' />
+      <HeaderConfig title='Pagina No Encontrada' backLabel='Volver' />
       <StyledText
         variant='primary'
         style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}
