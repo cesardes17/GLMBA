@@ -126,13 +126,21 @@ export const DatabaseSupabase = {
   // Obtener registros con relaciones (join)
   async getWithRelations<T>(
     table: string,
-    relationQuery: string
+    relationQuery: string,
+    filter?: { column: string; value: string }
   ): Promise<DBResponse<T[]>> {
-    const { data, error } = await supabase.from(table).select(relationQuery);
-    // If there is an error, return null data
+    let query = supabase.from(table).select(relationQuery);
+
+    if (filter) {
+      query = query.eq(filter.column, filter.value);
+    }
+
+    const { data, error } = await query;
+
     if (error) {
       return { data: null, error };
     }
+
     return { data: data as T[], error: null };
   },
   // Obtener datos paginados

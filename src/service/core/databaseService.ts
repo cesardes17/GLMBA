@@ -110,11 +110,13 @@ export const DatabaseService = {
 
   async getWithRelations<T>(
     table: string,
-    relationQuery: string
+    relationQuery: string,
+    filter?: { column: string; value: string }
   ): Promise<DatabaseServiceResponse<T[]>> {
     const { data, error } = await DatabaseSupabase.getWithRelations<T>(
       table,
-      relationQuery
+      relationQuery,
+      filter
     );
     if (error) {
       return { data: null, error: error.message };

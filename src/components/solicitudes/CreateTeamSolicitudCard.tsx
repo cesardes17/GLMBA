@@ -3,12 +3,16 @@ import { View, Text, StyleSheet, Image, Button } from 'react-native';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { ShieldIcon } from '../Icons';
 import { CreateTeamRequest } from '@/src/types/requests';
+import { useUserContext } from '@/src/contexts/UserContext';
+import StyledAlert from '../common/StyledAlert';
+import Separator from '../common/Separator';
 
 interface CreateTeamSolicitudCardProps {
   request: CreateTeamRequest;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
   id: string;
+  currentUserEmail: string;
 }
 
 export function CreateTeamSolicitudCard({
@@ -16,8 +20,10 @@ export function CreateTeamSolicitudCard({
   onAccept,
   onReject,
   id,
+  currentUserEmail,
 }: CreateTeamSolicitudCardProps) {
   const { theme } = useThemeContext();
+
   const {
     nombre_equipo,
     escudo_url,
@@ -32,6 +38,9 @@ export function CreateTeamSolicitudCard({
     month: 'long',
     year: 'numeric',
   });
+  console.log(request.iniciada_por);
+  console.log(currentUserEmail);
+  const isSolicitante = request.iniciada_por === currentUserEmail;
 
   return (
     <View
@@ -105,20 +114,28 @@ export function CreateTeamSolicitudCard({
           </Text>
         </View>
       </View>
-
+      <Separator />
       <View style={styles.footer}>
-        <Button
-          title='Rechazar'
-          onPress={() => onReject(id)}
-          disabled={estado !== 'pendiente'}
-          color={theme.error}
-        />
-        <Button
-          title='Aceptar'
-          onPress={() => onAccept(id)}
-          disabled={estado !== 'pendiente'}
-          color={theme.success}
-        />
+        {isSolicitante ? (
+          <Text style={{ textAlign: 'center', color: theme.textSecondary }}>
+            Pendiente de confirmación por parte de la administración.
+          </Text>
+        ) : (
+          <>
+            <Button
+              title='Rechazar'
+              onPress={() => onReject(id)}
+              disabled={estado !== 'pendiente'}
+              color={theme.error}
+            />
+            <Button
+              title='Aceptar'
+              onPress={() => onAccept(id)}
+              disabled={estado !== 'pendiente'}
+              color={theme.success}
+            />
+          </>
+        )}
       </View>
     </View>
   );

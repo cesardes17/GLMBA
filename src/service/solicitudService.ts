@@ -186,22 +186,85 @@ export class SolicitudService {
   }
 
   async getSolicitudesUsuario(
-    usuarioId: string
+    userId: string,
+    page: number = 1,
+    limit: number = 20
   ): Promise<SolicitudesServiceResponse> {
     try {
-      if (error) {
-        console.error('Error obteniendo solicitudes:', error);
+      const select = `
+        *,
+        equipo_id (
+          id,
+          nombre,
+          escudo_url
+        ),
+        jugador_objetivo_id (
+          id,
+          nombre,
+          email
+        ),
+        capitan_objetivo_id (
+          id,
+          nombre,
+          email
+        ),
+        iniciada_por_id (
+          id,
+          nombre,
+          email
+        )
+      `;
+
+      const solicitudes = await this.dbService.getPaginatedData<Solicitud>(
+        'solicitudes',
+        {
+          filters: [
+            { field: 'iniciada_por_id', operator: 'eq', value: userId },
+          ],
+          page,
+          limit,
+          select,
+        }
+      );
+
+      if (!solicitudes.data) {
         return {
           solicitudes: [],
           error: true,
-          mensaje: error,
+          mensaje: solicitudes.error ?? 'Error al obtener solicitudes',
         };
       }
 
+      // Obtener las public URL de los escudos si es tipo "crear_equipo"
+      const solicitudesConImagen = await Promise.all(
+        solicitudes.data.map(async (solicitud) => {
+          if (
+            solicitud.tipo === 'crear_equipo' &&
+            solicitud.escudo_url &&
+            !solicitud.escudo_url.startsWith('http')
+          ) {
+            const { data: publicURLData, error: publicURLError } =
+              await this.storageService.getPublicUrl(
+                this.bucket,
+                solicitud.escudo_url
+              );
+
+            return {
+              ...solicitud,
+              escudo_url: publicURLError
+                ? solicitud.escudo_url
+                : publicURLData.publicUrl,
+            };
+          }
+
+          return solicitud;
+        })
+      );
+
       return {
-        solicitudes: data || [],
+        solicitudes: solicitudesConImagen,
         error: false,
-        mensaje: null,
+        mensaje: 'Solicitudes obtenidas correctamente',
       };
     } catch (error) {
       return {
@@ -210,11 +273,10 @@ export class SolicitudService {
         mensaje:
           error instanceof Error
             ? error.message
-            : 'Error al obtener las solicitudes',
+            : 'Error inesperado al obtener las solicitudes',
       };
     }
   }
 }
-
 // Exportar una instancia única
 export const solicitudService = SolicitudService.getInstance();
