@@ -98,3 +98,14 @@ export const RolIcon = ({ size = 24, color }: IconProps) => {
     <MaterialCommunityIcons name='badge-account' size={size} color={color} />
   );
 };
+
+export const DownIcon = ({ size = 24, color }: IconProps) => {
+  return <Entypo name='chevron-down' size={size} color={color} />;
+};
+export const UpIcon = ({ size = 24, color }: IconProps) => {
+  return <Entypo name='chevron-up' size={size} color={color} />;
+};
+
+export const InfoIcon = ({ size = 24, color }: IconProps) => {
+  return <AntDesign name='infocirlceo' size={size} color={color} />;
+};
