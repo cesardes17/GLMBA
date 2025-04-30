@@ -1,5 +1,5 @@
 import { Formik } from 'formik';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import StyledButton from '../../common/StyledButton';
 import ImagePicker from '../../common/ImagePicker';
 import StyledText from '../../common/StyledText';
@@ -239,15 +239,23 @@ export default function FormikCompletarPerfilForm({
               Selecciona tu imagen de perfil
             </StyledText>
             <View style={styles.imagePickerContainer}>
-              <ImagePicker
-                onImageSelected={(uri) => setSelectedImage(uri)}
-                size='large'
-                variant='outline'
-              />
-              {selectedImage && (
-                <StyledText style={styles.successText}>
-                  Imagen seleccionada correctamente
-                </StyledText>
+              {selectedImage ? (
+                <>
+                  <Image
+                    source={{ uri: selectedImage }}
+                    style={styles.imagePreview}
+                    resizeMode='cover'
+                  />
+                  <StyledText style={styles.successText}>
+                    Imagen seleccionada correctamente
+                  </StyledText>
+                </>
+              ) : (
+                <ImagePicker
+                  onImageSelected={(uri) => setSelectedImage(uri)}
+                  size='large'
+                  variant='outline'
+                />
               )}
             </View>
           </View>

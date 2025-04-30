@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     borderRadius: 12,
     overflow: 'hidden',
-    elevation: 4,
   },
   imageWeb: {
     width: '30%',
@@ -108,44 +107,46 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 16,
     alignSelf: 'center',
-    elevation: 3,
   },
   imageMobile: {
-    minWidth: '100%',
-    minHeight: 400,
+    width: '100%',
+    aspectRatio: 1, // Hacemos la imagen cuadrada
   },
   contentMobile: {
-    marginTop: 12,
-    gap: 8,
+    padding: 16,
+    gap: 12,
   },
   contentWeb: {
     padding: 12,
   },
   nombre: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 4,
   },
   apellidos: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '600',
     marginBottom: 12,
   },
   text: {
     fontSize: 16,
-    marginBottom: 8,
     marginLeft: 8,
   },
   dorsalContainer: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 12,
+    right: 12,
     backgroundColor: 'red',
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderRadius: 24,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dorsal: {
+    color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 20,
   },
 });
