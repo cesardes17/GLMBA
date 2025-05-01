@@ -99,8 +99,8 @@ export class UsuarioService {
   async updateUser(
     userId: string,
     userData: Partial<Usuario>,
-    jugadorData: null | CompletarPerfilJugador,
-    imageUri: string | null
+    jugadorData: null | CompletarPerfilJugador = null,
+    imageUri: string | null = null
   ): Promise<UsuarioServiceResponse> {
     try {
       const { data, error } = await this.dbService.updateById(

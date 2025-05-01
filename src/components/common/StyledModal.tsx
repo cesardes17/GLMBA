@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { useThemeContext } from '@/src/contexts/ThemeContext';
 
 interface Props {
   visible: boolean;
@@ -18,21 +19,45 @@ export default function StyledModal({
   onConfirm,
   confirmLabel,
 }: Props) {
+  const { theme } = useThemeContext();
+
   return (
-    <Modal visible={visible} transparent animationType='slide'>
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
-          <Text style={styles.title}>Motivo del administrador</Text>
+    <Modal visible={visible} transparent animationType='fade'>
+      <View style={[styles.overlay, { backgroundColor: theme.backdrop }]}>
+        <View
+          style={[
+            styles.modal,
+            {
+              backgroundColor: theme.cardBackground,
+              borderColor: theme.border,
+            },
+          ]}
+        >
+          <Text style={[styles.title, { color: theme.textPrimary }]}>
+            Motivo del administrador
+          </Text>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.surfaceColor,
+                borderColor: theme.border,
+                color: theme.textPrimary,
+              },
+            ]}
             placeholder='Introduce el motivo de la decisión'
+            placeholderTextColor={theme.textSecondary}
             value={value}
             onChangeText={onChangeText}
             multiline
           />
           <View style={styles.buttons}>
-            <Button title='Cancelar' onPress={onClose} color='#999' />
-            <Button title={confirmLabel} onPress={onConfirm} color='#28a745' />
+            <Button title='Cancelar' onPress={onClose} color={theme.error} />
+            <Button
+              title={confirmLabel}
+              onPress={onConfirm}
+              color={theme.success}
+            />
           </View>
         </View>
       </View>
@@ -44,13 +69,12 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 24,
   },
   modal: {
-    backgroundColor: 'white',
     borderRadius: 12,
     padding: 16,
+    borderWidth: 1,
   },
   title: {
     fontWeight: '600',
@@ -59,7 +83,6 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 8,
     padding: 8,
     minHeight: 80,

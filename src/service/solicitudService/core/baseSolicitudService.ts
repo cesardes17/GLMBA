@@ -159,6 +159,70 @@ async function getSolicitudesAdministrador(
   }
 }
 
+async function crearSolicitud(
+  solicitudData: Omit<Solicitud, 'id' | 'fecha_creacion'>
+): Promise<{
+  solicitud: Solicitud | null;
+  error: boolean;
+  mensaje: string | null;
+}> {
+  try {
+    // Validar que el tipo 'crear_equipo' tenga escudo obligatoriamente
+    if (
+      solicitudData.tipo === 'crear_equipo' &&
+      (!solicitudData.escudo_url || solicitudData.escudo_url.trim() === '')
+    ) {
+      return {
+        solicitud: null,
+        error: true,
+        mensaje: 'El escudo es obligatorio para crear un equipo.',
+      };
+    }
+
+    // Subir escudo si existe
+    if (solicitudData.escudo_url) {
+      const {
+        data: dataStorage,
+        error: errorStorage,
+        mensaje,
+      } = await storageService.uploadImage(
+        'escudosequipos',
+        solicitudData.escudo_url
+      );
+
+      if (!dataStorage || errorStorage) {
+        throw new Error(mensaje || 'Error al subir la imagen del escudo');
+      }
+
+      solicitudData = {
+        ...solicitudData,
+        escudo_url: dataStorage.path,
+      };
+    }
+
+    const { data, error } = await DatabaseService.insert<
+      typeof solicitudData,
+      Solicitud
+    >('solicitudes', solicitudData);
+
+    if (error || !data) {
+      throw new Error(error || 'No se pudo crear la solicitud');
+    }
+
+    return {
+      solicitud: data[0],
+      error: false,
+      mensaje: null,
+    };
+  } catch (error) {
+    return {
+      solicitud: null,
+      error: true,
+      mensaje:
+        error instanceof Error ? error.message : 'Error al crear la solicitud',
+    };
+  }
+}
 // OBJETO DE EXPORTACIÓN
 export const baseSolicitudService = {
   getById: (id: string) =>
@@ -177,4 +241,5 @@ export const baseSolicitudService = {
 
   getSolicitudesUsuario,
   getSolicitudesAdministrador,
+  crearSolicitud,
 };

@@ -96,7 +96,11 @@ export const BanIcon = ({ size = 24, color }: IconProps) => {
 };
 
 export const CheckCircleIcon = ({ size = 24, color }: IconProps) => {
-  return <FontAwesome name='check-circle' size={size} color={color} />;
+  return <Feather name='check-circle' size={size} color={color} />;
+};
+
+export const XCircleIcon = ({ size = 24, color }: IconProps) => {
+  return <Feather name='x-circle' size={size} color={color} />;
 };
 
 export const CloseIcon = ({ size = 24, color }: IconProps) => {

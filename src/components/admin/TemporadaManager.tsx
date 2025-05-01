@@ -5,10 +5,8 @@ import StyledActivityIndicator from '@/src/components/common/StyledActivitiIndic
 import StyledAlert from '@/src/components/common/StyledAlert';
 import StyledText from '@/src/components/common/StyledText';
 import StyledButton from '@/src/components/common/StyledButton';
-import TablaRequisitoEquipos from '@/src/components/equipos/admin/TablaRequisitoEquipos';
-import TemporadaManager from '@/src/components/admin/TemporadaManager';
 
-export default function PanelControlScreen() {
+export default function TemporadaManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [temporadaActiva, setTemporadaActiva] = useState(false);
@@ -55,6 +53,21 @@ export default function PanelControlScreen() {
     }
   };
 
+  const handleCrearLiga = async () => {
+    // TODO: Implementar la lógica de creación de liga
+    console.log('Crear liga');
+  };
+
+  const handleCrearCopa = async () => {
+    // TODO: Implementar la lógica de creación de copa
+    console.log('Crear copa');
+  };
+
+  const handleCrearPlayoff = async () => {
+    // TODO: Implementar la lógica de creación de playoff
+    console.log('Crear playoff');
+  };
+
   if (loading) {
     return <StyledActivityIndicator message='Cargando...' />;
   }
@@ -67,22 +80,14 @@ export default function PanelControlScreen() {
         </StyledAlert>
       )}
 
-      {!temporadaActiva ? (
-        <View style={styles.buttonContainer}>
-          <StyledText style={styles.message}>
-            No hay una temporada activa actualmente
-          </StyledText>
-          <StyledButton
-            title='Crear Nueva Temporada'
-            onPress={handleCrearTemporada}
-          />
-        </View>
-      ) : (
-        <>
-          <TemporadaManager />
-          <TablaRequisitoEquipos />
-        </>
-      )}
+      <View style={styles.buttonContainer}>
+        <StyledText style={styles.message}>
+          Temporada activa - Seleccione una opción:
+        </StyledText>
+        <StyledButton title='Crear Liga' onPress={handleCrearLiga} />
+        <StyledButton title='Crear Copa' onPress={handleCrearCopa} />
+        <StyledButton title='Crear Playoff' onPress={handleCrearPlayoff} />
+      </View>
     </View>
   );
 }
@@ -90,8 +95,7 @@ export default function PanelControlScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    gap: 16,
+    width: '100%',
   },
   buttonContainer: {
     gap: 16,

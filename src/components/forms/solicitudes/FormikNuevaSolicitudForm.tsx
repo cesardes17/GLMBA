@@ -11,9 +11,9 @@ import StyledAlert from '../../common/StyledAlert';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { Solicitud } from '@/src/interfaces/Solicitudes';
 import { useUserContext } from '@/src/contexts/UserContext';
-import { solicitudService } from '@/src/service/solicitudService';
 import * as Yup from 'yup';
 import { isJugador } from '@/src/interfaces/Jugador';
+import { baseSolicitudService } from '@/src/service/solicitudService';
 
 const TIPOS_SOLICITUD = [
   {
@@ -89,8 +89,7 @@ export default function FormikNuevaSolicitudForm({
           motivo: values.motivo,
         };
         const { solicitud, error, mensaje } =
-          await solicitudService.createSolicitud(solicitudData);
-
+          await baseSolicitudService.crearSolicitud(solicitudData);
         if (error || !solicitud) {
           throw new Error(mensaje || 'Error al crear la solicitud');
         }

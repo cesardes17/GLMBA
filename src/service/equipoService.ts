@@ -145,6 +145,19 @@ export class EquipoService {
       };
     }
   }
+  async getNumeroJugadoresPorEquipo(equipoId: string): Promise<number | null> {
+    const { data, error } = await this.dbService.callRpc<number>(
+      'count_inscripciones_por_equipo',
+      { equipo: equipoId }
+    );
+
+    console.log(data);
+    if (error || data === null) {
+      console.error('Error contando jugadores del equipo:', error);
+      return null;
+    }
+    return data;
+  }
 }
 
 export const equipoService = EquipoService.getInstance();

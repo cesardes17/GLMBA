@@ -31,9 +31,11 @@ export default function SolicitudesScreen() {
   const { isMobile } = useResponsiveLayout();
   const { authUser } = useAuth();
   const { usuario } = useUserContext();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [requests, setRequests] = useState<RequestWithId[]>([]);
   const [loadingSolicitudes, setLoadingSolicitudes] = useState(true);
+  const [actualizandoSolicitud, setactualizandoSolicitud] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalSolicitudId, setModalSolicitudId] = useState<string | null>(null);
   const [modalTipo, setModalTipo] = useState<'aceptada' | 'rechazada' | null>(
@@ -74,8 +76,9 @@ export default function SolicitudesScreen() {
     setModalVisible(true);
   };
 
-  const confirmarModal = () => {
+  const confirmarModal = async () => {
     if (!modalSolicitudId || !modalTipo || !authUser?.id) return;
+    setactualizandoSolicitud(true);
 
     const id = modalSolicitudId;
     const estado = modalTipo;
@@ -83,7 +86,7 @@ export default function SolicitudesScreen() {
 
     switch (callbackTipo) {
       case 'crear_equipo':
-        handleCrearEquipo(id, estado, mensaje, authUser.id);
+        await handleCrearEquipo(id, estado, mensaje, authUser.id);
         break;
       case 'unirse_equipo':
         handleUnirseEquipo(id, estado, mensaje);
@@ -95,6 +98,8 @@ export default function SolicitudesScreen() {
         handleDisolverEquipo(id, estado, mensaje);
         break;
     }
+    setactualizandoSolicitud(false);
+
     setModalVisible(false);
   };
 
@@ -313,6 +318,9 @@ export default function SolicitudesScreen() {
     );
   }
 
+  if (actualizandoSolicitud) {
+    return <StyledActivityIndicator message='Actualizando...' />;
+  }
   return (
     <>
       <StyledModal
@@ -339,26 +347,25 @@ export default function SolicitudesScreen() {
             onChangeText={setSearchQuery}
           />
         </View>
-        {usuario?.rol_id === 1 ||
-          (usuario?.rol_id === 2 && (
-            <TouchableOpacity
-              style={[
-                styles.createButton,
-                { backgroundColor: theme.requestCard.card.background },
-                isMobile && styles.createButtonMobile,
-              ]}
-              onPress={() => router.push('nuevaSolicitud')}
-            >
-              <View style={styles.buttonContent}>
-                <PlusIcon size={20} color={theme.textPrimary} />
-                <StyledText
-                  style={[styles.buttonText, { color: theme.textPrimary }]}
-                >
-                  Crear Solicitud
-                </StyledText>
-              </View>
-            </TouchableOpacity>
-          ))}
+        {usuario?.rol_id !== 1 && usuario?.rol_id !== 2 && (
+          <TouchableOpacity
+            style={[
+              styles.createButton,
+              { backgroundColor: theme.requestCard.card.background },
+              isMobile && styles.createButtonMobile,
+            ]}
+            onPress={() => router.push('nuevaSolicitud')}
+          >
+            <View style={styles.buttonContent}>
+              <PlusIcon size={20} color={theme.textPrimary} />
+              <StyledText
+                style={[styles.buttonText, { color: theme.textPrimary }]}
+              >
+                Crear Solicitud
+              </StyledText>
+            </View>
+          </TouchableOpacity>
+        )}
       </View>
       <SolicitudesList
         requests={requests}
