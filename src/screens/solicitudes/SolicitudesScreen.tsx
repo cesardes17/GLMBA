@@ -1,24 +1,30 @@
 import StyledText from '@/src/components/common/StyledText';
 import StyledTextInput from '@/src/components/common/StyledTextInput';
-import { PlusIcon } from '@/src/components/Icons';
-import { CreateTeamSolicitudCard } from '@/src/components/solicitudes/CreateTeamSolicitudCard';
-import { DissolveTeamSolicitudCard } from '@/src/components/solicitudes/DissolveTeamSolicitudCard';
-import { JoinTeamSolicitudCard } from '@/src/components/solicitudes/JoinTeamSolicitudCard';
-import { LeaveTeamSolicitudCard } from '@/src/components/solicitudes/LeaveTeamSolicitudCard';
+import { PlusIcon, WarningIcon } from '@/src/components/Icons';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { useResponsiveLayout } from '@/src/hooks/useResponsiveLayout';
 import { router } from 'expo-router';
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
-import { solicitudService } from '@/src/service/solicitudService';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RequestWithId } from '@/src/types/requests';
 import { useAuth } from '@/src/contexts/AuthContext';
-import StyledAlert from '@/src/components/common/StyledAlert';
 import { useUserContext } from '@/src/contexts/UserContext';
 import StyledModal from '@/src/components/common/StyledModal';
 import StyledActivityIndicator from '@/src/components/common/StyledActivitiIndicator';
-import { storageService } from '@/src/service/core/storageService';
-import { equipoService } from '@/src/service/equipoService';
+import { SolicitudesList } from '@/src/components/solicitudes/SolicitudesList';
+import StyledAlert from '@/src/components/common/StyledAlert';
+import { temporadaService } from '@/src/service/temporadaService';
+import {
+  aceptarSolicitudCrearEquipo,
+  rechazarSolicitudCrearEquipo,
+  aceptarSolicitudUnirseEquipo,
+  rechazarSolicitudUnirseEquipo,
+  aceptarSolicitudBajaEquipo,
+  rechazarSolicitudBajaEquipo,
+  aceptarSolicitudDisolverEquipo,
+  rechazarSolicitudDisolverEquipo,
+  baseSolicitudService,
+} from '@/src/service/solicitudService';
 
 export default function SolicitudesScreen() {
   const { theme } = useThemeContext();
@@ -35,6 +41,26 @@ export default function SolicitudesScreen() {
   );
   const [motivoRechazo, setMotivoRechazo] = useState('');
   const [callbackTipo, setCallbackTipo] = useState<string>('');
+  const [temporadaActiva, setTemporadaActiva] = useState<boolean>(false);
+  const [loadingTemporada, setLoadingTemporada] = useState<boolean>(true);
+
+  const verificarTemporadaActiva = useCallback(async () => {
+    try {
+      const { temporada, error } = await temporadaService.getTemporadaActiva();
+      if (error) {
+        throw new Error('Error al verificar la temporada activa');
+      }
+      setTemporadaActiva(!!temporada);
+    } catch (error) {
+      console.error('Error al verificar temporada:', error);
+    } finally {
+      setLoadingTemporada(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    verificarTemporadaActiva();
+  }, [verificarTemporadaActiva]);
 
   const abrirModal = (
     id: string,
@@ -78,56 +104,20 @@ export default function SolicitudesScreen() {
     respuesta_admin: string,
     userID: string
   ) => {
-    const fecha_respuesta = new Date().toISOString();
-
     try {
-      // Paso 1: Actualizar solicitud
       const { solicitud, error, mensaje } =
-        await solicitudService.updateSolicitud(id, {
-          estado: nuevoEstado,
-          respuesta_admin,
-          fecha_respuesta,
-          admin_aprobador_id: userID,
-        });
+        nuevoEstado === 'aceptada'
+          ? await aceptarSolicitudCrearEquipo(id, userID, respuesta_admin)
+          : await rechazarSolicitudCrearEquipo(id, userID, respuesta_admin);
 
       if (error || !solicitud) {
-        throw new Error(mensaje || 'Error al actualizar la solicitud');
+        throw new Error(
+          mensaje ||
+            `Error al ${nuevoEstado === 'aceptada' ? 'aceptar' : 'rechazar'} la solicitud`
+        );
       }
 
-      // Paso 2: Si se rechaza, eliminar escudo
-      if (nuevoEstado === 'rechazada') {
-        const { error: deleteError, mensaje: deleteMsg } =
-          await storageService.deleteFile(
-            'escudosequipos',
-            solicitud.escudo_url!
-          );
-        if (deleteError) {
-          throw new Error(deleteMsg || 'Error al eliminar escudo');
-        }
-        console.log('Escudo eliminado:', solicitud.escudo_url);
-      }
-
-      // Paso 3: Si se acepta, crear equipo
-      if (nuevoEstado === 'aceptada') {
-        console.log('Creando equipo...');
-        const {
-          equipo,
-          error: equipoError,
-          mensaje: equipoMsg,
-        } = await equipoService.createEquipo({
-          nombre: solicitud.nombre_equipo!,
-          escudo_url: solicitud.escudo_url!,
-          capitan_id: solicitud.iniciada_por_id,
-        });
-
-        if (equipoError || !equipo) {
-          throw new Error(equipoMsg || 'Error al crear el equipo');
-        }
-
-        console.log('Equipo creado:', equipo);
-      }
-
-      // Paso 4: Actualizar estado local
+      // Actualizar estado local
       setRequests((prevRequests) =>
         prevRequests.map((req) =>
           req.id === id
@@ -137,23 +127,15 @@ export default function SolicitudesScreen() {
                   ...req.data,
                   estado: nuevoEstado,
                   respuesta_admin,
-                  fecha_respuesta,
-                  admin_aprobador: authUser.email,
+                  fecha_respuesta: new Date().toISOString(),
+                  admin_aprobador: authUser?.email,
                 },
               }
             : req
         )
       );
-    } catch (err: any) {
-      console.error('Error en el flujo de creación de equipo:', err.message);
-
-      // Intentar revertir la solicitud si ya fue modificada
-      await solicitudService.updateSolicitud(id, {
-        estado: 'pendiente',
-        respuesta_admin: undefined,
-        fecha_respuesta: undefined,
-        admin_aprobador_id: undefined,
-      });
+    } catch (error) {
+      console.error('Error en el flujo de creación de equipo:', error);
     }
   };
   const handleUnirseEquipo = async (
@@ -161,17 +143,7 @@ export default function SolicitudesScreen() {
     estado: 'aceptada' | 'rechazada',
     respuesta_admin: string
   ) => {
-    const result = await solicitudService.updateSolicitud(id, {
-      estado,
-      respuesta_admin,
-      admin_aprobador_id: usuario?.id,
-      fecha_respuesta: new Date().toISOString(),
-    });
-
-    if (result.error) {
-      console.error('Error gestionando la solicitud:', result.mensaje);
-      return;
-    }
+    console.log('no implmentado');
   };
 
   const handleBajaEquipo = async (
@@ -179,17 +151,7 @@ export default function SolicitudesScreen() {
     estado: 'aceptada' | 'rechazada',
     respuesta_admin: string
   ) => {
-    const result = await solicitudService.updateSolicitud(id, {
-      estado,
-      respuesta_admin,
-      admin_aprobador_id: usuario?.id,
-      fecha_respuesta: new Date().toISOString(),
-    });
-
-    if (result.error) {
-      console.error('Error gestionando la solicitud:', result.mensaje);
-      return;
-    }
+    console.log('no implmentado');
   };
 
   const handleDisolverEquipo = async (
@@ -197,17 +159,7 @@ export default function SolicitudesScreen() {
     estado: 'aceptada' | 'rechazada',
     respuesta_admin: string
   ) => {
-    const result = await solicitudService.updateSolicitud(id, {
-      estado,
-      respuesta_admin,
-      admin_aprobador_id: usuario?.id,
-      fecha_respuesta: new Date().toISOString(),
-    });
-
-    if (result.error) {
-      console.error('Error gestionando la solicitud:', result.mensaje);
-      return;
-    }
+    console.log('no implmentado');
   };
 
   const cargarSolicitudes = useCallback(async () => {
@@ -219,8 +171,8 @@ export default function SolicitudesScreen() {
 
       const esAdmin = usuario.rol_id === 1 || usuario.rol_id === 2;
       const { solicitudes, error, mensaje } = esAdmin
-        ? await solicitudService.getSolicitudesAdministrador()
-        : await solicitudService.getSolicitudesUsuario(authUser.id);
+        ? await baseSolicitudService.getSolicitudesAdministrador()
+        : await baseSolicitudService.getSolicitudesUsuario(authUser.id);
 
       if (error) {
         console.error('Error al cargar solicitudes:', mensaje);
@@ -325,9 +277,42 @@ export default function SolicitudesScreen() {
     cargarSolicitudes();
   }, [cargarSolicitudes]);
 
-  if (loadingSolicitudes) {
-    return <StyledActivityIndicator message='Cargando solicitudes...' />;
+  const handleAccept = (id: string, tipo: string) => {
+    abrirModal(id, 'aceptada', tipo);
+  };
+
+  const handleReject = (id: string, tipo: string) => {
+    abrirModal(id, 'rechazada', tipo);
+  };
+
+  if (loadingSolicitudes || loadingTemporada) {
+    return <StyledActivityIndicator message='Cargando...' />;
   }
+
+  if (!temporadaActiva) {
+    return (
+      <StyledAlert variant='warning'>
+        <View style={styles.alertContent}>
+          <WarningIcon size={24} color={theme.warning} />
+          <View style={styles.alertTextContainer}>
+            <StyledText
+              size='large'
+              style={[styles.alertTitle, { color: theme.warning }]}
+            >
+              No hay una temporada activa en este momento.
+            </StyledText>
+            <StyledText
+              style={[styles.alertDescription, { color: theme.warning }]}
+            >
+              Por favor, contacta con la organización o espera a que comience
+              una nueva temporada.
+            </StyledText>
+          </View>
+        </View>
+      </StyledAlert>
+    );
+  }
+
   return (
     <>
       <StyledModal
@@ -354,85 +339,33 @@ export default function SolicitudesScreen() {
             onChangeText={setSearchQuery}
           />
         </View>
-        <TouchableOpacity
-          style={[
-            styles.createButton,
-            { backgroundColor: theme.requestCard.card.background },
-            isMobile && styles.createButtonMobile,
-          ]}
-          onPress={() => router.push('nuevaSolicitud')}
-        >
-          <View style={styles.buttonContent}>
-            <PlusIcon size={20} color={theme.textPrimary} />
-            <StyledText
-              style={[styles.buttonText, { color: theme.textPrimary }]}
+        {usuario?.rol_id === 1 ||
+          (usuario?.rol_id === 2 && (
+            <TouchableOpacity
+              style={[
+                styles.createButton,
+                { backgroundColor: theme.requestCard.card.background },
+                isMobile && styles.createButtonMobile,
+              ]}
+              onPress={() => router.push('nuevaSolicitud')}
             >
-              Crear Solicitud
-            </StyledText>
-          </View>
-        </TouchableOpacity>
+              <View style={styles.buttonContent}>
+                <PlusIcon size={20} color={theme.textPrimary} />
+                <StyledText
+                  style={[styles.buttonText, { color: theme.textPrimary }]}
+                >
+                  Crear Solicitud
+                </StyledText>
+              </View>
+            </TouchableOpacity>
+          ))}
       </View>
-      <ScrollView contentContainerStyle={styles.container}>
-        {requests.length === 0 ? (
-          <StyledAlert variant='info'>
-            No tienes ninguna solicitud asociada a tu cuenta. Para crear una
-            nueva solicitud, pulsa el botón "Crear Solicitud".
-          </StyledAlert>
-        ) : (
-          requests.map((request) => {
-            const aceptar = () =>
-              abrirModal(request.id, 'aceptada', request.data.tipo);
-            const rechazar = () =>
-              abrirModal(request.id, 'rechazada', request.data.tipo);
-
-            switch (request.data.tipo) {
-              case 'crear_equipo':
-                return (
-                  <CreateTeamSolicitudCard
-                    key={request.id}
-                    request={request.data}
-                    onAccept={aceptar}
-                    onReject={rechazar}
-                    id={request.id}
-                    currentUserEmail={authUser.email}
-                  />
-                );
-              case 'unirse_equipo':
-                return (
-                  <JoinTeamSolicitudCard
-                    key={request.id}
-                    request={request.data}
-                    onAccept={aceptar}
-                    onReject={rechazar}
-                    id={request.id}
-                  />
-                );
-              case 'baja_equipo':
-                return (
-                  <LeaveTeamSolicitudCard
-                    key={request.id}
-                    request={request.data}
-                    onAccept={aceptar}
-                    onReject={rechazar}
-                    id={request.id}
-                  />
-                );
-              case 'disolver_equipo':
-                return (
-                  <DissolveTeamSolicitudCard
-                    key={request.id}
-                    request={request.data}
-                    onAccept={aceptar}
-                    onReject={rechazar}
-                    id={request.id}
-                  />
-                );
-              default:
-                return null;
-            }
-          })
-        )}
-      </ScrollView>
+      <SolicitudesList
+        requests={requests}
+        onAccept={handleAccept}
+        onReject={handleReject}
+        currentUserEmail={authUser?.email}
+      />
     </>
   );
 }
@@ -490,5 +423,23 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  alertContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  alertTextContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  alertTitle: {
+    fontWeight: '600',
+  },
+  alertDescription: {
+    opacity: 0.9,
+  },
+  alertText: {
+    flex: 1,
   },
 });

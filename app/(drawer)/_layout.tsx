@@ -82,6 +82,18 @@ export default function Layout() {
         /> */}
         <Drawer.Screen name='ajustes' options={{ title: 'Ajustes' }} />
         <Drawer.Screen name='solicitudes' options={{ title: 'Solicitudes' }} />
+        <Drawer.Screen
+          name='panelControl'
+          options={{
+            title: 'Panel de Control',
+            drawerItemStyle: {
+              display:
+                usuario?.rol_id && [1, 2].includes(usuario.rol_id)
+                  ? 'flex'
+                  : 'none',
+            },
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );

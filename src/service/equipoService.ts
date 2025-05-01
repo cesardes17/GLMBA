@@ -1,6 +1,7 @@
 import { Equipo } from '../interfaces/Equipo';
 import { DatabaseService } from './core/databaseService';
 import { storageService } from './core/storageService';
+import { v4 as uuidv4 } from 'uuid';
 
 export type EquipoServiceResponse = {
   equipo: Equipo | null;
@@ -48,7 +49,7 @@ export class EquipoService {
       const equipoData = {
         ...payload,
         escudo_url,
-        id: crypto.randomUUID(),
+        id: uuidv4(),
       };
 
       console.log(equipoData);

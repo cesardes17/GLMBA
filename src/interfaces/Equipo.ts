@@ -4,4 +4,5 @@ export interface Equipo {
   escudo_url: string;
   capitan_id: string;
   fecha_creacion: string;
+  temporada_id: string;
 }

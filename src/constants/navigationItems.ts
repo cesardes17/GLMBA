@@ -25,6 +25,13 @@ export const navigationItems: NavigationItem[] = [
     title: 'Solicitudes',
     description: 'Gestiona tus solicitudes de unión a equipos.',
     path: '/solicitudes',
-    allowedRoles: ['JUGADOR', 'CAPITAN'], // solo jugadores y capitanes
+    allowedRoles: ['JUGADOR', 'CAPITAN', 'ORGANIZADOR', 'COORGANIZADOR'], // solo jugadores y capitanes
+  },
+  {
+    id: 'panelControl',
+    title: 'Panel de Control',
+    description: 'Gestiona la Liga Municipal de Baloncesto.',
+    path: '/panelControl',
+    allowedRoles: ['ORGANIZADOR', 'COORGANIZADOR'], // solo organizadores y coorganizadores
   },
 ];

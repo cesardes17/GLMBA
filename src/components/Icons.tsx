@@ -142,3 +142,7 @@ export const TrashIcon = ({ size = 24, color }: IconProps) => {
 export const AwardIcon = ({ size = 24, color }: IconProps) => {
   return <Feather name='award' size={size} color={color} />;
 };
+
+export const WarningIcon = ({ size = 24, color }: IconProps) => {
+  return <AntDesign name='warning' size={size} color={color} />;
+};
