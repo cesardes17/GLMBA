@@ -16,6 +16,7 @@ import { useAuth } from '@/src/contexts/AuthContext';
 import StyledAlert from '@/src/components/common/StyledAlert';
 import { useUserContext } from '@/src/contexts/UserContext';
 import StyledModal from '@/src/components/common/StyledModal';
+import StyledActivityIndicator from '@/src/components/common/StyledActivitiIndicator';
 
 export default function SolicitudesScreen() {
   const { theme } = useThemeContext();
@@ -24,7 +25,7 @@ export default function SolicitudesScreen() {
   const { usuario } = useUserContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [requests, setRequests] = useState<RequestWithId[]>([]);
-
+  const [loadingSolicitudes, setLoadingSolicitudes] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalSolicitudId, setModalSolicitudId] = useState<string | null>(null);
   const [modalTipo, setModalTipo] = useState<'aceptada' | 'rechazada' | null>(
@@ -163,6 +164,7 @@ export default function SolicitudesScreen() {
   };
 
   const cargarSolicitudes = useCallback(async () => {
+    setLoadingSolicitudes(true);
     try {
       if (!authUser?.id || !usuario) {
         console.error('No hay usuario autenticado');
@@ -170,7 +172,6 @@ export default function SolicitudesScreen() {
       }
 
       const esAdmin = usuario.rol_id === 1 || usuario.rol_id === 2;
-
       const { solicitudes, error, mensaje } = esAdmin
         ? await solicitudService.getSolicitudesAdministrador()
         : await solicitudService.getSolicitudesUsuario(authUser.id);
@@ -271,12 +272,16 @@ export default function SolicitudesScreen() {
     } catch (error) {
       console.error('Error al cargar solicitudes:', error);
     }
+    setLoadingSolicitudes(false);
   }, [authUser?.id, usuario]);
 
   useEffect(() => {
     cargarSolicitudes();
   }, [cargarSolicitudes]);
 
+  if (loadingSolicitudes) {
+    return <StyledActivityIndicator message='Cargando solicitudes...' />;
+  }
   return (
     <>
       <StyledModal

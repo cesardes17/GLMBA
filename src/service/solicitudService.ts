@@ -98,7 +98,6 @@ export class SolicitudService {
         };
       }
 
-      console.log('Datos recibidos en createSolicitud:', solicitudData);
       const { data: solicitudCreada, error } = await this.dbService.insert(
         this.tabla,
         solicitudData
@@ -191,53 +190,38 @@ export class SolicitudService {
     limit: number = 20
   ): Promise<SolicitudesServiceResponse> {
     try {
-      const select = `
-        *,
-        equipo_id (
-          id,
-          nombre,
-          escudo_url
-        ),
-        jugador_objetivo_id (
-          id,
-          nombre,
-          email
-        ),
-        capitan_objetivo_id (
-          id,
-          nombre,
-          email
-        ),
-        iniciada_por_id (
-          id,
-          nombre,
-          email
-        )
-      `;
+      const query = `
+      *,
+      equipo_id ( id, nombre, escudo_url ),
+      jugador_objetivo_id ( id, nombre, email ),
+      capitan_objetivo_id ( id, nombre, email ),
+      iniciada_por_id ( id, nombre, email ),
+      admin_aprobador_id ( id, nombre, email )
+    `;
 
-      const solicitudes = await this.dbService.getPaginatedData<Solicitud>(
+      const orFilter = `iniciada_por_id.eq.${userId},jugador_objetivo_id.eq.${userId},capitan_objetivo_id.eq.${userId}`;
+
+      const { data, error } = await this.dbService.getPaginatedData<Solicitud>(
         'solicitudes',
         {
-          filters: [
-            { field: 'iniciada_por_id', operator: 'eq', value: userId },
-          ],
+          orFilterString: orFilter,
           page,
           limit,
-          select,
+          select: query,
         }
       );
 
-      if (!solicitudes.data) {
+      if (error || !data) {
         return {
           solicitudes: [],
           error: true,
-          mensaje: solicitudes.error ?? 'Error al obtener solicitudes',
+          mensaje: 'Error al obtener solicitudes',
         };
       }
 
-      // Obtener las public URL de los escudos si es tipo "crear_equipo"
+      // Resolución de imagen escudo_url
       const solicitudesConImagen = await Promise.all(
-        solicitudes.data.map(async (solicitud) => {
+        data.map(async (solicitud) => {
           if (
             solicitud.tipo === 'crear_equipo' &&
             solicitud.escudo_url &&
@@ -277,7 +261,10 @@ export class SolicitudService {
       };
     }
   }
-  async getSolicitudesAdministrador(): Promise<SolicitudesServiceResponse> {
+  async getSolicitudesAdministrador(
+    page: number = 1,
+    limit: number = 20
+  ): Promise<SolicitudesServiceResponse> {
     try {
       const query = `
         *,
@@ -288,17 +275,26 @@ export class SolicitudService {
         admin_aprobador_id ( id, nombre, email )
       `;
 
-      const { data, error } = await this.dbService.getWithRelations<Solicitud>(
+      const solicitudes = await this.dbService.getPaginatedData<Solicitud>(
         'solicitudes',
-        query
+        {
+          page,
+          limit,
+          select: query,
+        }
       );
-      console.log('Data:', data);
-      if (error || !data) {
-        throw new Error(error || 'Error al obtener solicitudes');
+
+      if (!solicitudes.data) {
+        return {
+          solicitudes: [],
+          error: true,
+          mensaje: solicitudes.error ?? 'Error al obtener solicitudes',
+        };
       }
+
       // Obtener las public URL de los escudos si es tipo "crear_equipo"
       const solicitudesConImagen = await Promise.all(
-        data.map(async (solicitud) => {
+        solicitudes.data.map(async (solicitud) => {
           if (
             solicitud.tipo === 'crear_equipo' &&
             solicitud.escudo_url &&

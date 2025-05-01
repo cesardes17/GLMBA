@@ -21,8 +21,6 @@ export default function LoginScreen() {
     setError(null);
     try {
       const { data, error } = await login(email, password);
-      console.log('data', data);
-      console.log('error', error);
       if (error) {
         throw new Error(error);
       }

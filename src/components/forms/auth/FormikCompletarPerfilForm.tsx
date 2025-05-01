@@ -82,8 +82,6 @@ export default function FormikCompletarPerfilForm({
     }
   }, [initialValues.imagen_perfil]);
 
-  console.log('initialValues desde formulario', initialValues);
-
   const rolesOptions = ROLES_DISPONIBLES_EN_REGISTRO.map((rol) => ({
     id: rol.id.toString(),
     title: rol.nombre,

@@ -60,7 +60,6 @@ export default function FormikNuevaSolicitudForm({
   const onSubmit = async (values: typeof initialValues) => {
     setLoading(true);
     try {
-      console.log('ID del usuario:', usuario);
       let solicitudData: Omit<Solicitud, 'id' | 'fecha_creacion'> = {
         estado: 'pendiente',
         tipo: values.tipo as Solicitud['tipo'],
@@ -99,7 +98,6 @@ export default function FormikNuevaSolicitudForm({
         return router.back();
       }
 
-      console.log('Valores del formulario:', values);
       router.back();
     } catch (e) {
       setIsError((e as Error).message);

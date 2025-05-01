@@ -44,7 +44,6 @@ export const AuthService = {
       if (!data || !data.user) throw new Error('No data returned');
       const { usuario } = await usuarioService.getUser(data.user.id);
       if (!usuario) throw new Error('No user returned');
-      console.log(usuario);
       if (usuario.activo) {
         return {
           data: data.user,

@@ -31,7 +31,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }
     setLoading(true);
     try {
-      console.log('E', authUser.id);
       const { error, mensaje, usuario } = await usuarioService.getUser(
         authUser.id
       );

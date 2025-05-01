@@ -13,7 +13,6 @@ export default function PerfilScreen() {
   if (loading) {
     return <StyledActivityIndicator message='Cargando informacion...' />;
   }
-  console.log(usuario);
   return (
     <ScrollView
       style={{

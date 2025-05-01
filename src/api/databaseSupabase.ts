@@ -13,6 +13,7 @@ interface PaginatedOptions {
   filters?: Filter[];
   search?: string;
   searchFields?: string[];
+  orFilterString?: string; // NUEVO
   page: number;
   limit: number;
   select?: string;
@@ -153,6 +154,7 @@ export const DatabaseSupabase = {
       page,
       limit,
       select = '*',
+      orFilterString,
     }: PaginatedOptions
   ): Promise<T[]> {
     let query = supabase.from(table).select(select);
@@ -167,6 +169,10 @@ export const DatabaseSupabase = {
         query = query[operator](field, value);
       }
     });
+
+    if (orFilterString) {
+      query = query.or(orFilterString);
+    }
 
     if (search && searchFields.length > 0) {
       const orString = searchFields

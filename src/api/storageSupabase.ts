@@ -15,8 +15,6 @@ class StorageSupabase {
     file: File | { base64: string; contentType: string }
   ): Promise<StorageServiceResponse> {
     try {
-      console.log('uploadFile', bucket, path);
-
       if (file instanceof File) {
         const { data, error } = await supabase.storage
           .from(bucket)

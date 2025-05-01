@@ -24,11 +24,11 @@ export default function FormikRegistroForm({
   const onSubmit = async (values: typeof initialValues) => {
     try {
       setIsLoading(true);
-      console.log(values);
+
       await register(values.email, values.password);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
       router.replace('/');

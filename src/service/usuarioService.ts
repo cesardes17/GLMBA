@@ -103,8 +103,6 @@ export class UsuarioService {
     imageUri: string | null
   ): Promise<UsuarioServiceResponse> {
     try {
-      console.log('updateUser');
-
       const { data, error } = await this.dbService.updateById(
         this.tabla,
         userId,

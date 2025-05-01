@@ -22,7 +22,7 @@ export function CreateTeamSolicitudCard({
   currentUserEmail,
 }: CreateTeamSolicitudCardProps) {
   const { theme } = useThemeContext();
-  console.log('request: ', request);
+
   const {
     nombre_equipo,
     escudo_url,
@@ -51,8 +51,7 @@ export function CreateTeamSolicitudCard({
       year: 'numeric',
     }
   );
-  console.log(request.iniciada_por);
-  console.log(currentUserEmail);
+
   const isSolicitante = request.iniciada_por === currentUserEmail;
 
   return (

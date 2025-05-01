@@ -22,7 +22,7 @@ export default function EditarPerfilScreen() {
       />
     );
   }
-  console.log('initialValues desde perfilscreen', initialValues);
+
   return (
     <FormikCompletarPerfilForm
       setLoading={setLoading}
