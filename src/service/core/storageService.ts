@@ -59,6 +59,34 @@ class StorageService {
       };
     }
   }
+
+  async deleteFileByUrl(publicUrl: string): Promise<StorageServiceResponse> {
+    try {
+      return storageSupabase.deleteFileByUrl(publicUrl);
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      return {
+        data: null,
+        error: true,
+        mensaje: (error as Error).message || 'No se pudo eliminar el archivo',
+      };
+    }
+  }
+  async deleteFile(
+    bucket: string,
+    fileName: string
+  ): Promise<StorageServiceResponse> {
+    try {
+      return storageSupabase.deleteFile(bucket, fileName);
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      return {
+        data: null,
+        error: true,
+        mensaje: (error as Error).message || 'No se pudo eliminar el archivo',
+      };
+    }
+  }
 }
 
 export const storageService = new StorageService();

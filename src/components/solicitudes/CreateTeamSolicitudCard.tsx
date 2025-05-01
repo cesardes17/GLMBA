@@ -5,6 +5,7 @@ import { InfoIcon, ShieldIcon } from '../Icons';
 import { CreateTeamRequest } from '@/src/types/requests';
 import StyledAlert from '../common/StyledAlert';
 import Separator from '../common/Separator';
+import StyledText from '../common/StyledText';
 
 interface CreateTeamSolicitudCardProps {
   request: CreateTeamRequest;
@@ -157,7 +158,9 @@ export function CreateTeamSolicitudCard({
               style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}
             >
               <InfoIcon color={theme.info} size={16} />
-              Pendiente de confirmación por parte de la administración.
+              <StyledText size='small' style={{ color: theme.info }}>
+                Pendiente de confirmación por parte de la administración.
+              </StyledText>
             </View>
           </StyledAlert>
         ) : (

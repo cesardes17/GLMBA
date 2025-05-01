@@ -17,6 +17,7 @@ import StyledAlert from '@/src/components/common/StyledAlert';
 import { useUserContext } from '@/src/contexts/UserContext';
 import StyledModal from '@/src/components/common/StyledModal';
 import StyledActivityIndicator from '@/src/components/common/StyledActivitiIndicator';
+import { storageService } from '@/src/service/core/storageService';
 
 export default function SolicitudesScreen() {
   const { theme } = useThemeContext();
@@ -91,6 +92,17 @@ export default function SolicitudesScreen() {
       return;
     }
 
+    if (nuevoEstado === 'rechazada') {
+      const { error, mensaje } = await storageService.deleteFile(
+        'escudosequipos',
+        solicitud.escudo_url!
+      );
+      if (error) {
+        console.error('Error al eliminar el escudo:', mensaje);
+        return;
+      }
+      console.log('Escudo eliminado:', solicitud.escudo_url);
+    }
     setRequests((prevRequests) =>
       prevRequests.map((req) =>
         req.id === id
@@ -167,7 +179,6 @@ export default function SolicitudesScreen() {
     setLoadingSolicitudes(true);
     try {
       if (!authUser?.id || !usuario) {
-        console.error('No hay usuario autenticado');
         return;
       }
 
