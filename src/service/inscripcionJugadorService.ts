@@ -2,7 +2,7 @@ import { Inscripcion } from '../interfaces/inscripcion';
 import { DatabaseService } from './core/databaseService';
 import { v4 as uuidv4 } from 'uuid'; // si estás usando uuid
 
-export type InscripcionServiceResponse<T> = {
+export type InscripcionServiceResponse = {
   data: Inscripcion[] | null;
   error: boolean;
   mensaje: string | null;
@@ -27,7 +27,7 @@ export class InscripcionService {
 
   async crearInscripcion(
     inscripcion: Omit<Inscripcion, 'id' | 'fecha_inscripcion' | 'activo'>
-  ): Promise<InscripcionServiceResponse<Inscripcion>> {
+  ): Promise<InscripcionServiceResponse> {
     try {
       // Validación rápida
       if (
@@ -65,7 +65,7 @@ export class InscripcionService {
 
   async getInscripcionesByEquipoId(
     equipoId: string
-  ): Promise<InscripcionServiceResponse<Inscripcion[]>> {
+  ): Promise<InscripcionServiceResponse> {
     try {
       const { data, error } = await this.dbService.getByField<Inscripcion>(
         this.tabla,
@@ -94,9 +94,7 @@ export class InscripcionService {
     }
   }
 
-  async eliminarInscripcion(
-    id: string
-  ): Promise<InscripcionServiceResponse<null>> {
+  async eliminarInscripcion(id: string): Promise<InscripcionServiceResponse> {
     try {
       const { data, error } = await this.dbService.deleteById(this.tabla, id);
 
@@ -114,6 +112,25 @@ export class InscripcionService {
             ? error.message
             : 'Error al eliminar inscripción',
       };
+    }
+  }
+
+  async userHasTeam(userId: string): Promise<boolean> {
+    try {
+      const { data, error } = await this.dbService.getByField<Inscripcion>(
+        this.tabla,
+        'jugador_id',
+        userId
+      );
+      if (error || !data) {
+        throw new Error(
+          error || 'No se encontraron inscripciones para este usuario'
+        );
+      }
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
   }
 }

@@ -12,7 +12,7 @@ export default function PanelControlPage() {
     if (loading) return;
 
     if (!usuario) {
-      return router.replace('sinPermisos');
+      return router.replace('/');
     }
   }, [loading, usuario]);
 

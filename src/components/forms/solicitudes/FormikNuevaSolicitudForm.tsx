@@ -1,6 +1,6 @@
 import { Formik } from 'formik';
 import { StyleSheet, View, Image } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import StyledButton from '../../common/StyledButton';
 import StyledText from '../../common/StyledText';
@@ -14,6 +14,7 @@ import { useUserContext } from '@/src/contexts/UserContext';
 import * as Yup from 'yup';
 import { isJugador } from '@/src/interfaces/Jugador';
 import { baseSolicitudService } from '@/src/service/solicitudService';
+import { inscripcionService } from '@/src/service/inscripcionJugadorService';
 
 const TIPOS_SOLICITUD = [
   {
@@ -27,7 +28,7 @@ const TIPOS_SOLICITUD = [
     description: 'Solicita la disolución de tu equipo actual',
   },
   {
-    id: 'salir_equipo',
+    id: 'baja_equipo',
     title: 'Salir del equipo',
     description: 'Solicita darte de baja de tu equipo actual',
   },
@@ -45,6 +46,43 @@ export default function FormikNuevaSolicitudForm({
   const [isError, setIsError] = useState<string>('');
   const { theme } = useThemeContext();
   const { usuario } = useUserContext();
+  const [opciones, setOpciones] = useState<typeof TIPOS_SOLICITUD>([]);
+
+  useEffect(() => {
+    const getOpcionesDisponibles = async () => {
+      if (!usuario || !isJugador(usuario)) {
+        return [];
+      }
+
+      const tieneEquipo = await inscripcionService.userHasTeam(usuario.id);
+      const esJugador = usuario.rol_id === 5;
+      const esCapitan = usuario.rol_id === 4;
+      console.log('tieneEquipo', tieneEquipo);
+      console.log('esJugador', esJugador);
+      console.log('esCapitan', esCapitan);
+
+      if (!tieneEquipo && esJugador) {
+        return [TIPOS_SOLICITUD.find((opt) => opt.id === 'crear_equipo')!];
+      }
+
+      if (tieneEquipo && esJugador) {
+        return [TIPOS_SOLICITUD.find((opt) => opt.id === 'baja_equipo')!];
+      }
+
+      if (tieneEquipo && esCapitan) {
+        return [TIPOS_SOLICITUD.find((opt) => opt.id === 'disolver_equipo')!];
+      }
+
+      return [];
+    };
+
+    const loadOpciones = async () => {
+      const opcionesDisponibles = await getOpcionesDisponibles();
+      setOpciones(opcionesDisponibles);
+    };
+
+    loadOpciones();
+  }, [usuario]);
 
   if (!usuario || !isJugador(usuario)) {
     return null;
@@ -77,6 +115,7 @@ export default function FormikNuevaSolicitudForm({
         aprobado_capitan: undefined,
         aprobado_admin: undefined,
       };
+
       if (values.tipo === 'crear_equipo') {
         if (!selectedImage) {
           throw new Error('Debe seleccionar un escudo para el equipo');
@@ -88,15 +127,28 @@ export default function FormikNuevaSolicitudForm({
           escudo_url: selectedImage,
           motivo: values.motivo,
         };
-        const { solicitud, error, mensaje } =
-          await baseSolicitudService.crearSolicitud(solicitudData);
-        if (error || !solicitud) {
-          throw new Error(mensaje || 'Error al crear la solicitud');
+      } else if (
+        values.tipo === 'disolver_equipo' ||
+        values.tipo === 'baja_equipo'
+      ) {
+        if (!usuario.equipo_id) {
+          throw new Error('No perteneces a ningún equipo actualmente');
         }
-        setLoading(false);
-        return router.back();
+        solicitudData = {
+          ...solicitudData,
+          tipo: values.tipo,
+          equipo_id: usuario.equipo_id,
+          motivo: values.motivo,
+        };
       }
 
+      const { solicitud, error, mensaje } =
+        await baseSolicitudService.crearSolicitud(solicitudData);
+      if (error || !solicitud) {
+        throw new Error(mensaje || 'Error al crear la solicitud');
+      }
+
+      setLoading(false);
       router.back();
     } catch (e) {
       setIsError((e as Error).message);
@@ -127,14 +179,19 @@ export default function FormikNuevaSolicitudForm({
     );
   };
 
-  const renderFormContent = ({ setFieldValue, values }: any) => {
+  interface FormContentProps {
+    setFieldValue: (field: string, value: any) => void;
+    values: typeof initialValues;
+  }
+
+  const renderFormContent = ({ setFieldValue, values }: FormContentProps) => {
     switch (step) {
       case 1:
         return (
           <View style={styles.formContent}>
             <StyledText style={styles.stepTitle}>Tipo de solicitud</StyledText>
             <SelectableCardGroup
-              options={TIPOS_SOLICITUD}
+              options={opciones}
               selectedId={values.tipo}
               onSelect={(id) => setFieldValue('tipo', id)}
             />

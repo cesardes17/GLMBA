@@ -48,7 +48,7 @@ export class UsuarioService {
       }
 
       // Si el usuario es un jugador (rol_id === 5), obtener la información adicional
-      if (data.rol_id === 5) {
+      if (data.rol_id === 5 || data.rol_id === 4) {
         const {
           jugador,
           error: jugadorError,

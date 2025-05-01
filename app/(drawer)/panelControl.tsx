@@ -7,11 +7,12 @@ import { useEffect } from 'react';
 
 export default function PanelControlPage() {
   const { usuario, loading } = useUserContext();
+
   useEffect(() => {
     if (loading) return;
 
     if (!usuario) {
-      return router.replace('sinPermisos');
+      return router.replace('/sinPermisos');
     }
   }, [loading, usuario]);
 
