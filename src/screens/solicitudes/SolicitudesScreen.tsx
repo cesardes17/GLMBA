@@ -18,6 +18,7 @@ import { useUserContext } from '@/src/contexts/UserContext';
 import StyledModal from '@/src/components/common/StyledModal';
 import StyledActivityIndicator from '@/src/components/common/StyledActivitiIndicator';
 import { storageService } from '@/src/service/core/storageService';
+import { equipoService } from '@/src/service/equipoService';
 
 export default function SolicitudesScreen() {
   const { theme } = useThemeContext();
@@ -79,48 +80,82 @@ export default function SolicitudesScreen() {
   ) => {
     const fecha_respuesta = new Date().toISOString();
 
-    const { solicitud, error, mensaje } =
-      await solicitudService.updateSolicitud(id, {
-        estado: nuevoEstado,
-        respuesta_admin,
-        fecha_respuesta,
-        admin_aprobador_id: userID,
-      });
+    try {
+      // Paso 1: Actualizar solicitud
+      const { solicitud, error, mensaje } =
+        await solicitudService.updateSolicitud(id, {
+          estado: nuevoEstado,
+          respuesta_admin,
+          fecha_respuesta,
+          admin_aprobador_id: userID,
+        });
 
-    if (error || !solicitud) {
-      console.error('Error al actualizar solicitud:', mensaje);
-      return;
-    }
-
-    if (nuevoEstado === 'rechazada') {
-      const { error, mensaje } = await storageService.deleteFile(
-        'escudosequipos',
-        solicitud.escudo_url!
-      );
-      if (error) {
-        console.error('Error al eliminar el escudo:', mensaje);
-        return;
+      if (error || !solicitud) {
+        throw new Error(mensaje || 'Error al actualizar la solicitud');
       }
-      console.log('Escudo eliminado:', solicitud.escudo_url);
-    }
-    setRequests((prevRequests) =>
-      prevRequests.map((req) =>
-        req.id === id
-          ? {
-              ...req,
-              data: {
-                ...req.data,
-                estado: nuevoEstado,
-                respuesta_admin,
-                fecha_respuesta,
-                admin_aprobador: authUser.email,
-              },
-            }
-          : req
-      )
-    );
-  };
 
+      // Paso 2: Si se rechaza, eliminar escudo
+      if (nuevoEstado === 'rechazada') {
+        const { error: deleteError, mensaje: deleteMsg } =
+          await storageService.deleteFile(
+            'escudosequipos',
+            solicitud.escudo_url!
+          );
+        if (deleteError) {
+          throw new Error(deleteMsg || 'Error al eliminar escudo');
+        }
+        console.log('Escudo eliminado:', solicitud.escudo_url);
+      }
+
+      // Paso 3: Si se acepta, crear equipo
+      if (nuevoEstado === 'aceptada') {
+        console.log('Creando equipo...');
+        const {
+          equipo,
+          error: equipoError,
+          mensaje: equipoMsg,
+        } = await equipoService.createEquipo({
+          nombre: solicitud.nombre_equipo!,
+          escudo_url: solicitud.escudo_url!,
+          capitan_id: solicitud.iniciada_por_id,
+        });
+
+        if (equipoError || !equipo) {
+          throw new Error(equipoMsg || 'Error al crear el equipo');
+        }
+
+        console.log('Equipo creado:', equipo);
+      }
+
+      // Paso 4: Actualizar estado local
+      setRequests((prevRequests) =>
+        prevRequests.map((req) =>
+          req.id === id
+            ? {
+                ...req,
+                data: {
+                  ...req.data,
+                  estado: nuevoEstado,
+                  respuesta_admin,
+                  fecha_respuesta,
+                  admin_aprobador: authUser.email,
+                },
+              }
+            : req
+        )
+      );
+    } catch (err: any) {
+      console.error('Error en el flujo de creación de equipo:', err.message);
+
+      // Intentar revertir la solicitud si ya fue modificada
+      await solicitudService.updateSolicitud(id, {
+        estado: 'pendiente',
+        respuesta_admin: undefined,
+        fecha_respuesta: undefined,
+        admin_aprobador_id: undefined,
+      });
+    }
+  };
   const handleUnirseEquipo = async (
     id: string,
     estado: 'aceptada' | 'rechazada',

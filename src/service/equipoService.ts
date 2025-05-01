@@ -1,13 +1,6 @@
+import { Equipo } from '../interfaces/Equipo';
 import { DatabaseService } from './core/databaseService';
 import { storageService } from './core/storageService';
-
-export type Equipo = {
-  id: string;
-  nombre: string;
-  escudo_url: string;
-  creado_por: string; // ID o email del usuario
-  fecha_creacion: string;
-};
 
 export type EquipoServiceResponse = {
   equipo: Equipo | null;
@@ -43,19 +36,22 @@ export class EquipoService {
       let escudo_url = payload.escudo_url;
 
       if (escudo_url && !escudo_url.startsWith('http')) {
-        const { data, error, mensaje } = await storageService.uploadImage(
+        const { data, error, mensaje } = await storageService.getPublicUrl(
           this.bucket,
           escudo_url
         );
         if (error || !data) throw new Error(mensaje ?? 'Error al subir escudo');
-        escudo_url = data.path;
+        console.log(data);
+        escudo_url = data.publicUrl;
       }
 
       const equipoData = {
         ...payload,
         escudo_url,
+        id: crypto.randomUUID(),
       };
 
+      console.log(equipoData);
       const { data: created, error } = await this.dbService.insert<
         typeof equipoData,
         Equipo

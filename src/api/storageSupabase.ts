@@ -1,7 +1,6 @@
 // src/api/StorageSupabase.ts
 import { decode } from 'base64-arraybuffer';
 import { supabase } from './supabase/supabaseClient';
-import { parse } from 'dotenv';
 
 interface StorageServiceResponse {
   data: any;
