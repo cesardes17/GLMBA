@@ -34,4 +34,11 @@ export const navigationItems: NavigationItem[] = [
     path: '/panelControl',
     allowedRoles: ['ORGANIZADOR', 'COORGANIZADOR'], // solo organizadores y coorganizadores
   },
+  {
+    id: 'bolsaJugadores',
+    title: 'Bolsa de Jugadores',
+    description: 'Ficha a jugadores que están listos para jugar.',
+    path: '/bolsaJugadores',
+    allowedRoles: ['ORGANIZADOR', 'COORGANIZADOR', 'CAPITAN'], // solo organizadores y coorganizadores
+  },
 ];

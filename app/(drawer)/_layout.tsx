@@ -39,7 +39,7 @@ export default function Layout() {
         }}
       >
         <Drawer.Screen name='index' options={{ title: 'Inicio' }} />
-        <Drawer.Screen name='partidos' options={{ title: 'Partidos' }} />
+        <Drawer.Screen name='calendario' options={{ title: 'Calendario' }} />
         <Drawer.Screen
           name='clasificacion'
           options={{ title: 'Clasificación' }}
@@ -54,33 +54,6 @@ export default function Layout() {
                 : 'Perfil',
           }}
         />
-        {/*<Drawer.Screen
-          name='administrarUsuarios'
-          options={{
-            title: 'Adminstrar Usuarios',
-            drawerItemStyle: {
-              display:
-                usuario?.rol_nombre &&
-                ['Organizador', 'Coorganizador'].includes(usuario.rol_nombre)
-                  ? 'flex'
-                  : 'none',
-            },
-          }}
-        />
-        <Drawer.Screen
-          name='administrarJugadores'
-          options={{
-            title: 'Adminstrar Jugadores',
-            drawerItemStyle: {
-              display:
-                usuario?.rol_nombre &&
-                ['Organizador', 'Coorganizador'].includes(usuario.rol_nombre)
-                  ? 'flex'
-                  : 'none',
-            },
-          }}
-        /> */}
-        <Drawer.Screen name='ajustes' options={{ title: 'Ajustes' }} />
         <Drawer.Screen name='solicitudes' options={{ title: 'Solicitudes' }} />
         <Drawer.Screen
           name='panelControl'
@@ -94,6 +67,19 @@ export default function Layout() {
             },
           }}
         />
+        <Drawer.Screen
+          name='bolsaJugadores'
+          options={{
+            title: 'Bolsa de Jugadores',
+            drawerItemStyle: {
+              display:
+                usuario?.rol_id && [1, 2, 4].includes(usuario.rol_id)
+                  ? 'flex'
+                  : 'none',
+            },
+          }}
+        />
+        <Drawer.Screen name='ajustes' options={{ title: 'Ajustes' }} />
       </Drawer>
     </GestureHandlerRootView>
   );
