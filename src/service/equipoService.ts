@@ -31,19 +31,19 @@ export class EquipoService {
   }
 
   async createEquipo(
-    payload: Omit<Equipo, 'id' | 'fecha_creacion'>
+    payload: Omit<Equipo, 'id' | 'creado_en'>
   ): Promise<EquipoServiceResponse> {
     try {
       let escudo_url = payload.escudo_url;
 
+      // Si no es una URL completa, subimos la imagen y guardamos solo el path
       if (escudo_url && !escudo_url.startsWith('http')) {
-        const { data, error, mensaje } = await storageService.getPublicUrl(
+        const { data, error, mensaje } = await storageService.uploadImage(
           this.bucket,
           escudo_url
         );
         if (error || !data) throw new Error(mensaje ?? 'Error al subir escudo');
-        console.log(data);
-        escudo_url = data.publicUrl;
+        escudo_url = data.path; // solo el path
       }
 
       const equipoData = {
@@ -52,7 +52,6 @@ export class EquipoService {
         id: uuidv4(),
       };
 
-      console.log(equipoData);
       const { data: created, error } = await this.dbService.insert<
         typeof equipoData,
         Equipo
@@ -81,6 +80,13 @@ export class EquipoService {
         id
       );
       if (error || !data) throw new Error(error || 'Equipo no encontrado');
+
+      const { data: urlData } = await storageService.getPublicUrl(
+        this.bucket,
+        data.escudo_url
+      );
+      data.escudo_url = urlData?.publicUrl || '';
+
       return { equipo: data, error: false, mensaje: null };
     } catch (error) {
       return {
@@ -92,11 +98,32 @@ export class EquipoService {
     }
   }
 
-  async getEquipos(): Promise<EquiposServiceResponse> {
+  async getEquiposFromTemporada(
+    temporadaId: string
+  ): Promise<EquiposServiceResponse> {
     try {
-      const { data, error } = await this.dbService.getAll<Equipo>(this.tabla);
+      const { data, error } = await this.dbService.getByField<Equipo>(
+        this.tabla,
+        'temporada_id',
+        temporadaId
+      );
+
       if (error || !data) throw new Error(error || 'Error obteniendo equipos');
-      return { equipos: data, error: false, mensaje: null };
+
+      const equiposConUrl = await Promise.all(
+        data.map(async (equipo) => {
+          const { data: urlData } = await storageService.getPublicUrl(
+            this.bucket,
+            equipo.escudo_url
+          );
+          return {
+            ...equipo,
+            escudo_url: urlData?.publicUrl || '',
+          };
+        })
+      );
+
+      return { equipos: equiposConUrl, error: false, mensaje: null };
     } catch (error) {
       return {
         equipos: [],
@@ -145,13 +172,13 @@ export class EquipoService {
       };
     }
   }
+
   async getNumeroJugadoresPorEquipo(equipoId: string): Promise<number | null> {
     const { data, error } = await this.dbService.callRpc<number>(
       'count_inscripciones_por_equipo',
       { equipo: equipoId }
     );
 
-    console.log(data);
     if (error || data === null) {
       console.error('Error contando jugadores del equipo:', error);
       return null;

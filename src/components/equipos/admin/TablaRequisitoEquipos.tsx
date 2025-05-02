@@ -7,6 +7,7 @@ import StyledAlert from '@/src/components/common/StyledAlert';
 import StyledActivityIndicator from '@/src/components/common/StyledActivitiIndicator';
 import { equipoService } from '@/src/service/equipoService';
 import { Equipo } from '@/src/interfaces/Equipo';
+import { temporadaService } from '@/src/service/temporadaService';
 
 interface EquipoConRequisito extends Equipo {
   cumpleRequisito: boolean;
@@ -25,11 +26,17 @@ export default function TablaRequisitoEquipos() {
 
   const cargarEquipos = async () => {
     try {
+      const { error: errorT, temporada } =
+        await temporadaService.getTemporadaActiva();
+
+      if (errorT || !temporada) {
+        throw new Error('Error al cargar la temporada');
+      }
       const {
         equipos: equiposData,
         error,
         mensaje,
-      } = await equipoService.getEquipos();
+      } = await equipoService.getEquiposFromTemporada(temporada.id);
 
       if (error) {
         throw new Error(mensaje || 'Error al cargar los equipos');

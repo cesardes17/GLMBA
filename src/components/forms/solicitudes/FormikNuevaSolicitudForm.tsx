@@ -15,7 +15,7 @@ import * as Yup from 'yup';
 import { isJugador } from '@/src/interfaces/Jugador';
 import { baseSolicitudService } from '@/src/service/solicitudService';
 import { inscripcionService } from '@/src/service/inscripcionJugadorService';
-
+import { v4 as uuidv4 } from 'uuid'; // si estás usando uuid
 const TIPOS_SOLICITUD = [
   {
     id: 'crear_equipo',
@@ -54,7 +54,9 @@ export default function FormikNuevaSolicitudForm({
         return [];
       }
 
-      const tieneEquipo = await inscripcionService.userHasTeam(usuario.id);
+      const tieneEquipo = await inscripcionService.userHasTeam(
+        usuario.usuario_id
+      );
       const esJugador = usuario.rol_id === 5;
       const esCapitan = usuario.rol_id === 4;
       console.log('tieneEquipo', tieneEquipo);
@@ -98,7 +100,8 @@ export default function FormikNuevaSolicitudForm({
   const onSubmit = async (values: typeof initialValues) => {
     setLoading(true);
     try {
-      let solicitudData: Omit<Solicitud, 'id' | 'fecha_creacion'> = {
+      let solicitudData: Omit<Solicitud, 'fecha_creacion'> = {
+        id: uuidv4(),
         estado: 'pendiente',
         tipo: values.tipo as Solicitud['tipo'],
         equipo_id: undefined,
@@ -141,7 +144,6 @@ export default function FormikNuevaSolicitudForm({
           motivo: values.motivo,
         };
       }
-
       const { solicitud, error, mensaje } =
         await baseSolicitudService.crearSolicitud(solicitudData);
       if (error || !solicitud) {

@@ -1,5 +1,5 @@
 export interface Solicitud {
-  id: number;
+  id: string; // UUID
   estado: 'pendiente' | 'aceptada' | 'rechazada';
   tipo:
     | 'crear_equipo'

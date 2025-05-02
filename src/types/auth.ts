@@ -9,5 +9,5 @@ export type CompletarPerfilJugador = {
   posicion_preferida: string;
   dorsal_preferido: number;
   descripcion: string;
-  foto_name: string;
+  foto_url: string;
 };

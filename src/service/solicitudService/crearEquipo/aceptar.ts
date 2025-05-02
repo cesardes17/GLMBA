@@ -5,6 +5,7 @@ import { temporadaService } from '../../temporadaService';
 import { inscripcionService } from '../../inscripcionJugadorService';
 import { usuarioService } from '../../usuarioService';
 import { jugadorService } from '../../jugadorService';
+import { isJugador } from '@/src/interfaces/Jugador';
 
 export async function aceptarSolicitudCrearEquipo(
   solicitudId: string,
@@ -83,14 +84,15 @@ export async function aceptarSolicitudCrearEquipo(
 
     usuarioModificado = {
       modificado: true,
-      id: usuario.id,
+      id: data.iniciada_por_id, // Use the original iniciada_por_id instead
     };
+
     //obtenemos la info del jugador
     const {
       error: eJugador,
       mensaje: mJugador,
       jugador,
-    } = await jugadorService.getJugadorByUserId(usuario.id);
+    } = await jugadorService.getJugadorByUserId(data.iniciada_por_id); // Use the same ID here
     // Paso 4: Crear la inscripcion del capitan en inscripcion_jugador
 
     if (eJugador || !jugador) {
@@ -103,7 +105,7 @@ export async function aceptarSolicitudCrearEquipo(
       mensaje: mInscripcion,
     } = await inscripcionService.crearInscripcion({
       equipo_id: equipo.id,
-      jugador_id: jugador.id,
+      jugador_id: jugador.usuario_id,
       numero_camiseta: jugador.dorsal_preferido,
     });
 

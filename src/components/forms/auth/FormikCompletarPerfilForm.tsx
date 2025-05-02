@@ -106,7 +106,7 @@ export default function FormikCompletarPerfilForm({
           altura_cm: Number(values.altura_cm),
           descripcion: values.descripcion,
           dorsal_preferido: Number(values.dorsal_preferido),
-          foto_name: selectedImage ? selectedImage : values.imagen_perfil,
+          foto_url: selectedImage ? selectedImage : values.imagen_perfil,
           peso_kg: Number(values.peso_kg),
           posicion_preferida: values.posicion_preferida,
           usuario_id: authUser.id,

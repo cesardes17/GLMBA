@@ -22,7 +22,7 @@ export default function JugadorCard({ jugador }: PlayerCardProps) {
   return isDesktop ? (
     <View style={styles.cardWeb}>
       <Image
-        source={{ uri: jugador.foto_name }}
+        source={{ uri: jugador.foto_url }}
         style={styles.imageWeb}
         resizeMode='cover'
       />
@@ -50,7 +50,7 @@ export default function JugadorCard({ jugador }: PlayerCardProps) {
   ) : (
     <View style={styles.cardMobile}>
       <Image
-        source={{ uri: jugador.foto_name }}
+        source={{ uri: jugador.foto_url }}
         style={styles.imageMobile}
         resizeMode='cover'
       />

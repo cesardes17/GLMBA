@@ -3,6 +3,6 @@ export interface Equipo {
   nombre: string;
   escudo_url: string;
   capitan_id: string;
-  fecha_creacion: string;
+  creado_en: string;
   temporada_id: string;
 }

@@ -3,7 +3,7 @@ import StyledTextInput from '@/src/components/common/StyledTextInput';
 import { PlusIcon, WarningIcon } from '@/src/components/Icons';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { useResponsiveLayout } from '@/src/hooks/useResponsiveLayout';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RequestWithId } from '@/src/types/requests';
@@ -278,9 +278,12 @@ export default function SolicitudesScreen() {
     setLoadingSolicitudes(false);
   }, [authUser?.id, usuario]);
 
-  useEffect(() => {
-    cargarSolicitudes();
-  }, [cargarSolicitudes]);
+  useFocusEffect(
+    useCallback(() => {
+      // Esta función se ejecuta cada vez que vuelves a esta pantalla
+      cargarSolicitudes();
+    }, [cargarSolicitudes])
+  );
 
   const handleAccept = (id: string, tipo: string) => {
     abrirModal(id, 'aceptada', tipo);

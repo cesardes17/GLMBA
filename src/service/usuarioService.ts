@@ -154,6 +154,7 @@ export class UsuarioService {
   ): Promise<UsuarioServiceResponse> {
     try {
       // Primero crear el usuario
+      console.log('userData', userData);
       const { data: usuarioCreado, error: errorUsuario } =
         await this.dbService.insert(this.tabla, userData);
 

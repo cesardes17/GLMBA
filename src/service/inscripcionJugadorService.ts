@@ -115,19 +115,17 @@ export class InscripcionService {
     }
   }
 
-  async userHasTeam(userId: string): Promise<boolean> {
+  async userHasTeam(usuarioId: string): Promise<boolean> {
     try {
-      const { data, error } = await this.dbService.getByField<Inscripcion>(
-        this.tabla,
-        'jugador_id',
-        userId
-      );
-      if (error || !data) {
-        throw new Error(
-          error || 'No se encontraron inscripciones para este usuario'
-        );
+      const { data, error } = await DatabaseService.callRpc<
+        boolean,
+        { jugador_id_param: string }
+      >('tiene_equipo_temporada_actual', { jugador_id_param: usuarioId });
+      if (error) {
+        console.error(error);
+        return false;
       }
-      return true;
+      return data ?? false;
     } catch (error) {
       console.error(error);
       return false;

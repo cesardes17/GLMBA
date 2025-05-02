@@ -20,7 +20,7 @@ export function getInitialValuesFromUser(usuario: any) {
       peso_kg: jugador.peso_kg.toString(),
       descripcion: jugador.descripcion,
       dorsal_preferido: jugador.dorsal_preferido.toString(),
-      imagen_perfil: jugador.foto_name,
+      imagen_perfil: jugador.foto_url,
     };
   }
 

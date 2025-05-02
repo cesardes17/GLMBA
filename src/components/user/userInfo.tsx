@@ -1,11 +1,11 @@
 import { View, StyleSheet } from 'react-native';
 
 import StyledText from '../common/StyledText';
-import EspectadorCard from './EspectadorCard';
 import JugadorCard from './JugadorCard';
 import { Usuario } from '@/src/interfaces/Usuario';
 import { Jugador } from '@/src/interfaces/Jugador';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
+import UsuarioCard from './UsuarioCard';
 
 interface PerfilCardProps {
   usuario: Usuario | Jugador | null;
@@ -30,7 +30,7 @@ export default function PerfilCard({ usuario }: PerfilCardProps) {
       'posicion_preferida' in user &&
       'altura_cm' in user &&
       'peso_kg' in user &&
-      'foto_name' in user
+      'foto_url' in user
     );
   }
 
@@ -47,7 +47,7 @@ export default function PerfilCard({ usuario }: PerfilCardProps) {
       {isJugador(usuario) ? (
         <JugadorCard jugador={usuario} />
       ) : (
-        <EspectadorCard usuario={usuario} />
+        <UsuarioCard usuario={usuario} />
       )}
     </View>
   );

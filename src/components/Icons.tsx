@@ -114,6 +114,7 @@ export const ArrowBackIosIcon = ({ size = 24, color }: IconProps) => {
 export const ArrowBackIcon = ({ size = 24, color }: IconProps) => {
   return <Ionicons name='arrow-back' size={size} color={color} />;
 };
+
 export const RolIcon = ({ size = 24, color }: IconProps) => {
   return (
     <MaterialCommunityIcons name='badge-account' size={size} color={color} />
@@ -123,6 +124,7 @@ export const RolIcon = ({ size = 24, color }: IconProps) => {
 export const DownIcon = ({ size = 24, color }: IconProps) => {
   return <Entypo name='chevron-down' size={size} color={color} />;
 };
+
 export const UpIcon = ({ size = 24, color }: IconProps) => {
   return <Entypo name='chevron-up' size={size} color={color} />;
 };
@@ -149,4 +151,12 @@ export const AwardIcon = ({ size = 24, color }: IconProps) => {
 
 export const WarningIcon = ({ size = 24, color }: IconProps) => {
   return <AntDesign name='warning' size={size} color={color} />;
+};
+
+export const PaperAirplaneIcon = ({ size = 24, color }: IconProps) => {
+  return <FontAwesome5 name='paper-plane' size={size} color={color} />;
+};
+
+export const EmailIcon = ({ size = 24, color }: IconProps) => {
+  return <Feather name='at-sign' size={size} color={color} />;
 };

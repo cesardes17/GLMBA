@@ -20,9 +20,9 @@ export default function RegistroScreen() {
       </StyledText>
       <StyledButton
         variant='outline'
-        title='Registrarse'
+        title='Inicia Sesión'
         onPress={() => {
-          router.replace('/registro');
+          router.replace('/login');
         }}
       />
     </View>

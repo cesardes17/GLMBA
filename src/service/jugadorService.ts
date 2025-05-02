@@ -13,14 +13,12 @@ export class JugadorService {
   private static instance: JugadorService;
   private dbService: typeof DatabaseService;
   private tabla: string;
-  private columnID: string;
   private storageService: typeof storageService;
   private bucket: string;
 
   private constructor() {
     this.dbService = DatabaseService;
     this.tabla = 'jugadores';
-    this.columnID = 'id';
     this.storageService = storageService;
     this.bucket = 'fotojugadores';
   }
@@ -49,7 +47,7 @@ export class JugadorService {
       // Actualizar el nombre del archivo en los datos del jugador
       const jugadorDataConFoto = {
         ...jugadorData,
-        foto_name: dataStorage.path,
+        foto_url: dataStorage.path,
       };
 
       const { data, error } = await this.dbService.insert(
@@ -100,7 +98,7 @@ export class JugadorService {
 
       // Obtener la URL pública de la imagen
       const { data: urlData, error: urlError } =
-        await this.storageService.getPublicUrl(this.bucket, data[0].foto_name);
+        await this.storageService.getPublicUrl(this.bucket, data[0].foto_url);
 
       if (urlError || !urlData) {
         console.error(
@@ -110,7 +108,7 @@ export class JugadorService {
         // Continuamos aunque no se pueda obtener la URL
       } else {
         // Asignamos la URL pública al mismo campo que contenía el nombre
-        data[0].foto_name = urlData.publicUrl;
+        data[0].foto_url = urlData.publicUrl;
       }
 
       return {
@@ -128,6 +126,19 @@ export class JugadorService {
             : 'Error al obtener el jugador',
       };
     }
+  }
+  async tieneEquipoEnTemporadaActual(jugadorId: number): Promise<boolean> {
+    const { data, error } = await DatabaseService.callRpc<
+      boolean,
+      { jugador_id_param: number }
+    >('tiene_equipo_temporada_actual', { jugador_id_param: jugadorId });
+
+    if (error) {
+      console.error('Error al comprobar si el jugador tiene equipo:', error);
+      return false;
+    }
+
+    return data ?? false;
   }
 }
 
