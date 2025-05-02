@@ -185,6 +185,51 @@ export class EquipoService {
     }
     return data;
   }
+  async getEquipoDeTemporadaActualByCapitan(
+    capitanId: string
+  ): Promise<EquipoServiceResponse> {
+    try {
+      // Paso 1: Obtener la temporada activa
+      const { data: temporada, error: errorTemporada } =
+        await this.dbService.getByField<any>('temporadas', 'estado', 'activa');
+
+      if (errorTemporada || !temporada || temporada.length === 0) {
+        throw new Error('No se encontró una temporada activa');
+      }
+
+      const temporadaId = temporada[0].id;
+
+      // Paso 2: Buscar el equipo del capitán en esa temporada
+      const { data: equipo, error: errorEquipo } =
+        await this.dbService.getByFields<Equipo>('equipos', [
+          { key: 'capitan_id', operator: 'eq', value: capitanId },
+          { key: 'temporada_id', operator: 'eq', value: temporadaId },
+        ]);
+
+      if (errorEquipo || !equipo || equipo.length === 0) {
+        return {
+          equipo: null,
+          error: true,
+          mensaje: 'No se encontró equipo del capitán en la temporada actual',
+        };
+      }
+
+      return {
+        equipo: equipo[0],
+        error: false,
+        mensaje: null,
+      };
+    } catch (error) {
+      return {
+        equipo: null,
+        error: true,
+        mensaje:
+          error instanceof Error
+            ? error.message
+            : 'Error al obtener equipo del capitán',
+      };
+    }
+  }
 }
 
 export const equipoService = EquipoService.getInstance();

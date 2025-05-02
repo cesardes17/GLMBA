@@ -8,6 +8,8 @@ import { bolsaJugadoresService } from '../service/bolsaJugadoresService';
 import { useUserContext } from '../contexts/UserContext';
 import { isJugador } from '../interfaces/Jugador';
 import { VistaBolsaJugador } from '../interfaces/vistas/VistaBolsaJugador';
+import { baseSolicitudService } from '../service/solicitudService/core/baseSolicitudService';
+import { v4 as uuidv4 } from 'uuid'; // si estás usando uuid
 
 export default function BolsaJugadoresScreen() {
   const { theme } = useThemeContext();
@@ -16,9 +18,39 @@ export default function BolsaJugadoresScreen() {
   const { usuario } = useUserContext();
   const [userId, setUserId] = useState<string>('');
 
-  const handleSendRequest = (jugador_id: string) => {
-    // Aquí iría la lógica para enviar una solicitud al jugador
-    console.log(`Solicitud enviada a jugador ID: ${jugador_id}`);
+  const handleSendRequest = async (jugador_id: string) => {
+    try {
+      const solicitudData = {
+        id: uuidv4(),
+        tipo: 'unirse_equipo' as const,
+        estado: 'pendiente' as const,
+        jugador_objetivo_id: jugador_id,
+        iniciada_por_id: userId,
+      };
+
+      const { error, mensaje } =
+        await baseSolicitudService.crearSolicitud(solicitudData);
+
+      if (error) {
+        console.error(mensaje || 'Error al crear la solicitud');
+        return;
+      }
+      // Actualiza el estado de la solicitud en el jugador correspondiente
+      const updatedPlayers = players.map((player) => {
+        if (player.jugador_id === jugador_id) {
+          return {
+            ...player,
+            solicitudPendiente: true,
+          };
+        }
+        return player;
+      });
+      setPlayers(updatedPlayers);
+
+      console.log('Solicitud creada exitosamente');
+    } catch (error) {
+      console.error('Error al enviar la solicitud:', error);
+    }
   };
 
   useEffect(() => {

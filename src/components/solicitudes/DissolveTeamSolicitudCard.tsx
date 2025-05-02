@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { TrashIcon, UsersIcon, AwardIcon, CalendarIcon } from '../Icons';
-import { DissolveTeamRequest } from '@/src/types/requests';
+import { DissolveTeamRequestData } from '@/src/types/requests';
 
 interface DissolveTeamRequestProps {
-  request: DissolveTeamRequest;
+  request: DissolveTeamRequestData;
   onAccept: (id: string, respuesta_admin: string) => void;
   onReject: (id: string, respuesta_admin: string) => void;
   id: string;

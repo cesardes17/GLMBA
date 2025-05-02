@@ -9,10 +9,11 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RequestWithId } from '@/src/types/requests';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useUserContext } from '@/src/contexts/UserContext';
-import StyledModal from '@/src/components/common/StyledModal';
 import StyledActivityIndicator from '@/src/components/common/StyledActivitiIndicator';
 import { SolicitudesList } from '@/src/components/solicitudes/SolicitudesList';
 import StyledAlert from '@/src/components/common/StyledAlert';
+import ConfirmModal from '@/src/components/common/ConfirmModal';
+import InputModal from '@/src/components/common/InputModal';
 import { temporadaService } from '@/src/service/temporadaService';
 import {
   aceptarSolicitudCrearEquipo,
@@ -31,7 +32,6 @@ export default function SolicitudesScreen() {
   const { isMobile } = useResponsiveLayout();
   const { authUser } = useAuth();
   const { usuario } = useUserContext();
-
   const [searchQuery, setSearchQuery] = useState('');
   const [requests, setRequests] = useState<RequestWithId[]>([]);
   const [loadingSolicitudes, setLoadingSolicitudes] = useState(true);
@@ -45,13 +45,14 @@ export default function SolicitudesScreen() {
   const [callbackTipo, setCallbackTipo] = useState<string>('');
   const [temporadaActiva, setTemporadaActiva] = useState<boolean>(false);
   const [loadingTemporada, setLoadingTemporada] = useState<boolean>(true);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+
+  const esAdmin = usuario?.rol_id === 1 || usuario?.rol_id === 2;
 
   const verificarTemporadaActiva = useCallback(async () => {
     try {
       const { temporada, error } = await temporadaService.getTemporadaActiva();
-      if (error) {
-        throw new Error('Error al verificar la temporada activa');
-      }
+      if (error) throw new Error('Error al verificar la temporada activa');
       setTemporadaActiva(!!temporada);
     } catch (error) {
       console.error('Error al verificar temporada:', error);
@@ -73,7 +74,11 @@ export default function SolicitudesScreen() {
     setModalTipo(estado);
     setCallbackTipo(tipo);
     setMotivoRechazo('');
-    setModalVisible(true);
+    if (esAdmin) {
+      setModalVisible(true);
+    } else {
+      setIsConfirmModalVisible(true);
+    }
   };
 
   const confirmarModal = async () => {
@@ -84,203 +89,73 @@ export default function SolicitudesScreen() {
     const estado = modalTipo;
     const mensaje = motivoRechazo;
 
-    switch (callbackTipo) {
-      case 'crear_equipo':
-        await handleCrearEquipo(id, estado, mensaje, authUser.id);
-        break;
-      case 'unirse_equipo':
-        handleUnirseEquipo(id, estado, mensaje);
-        break;
-      case 'baja_equipo':
-        handleBajaEquipo(id, estado, mensaje);
-        break;
-      case 'disolver_equipo':
-        handleDisolverEquipo(id, estado, mensaje);
-        break;
+    try {
+      switch (callbackTipo) {
+        case 'crear_equipo':
+          const {
+            solicitud,
+            error,
+            mensaje: msg,
+          } = estado === 'aceptada'
+            ? await aceptarSolicitudCrearEquipo(id, authUser.id, mensaje)
+            : await rechazarSolicitudCrearEquipo(id, authUser.id, mensaje);
+
+          if (error || !solicitud) throw new Error(msg || 'Error');
+
+          setRequests((prev) =>
+            prev.map((req) =>
+              req.id === id
+                ? {
+                    ...req,
+                    data: {
+                      ...req.data,
+                      estado,
+                      respuesta_admin: mensaje,
+                      fecha_respuesta: new Date().toISOString(),
+                      admin_aprobador: authUser?.email,
+                    },
+                  }
+                : req
+            )
+          );
+          break;
+
+        default:
+          console.log('No implementado aún');
+          break;
+      }
+    } catch (error) {
+      console.error(error);
     }
-    setactualizandoSolicitud(false);
 
     setModalVisible(false);
-  };
-
-  const handleCrearEquipo = async (
-    id: string,
-    nuevoEstado: 'aceptada' | 'rechazada',
-    respuesta_admin: string,
-    userID: string
-  ) => {
-    try {
-      const { solicitud, error, mensaje } =
-        nuevoEstado === 'aceptada'
-          ? await aceptarSolicitudCrearEquipo(id, userID, respuesta_admin)
-          : await rechazarSolicitudCrearEquipo(id, userID, respuesta_admin);
-
-      if (error || !solicitud) {
-        throw new Error(
-          mensaje ||
-            `Error al ${nuevoEstado === 'aceptada' ? 'aceptar' : 'rechazar'} la solicitud`
-        );
-      }
-
-      // Actualizar estado local
-      setRequests((prevRequests) =>
-        prevRequests.map((req) =>
-          req.id === id
-            ? {
-                ...req,
-                data: {
-                  ...req.data,
-                  estado: nuevoEstado,
-                  respuesta_admin,
-                  fecha_respuesta: new Date().toISOString(),
-                  admin_aprobador: authUser?.email,
-                },
-              }
-            : req
-        )
-      );
-    } catch (error) {
-      console.error('Error en el flujo de creación de equipo:', error);
-    }
-  };
-  const handleUnirseEquipo = async (
-    id: string,
-    estado: 'aceptada' | 'rechazada',
-    respuesta_admin: string
-  ) => {
-    console.log('no implmentado');
-  };
-
-  const handleBajaEquipo = async (
-    id: string,
-    estado: 'aceptada' | 'rechazada',
-    respuesta_admin: string
-  ) => {
-    console.log('no implmentado');
-  };
-
-  const handleDisolverEquipo = async (
-    id: string,
-    estado: 'aceptada' | 'rechazada',
-    respuesta_admin: string
-  ) => {
-    console.log('no implmentado');
+    setIsConfirmModalVisible(false);
+    setactualizandoSolicitud(false);
   };
 
   const cargarSolicitudes = useCallback(async () => {
     setLoadingSolicitudes(true);
     try {
-      if (!authUser?.id || !usuario) {
-        return;
-      }
+      if (!authUser?.id || !usuario) return;
 
       const esAdmin = usuario.rol_id === 1 || usuario.rol_id === 2;
-      const { solicitudes, error, mensaje } = esAdmin
+      const { solicitudes, error } = esAdmin
         ? await baseSolicitudService.getSolicitudesAdministrador()
         : await baseSolicitudService.getSolicitudesUsuario(authUser.id);
 
-      if (error) {
-        console.error('Error al cargar solicitudes:', mensaje);
-        return;
-      }
+      if (error) return;
 
       if (solicitudes) {
-        const mappedRequests = solicitudes.map((solicitud) => {
-          const getUsuarioNombre = (usuario: any) => {
-            if (!usuario) return '';
-            if (typeof usuario === 'object' && usuario !== null) {
-              return (
-                usuario.email ||
-                usuario.nombre ||
-                usuario.id ||
-                usuario.toString()
-              );
-            }
-            return usuario.toString();
-          };
-
-          switch (solicitud.tipo) {
-            case 'crear_equipo':
-              return {
-                id: solicitud.id.toString(),
-                data: {
-                  tipo: 'crear_equipo' as const,
-                  estado: solicitud.estado,
-                  fecha_creacion: solicitud.fecha_creacion,
-                  iniciada_por: getUsuarioNombre(solicitud.iniciada_por_id),
-                  nombre_equipo: solicitud.nombre_equipo || '',
-                  escudo_url: solicitud.escudo_url || '',
-                  motivo: solicitud.motivo || '',
-                  respuesta_admin: solicitud.respuesta_admin || '',
-                  admin_aprobador: getUsuarioNombre(
-                    solicitud.admin_aprobador_id
-                  ),
-                  fecha_respuesta: solicitud.fecha_respuesta || '',
-                },
-              };
-            case 'unirse_equipo':
-              return {
-                id: solicitud.id.toString(),
-                data: {
-                  tipo: 'unirse_equipo' as const,
-                  estado: solicitud.estado,
-                  fecha_creacion: solicitud.fecha_creacion,
-                  iniciada_por: getUsuarioNombre(solicitud.iniciada_por_id),
-                  jugador_objetivo: getUsuarioNombre(
-                    solicitud.jugador_objetivo_id
-                  ),
-                  equipo: solicitud.equipo_id || '',
-                  capitan_objetivo: getUsuarioNombre(
-                    solicitud.capitan_objetivo_id
-                  ),
-                  aprobado_jugador: solicitud.aprobado_jugador || false,
-                  aprobado_capitan: solicitud.aprobado_capitan || false,
-                },
-              };
-            case 'baja_equipo':
-              return {
-                id: solicitud.id.toString(),
-                data: {
-                  tipo: 'baja_equipo' as const,
-                  estado: solicitud.estado,
-                  fecha_creacion: solicitud.fecha_creacion,
-                  iniciada_por: solicitud.iniciada_por_id || '',
-                  jugador_objetivo: solicitud.jugador_objetivo_id || '',
-                  equipo: solicitud.equipo_id || '',
-                  motivo: solicitud.motivo || '',
-                },
-              };
-            case 'disolver_equipo':
-              return {
-                id: solicitud.id.toString(),
-                data: {
-                  tipo: 'disolver_equipo' as const,
-                  estado: solicitud.estado,
-                  fecha_creacion: solicitud.fecha_creacion,
-                  iniciada_por: solicitud.iniciada_por_id || '',
-                  capitan_objetivo: solicitud.capitan_objetivo_id || '',
-                  equipo: solicitud.equipo_id || '',
-                  motivo: solicitud.motivo || '',
-                },
-              };
-            default:
-              throw new Error(
-                `Tipo de solicitud no soportado: ${solicitud.tipo}`
-              );
-          }
-        });
-
-        setRequests(mappedRequests);
+        setRequests(solicitudes);
       }
     } catch (error) {
-      console.error('Error al cargar solicitudes:', error);
+      console.error(error);
     }
     setLoadingSolicitudes(false);
   }, [authUser?.id, usuario]);
 
   useFocusEffect(
     useCallback(() => {
-      // Esta función se ejecuta cada vez que vuelves a esta pantalla
       cargarSolicitudes();
     }, [cargarSolicitudes])
   );
@@ -324,18 +199,30 @@ export default function SolicitudesScreen() {
   if (actualizandoSolicitud) {
     return <StyledActivityIndicator message='Actualizando...' />;
   }
+
   return (
     <>
-      <StyledModal
+      <InputModal
         visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onConfirm={confirmarModal}
         value={motivoRechazo}
         onChangeText={setMotivoRechazo}
-        confirmLabel={
+        onClose={() => setModalVisible(false)}
+        onConfirm={confirmarModal}
+        title={
           modalTipo === 'aceptada' ? 'Aceptar solicitud' : 'Rechazar solicitud'
         }
+        confirmLabel='Confirmar'
+        cancelLabel='Cancelar'
       />
+
+      <ConfirmModal
+        visible={isConfirmModalVisible}
+        onClose={() => setIsConfirmModalVisible(false)}
+        onConfirm={confirmarModal}
+        title='¿Confirmas esta acción?'
+        message='Esta acción no se puede deshacer.'
+      />
+
       <View style={[styles.header, isMobile && styles.headerMobile]}>
         <View
           style={[
@@ -381,9 +268,7 @@ export default function SolicitudesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 12,
-  },
+  container: { padding: 12 },
   header: {
     padding: 12,
     flexDirection: 'row',
@@ -391,19 +276,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     alignItems: 'center',
   },
-  headerMobile: {
-    flexDirection: 'column',
-    paddingBottom: 0,
-  },
-  searchContainer: {
-    flex: 3,
-    justifyContent: 'center',
-  },
-  searchContainerMobile: {
-    flex: undefined,
-    width: '100%',
-    marginBottom: 12,
-  },
+  headerMobile: { flexDirection: 'column', paddingBottom: 0 },
+  searchContainer: { flex: 3, justifyContent: 'center' },
+  searchContainerMobile: { flex: undefined, width: '100%', marginBottom: 12 },
   searchInput: {
     borderRadius: 8,
     borderWidth: 1,
@@ -420,36 +295,17 @@ const styles = StyleSheet.create({
     height: 48,
     alignItems: 'center',
   },
-  createButtonMobile: {
-    flex: undefined,
-    width: '100%',
-  },
+  createButtonMobile: { flex: undefined, width: '100%' },
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  alertContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  alertTextContainer: {
-    flex: 1,
-    gap: 4,
-  },
-  alertTitle: {
-    fontWeight: '600',
-  },
-  alertDescription: {
-    opacity: 0.9,
-  },
-  alertText: {
-    flex: 1,
-  },
+  buttonText: { fontSize: 16, fontWeight: '500' },
+  alertContent: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  alertTextContainer: { flex: 1, gap: 4 },
+  alertTitle: { fontWeight: '600' },
+  alertDescription: { opacity: 0.9 },
+  alertText: { flex: 1 },
 });

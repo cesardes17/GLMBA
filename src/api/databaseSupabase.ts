@@ -189,4 +189,19 @@ export const DatabaseSupabase = {
     if (error) throw error;
     return data as T[];
   },
+
+  // Obtener por múltiples campos (AND lógico)
+  async getByFields<T>(
+    table: string,
+    conditions: { key: string; operator?: 'eq'; value: string | number }[]
+  ): Promise<DBResponse<T[]>> {
+    let query = supabase.from(table).select('*');
+
+    conditions.forEach(({ key, value, operator = 'eq' }) => {
+      query = query[operator](key, value);
+    });
+
+    const { data, error } = await query;
+    return { data, error };
+  },
 };

@@ -55,6 +55,7 @@ export const SolicitudesList: React.FC<SolicitudesListProps> = ({
                 onAccept={aceptar}
                 onReject={rechazar}
                 id={request.id}
+                currentUserEmail={currentUserEmail!}
               />
             );
           case 'baja_equipo':

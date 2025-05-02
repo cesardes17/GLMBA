@@ -22,3 +22,39 @@ export interface Solicitud {
   aprobado_capitan?: boolean;
   aprobado_admin?: boolean;
 }
+export interface UsuarioRelacionado {
+  id: string;
+  nombre: string;
+  email: string;
+}
+
+export interface EquipoRelacionado {
+  id: string;
+  nombre: string;
+  escudo_url: string;
+}
+
+export interface SolicitudExpandida {
+  id: string;
+  estado: 'pendiente' | 'aceptada' | 'rechazada';
+  tipo:
+    | 'crear_equipo'
+    | 'unirse_equipo'
+    | 'baja_equipo'
+    | 'disolver_equipo'
+    | 'expulsar_jugador';
+  equipo_id?: EquipoRelacionado | null;
+  nombre_equipo?: string;
+  escudo_url?: string;
+  motivo?: string;
+  respuesta_admin?: string;
+  iniciada_por_id: UsuarioRelacionado;
+  fecha_creacion: string;
+  fecha_respuesta?: string;
+  jugador_objetivo_id?: UsuarioRelacionado;
+  capitan_objetivo_id?: UsuarioRelacionado;
+  admin_aprobador_id?: UsuarioRelacionado;
+  aprobado_jugador?: boolean;
+  aprobado_capitan?: boolean;
+  aprobado_admin?: boolean;
+}

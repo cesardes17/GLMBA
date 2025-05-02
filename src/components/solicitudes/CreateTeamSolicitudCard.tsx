@@ -2,13 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, Button } from 'react-native';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { InfoIcon, ShieldIcon } from '../Icons';
-import { CreateTeamRequest } from '@/src/types/requests';
+import { CreateTeamRequestData } from '@/src/types/requests';
 import StyledAlert from '../common/StyledAlert';
 import Separator from '../common/Separator';
 import StyledText from '../common/StyledText';
 
 interface CreateTeamSolicitudCardProps {
-  request: CreateTeamRequest;
+  request: CreateTeamRequestData;
   onAccept: (id: string, respuesta_admin: string) => void;
   onReject: (id: string, respuesta_admin: string) => void;
   id: string;
@@ -53,7 +53,7 @@ export function CreateTeamSolicitudCard({
     }
   );
 
-  const isSolicitante = request.iniciada_por === currentUserEmail;
+  const isSolicitante = request.iniciada_por.email === currentUserEmail;
 
   return (
     <View
@@ -103,7 +103,7 @@ export function CreateTeamSolicitudCard({
               <Text
                 style={[styles.bold, { color: theme.requestCard.text.content }]}
               >
-                {iniciada_por}
+                {iniciada_por.nombre} ({iniciada_por.email})
               </Text>
             </Text>
           </View>
@@ -144,7 +144,7 @@ export function CreateTeamSolicitudCard({
                 <Text style={{ fontWeight: 'bold' }}>
                   Administrador que gestionó:
                 </Text>{' '}
-                {admin_aprobador}
+                {admin_aprobador!.nombre} ({admin_aprobador!.email})
               </Text>
               <Text style={{ color: theme.requestCard.text.content }}>
                 <Text style={{ fontWeight: 'bold' }}>Fecha de respuesta:</Text>{' '}

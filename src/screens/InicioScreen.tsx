@@ -3,9 +3,12 @@ import { View, StyleSheet } from 'react-native';
 import PageContainer from '@/src/components/PageContainer';
 import StyledText from '@/src/components/common/StyledText';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
+// import StyledButton from '../components/common/StyledButton';
+// import { useAuth } from '../contexts/AuthContext';
 
 export default function InicioScreen() {
   const { theme } = useThemeContext();
+  // const { logout } = useAuth();
 
   return (
     <PageContainer>
@@ -18,6 +21,11 @@ export default function InicioScreen() {
           Bienvenido a GLMBA
         </StyledText>
       </View>
+      {/* <StyledButton
+        variant='danger'
+        title='Cerrar Sesión'
+        onPress={() => logout()}
+      /> */}
     </PageContainer>
   );
 }

@@ -1,23 +1,32 @@
 import React from 'react';
-import { Modal, View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  GestureResponderEvent,
+} from 'react-native';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 
 interface Props {
   visible: boolean;
-  value: string;
-  onChangeText: (text: string) => void;
-  onClose: () => void;
-  onConfirm: () => void;
-  confirmLabel: string;
+  onClose: (event: GestureResponderEvent) => void;
+  onConfirm: (event: GestureResponderEvent) => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  title?: string;
+  children?: React.ReactNode;
 }
 
 export default function StyledModal({
   visible,
-  value,
-  onChangeText,
   onClose,
   onConfirm,
-  confirmLabel,
+  confirmLabel = 'Confirmar',
+  cancelLabel = 'Cancelar',
+  title,
+  children,
 }: Props) {
   const { theme } = useThemeContext();
 
@@ -33,26 +42,16 @@ export default function StyledModal({
             },
           ]}
         >
-          <Text style={[styles.title, { color: theme.textPrimary }]}>
-            Motivo del administrador
-          </Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.surfaceColor,
-                borderColor: theme.border,
-                color: theme.textPrimary,
-              },
-            ]}
-            placeholder='Introduce el motivo de la decisión'
-            placeholderTextColor={theme.textSecondary}
-            value={value}
-            onChangeText={onChangeText}
-            multiline
-          />
+          {title && (
+            <Text style={[styles.title, { color: theme.textPrimary }]}>
+              {title}
+            </Text>
+          )}
+
+          {children}
+
           <View style={styles.buttons}>
-            <Button title='Cancelar' onPress={onClose} color={theme.error} />
+            <Button title={cancelLabel} onPress={onClose} color={theme.error} />
             <Button
               title={confirmLabel}
               onPress={onConfirm}
@@ -81,17 +80,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 12,
   },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 8,
-    minHeight: 80,
-    textAlignVertical: 'top',
-    marginBottom: 12,
-  },
   buttons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 8,
+    marginTop: 16,
   },
 });

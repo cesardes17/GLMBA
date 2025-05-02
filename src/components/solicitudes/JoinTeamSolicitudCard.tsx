@@ -8,13 +8,14 @@ import {
   CalendarIcon,
 } from '../Icons';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
-import { JoinTeamRequest } from '@/src/types/requests';
+import { JoinTeamRequestData } from '@/src/types/requests';
 
 interface JoinTeamRequestProps {
-  request: JoinTeamRequest;
+  request: JoinTeamRequestData;
   onAccept: (id: string, respuesta_admin: string) => void;
   onReject: (id: string, respuesta_admin: string) => void;
   id: string;
+  currentUserEmail: string;
 }
 
 export function JoinTeamSolicitudCard({
@@ -22,15 +23,15 @@ export function JoinTeamSolicitudCard({
   onAccept,
   onReject,
   id,
+  currentUserEmail,
 }: JoinTeamRequestProps) {
   const { theme } = useThemeContext();
   const {
     jugador_objetivo,
     equipo,
-    capitan_objetivo,
+    iniciada_por,
     fecha_creacion,
     aprobado_jugador,
-    aprobado_capitan,
     estado,
   } = request;
 
@@ -40,8 +41,7 @@ export function JoinTeamSolicitudCard({
     year: 'numeric',
   });
 
-  const isWaiting = !aprobado_jugador || !aprobado_capitan;
-
+  // Remove the return null statement that was preventing the component from rendering
   return (
     <View
       style={[
@@ -72,7 +72,7 @@ export function JoinTeamSolicitudCard({
           <Text
             style={[styles.value, { color: theme.requestCard.text.content }]}
           >
-            {jugador_objetivo}
+            {jugador_objetivo.nombre} ({jugador_objetivo.email})
           </Text>
         </View>
         <ApprovalBadge approved={aprobado_jugador} label='Jugador' />
@@ -87,7 +87,7 @@ export function JoinTeamSolicitudCard({
           <Text
             style={[styles.value, { color: theme.requestCard.text.content }]}
           >
-            {equipo}
+            {equipo.id.nombre || 'Nombre no disponible'}
           </Text>
         </View>
       </View>
@@ -101,10 +101,10 @@ export function JoinTeamSolicitudCard({
           <Text
             style={[styles.value, { color: theme.requestCard.text.content }]}
           >
-            {capitan_objetivo}
+            {iniciada_por.nombre} ({iniciada_por.email})
           </Text>
         </View>
-        <ApprovalBadge approved={aprobado_capitan} label='Capitán' />
+        <ApprovalBadge approved={true} label='Capitán' />
       </View>
 
       <View style={styles.section}>
@@ -122,25 +122,37 @@ export function JoinTeamSolicitudCard({
       </View>
 
       <View style={styles.footer}>
-        {isWaiting ? (
+        {estado === 'rechazada' ? (
+          <Text style={[styles.waiting, { color: theme.error }]}>
+            Solicitud rechazada
+          </Text>
+        ) : estado === 'aceptada' ? (
+          <Text style={[styles.waiting, { color: theme.success }]}>
+            Solicitud aceptada
+          </Text>
+        ) : jugador_objetivo.email === currentUserEmail ? (
+          aprobado_jugador ? (
+            <Text style={[styles.waiting, { color: theme.warning }]}>
+              Esperando confirmación del organizador
+            </Text>
+          ) : (
+            <>
+              <Button
+                title='Rechazar'
+                onPress={() => onReject(id, '')}
+                color={theme.error}
+              />
+              <Button
+                title='Aceptar'
+                onPress={() => onAccept(id, '')}
+                color={theme.success}
+              />
+            </>
+          )
+        ) : (
           <Text style={[styles.waiting, { color: theme.warning }]}>
             Esperando confirmación...
           </Text>
-        ) : (
-          <>
-            <Button
-              title='Rechazar'
-              onPress={() => onReject(id, '')}
-              disabled={estado !== 'pendiente'}
-              color={theme.error}
-            />
-            <Button
-              title='Aceptar'
-              onPress={() => onAccept(id, '')}
-              disabled={estado !== 'pendiente'}
-              color={theme.success}
-            />
-          </>
         )}
       </View>
     </View>

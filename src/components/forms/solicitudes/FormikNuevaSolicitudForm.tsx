@@ -16,6 +16,7 @@ import { isJugador } from '@/src/interfaces/Jugador';
 import { baseSolicitudService } from '@/src/service/solicitudService';
 import { inscripcionService } from '@/src/service/inscripcionJugadorService';
 import { v4 as uuidv4 } from 'uuid'; // si estás usando uuid
+
 const TIPOS_SOLICITUD = [
   {
     id: 'crear_equipo',

@@ -94,6 +94,20 @@ export const DatabaseService = {
     return { data, error: null };
   },
 
+  async getByFields<T>(
+    table: string,
+    conditions: { key: string; operator?: 'eq'; value: string | number }[]
+  ): Promise<DatabaseServiceResponse<T[]>> {
+    const { data, error } = await DatabaseSupabase.getByFields<T>(
+      table,
+      conditions
+    );
+    if (error) {
+      return { data: null, error: error.message };
+    }
+    return { data, error: null };
+  },
+
   async callRpc<T, P = any>(
     fnName: string,
     params?: P
