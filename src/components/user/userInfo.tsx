@@ -1,73 +1,20 @@
-import { View, StyleSheet } from 'react-native';
-
-import StyledText from '../common/StyledText';
-import JugadorCard from './JugadorCard';
 import { Usuario } from '@/src/interfaces/Usuario';
-import { Jugador } from '@/src/interfaces/Jugador';
-import { useThemeContext } from '@/src/contexts/ThemeContext';
+
 import UsuarioCard from './UsuarioCard';
+import JugadorCard from './JugadorCard';
+import { JugadorConEquipo } from '@/src/interfaces/vistas/JugadorConEquipo';
 
 interface PerfilCardProps {
-  usuario: Usuario | Jugador | null;
+  usuario: Usuario;
+  jugadorExtendido?: JugadorConEquipo | null;
 }
 
-export default function PerfilCard({ usuario }: PerfilCardProps) {
-  const { theme } = useThemeContext();
-
-  if (!usuario) {
-    return (
-      <View>
-        <StyledText style={[styles.title, { color: theme.textPrimary }]}>
-          No hay información del perfil.
-        </StyledText>
-      </View>
-    );
+export default function PerfilCard({
+  usuario,
+  jugadorExtendido,
+}: PerfilCardProps) {
+  if (usuario.rol_id === 5 && jugadorExtendido) {
+    return <JugadorCard jugador={jugadorExtendido} />;
   }
-
-  // Función de type guard para verificar si es un jugador
-  function isJugador(user: Usuario | Jugador): user is Jugador {
-    return (
-      'posicion_preferida' in user &&
-      'altura_cm' in user &&
-      'peso_kg' in user &&
-      'foto_url' in user
-    );
-  }
-
-  return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: theme.cardBackground,
-          borderColor: theme.border,
-        },
-      ]}
-    >
-      {isJugador(usuario) ? (
-        <JugadorCard jugador={usuario} />
-      ) : (
-        <UsuarioCard usuario={usuario} />
-      )}
-    </View>
-  );
+  return <UsuarioCard usuario={usuario} />;
 }
-
-const styles = StyleSheet.create({
-  card: {
-    marginVertical: 16,
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    minWidth: '100%',
-    alignSelf: 'center',
-
-    elevation: 3,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-});

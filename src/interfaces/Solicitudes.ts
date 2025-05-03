@@ -21,6 +21,7 @@ export interface Solicitud {
   aprobado_jugador?: boolean;
   aprobado_capitan?: boolean;
   aprobado_admin?: boolean;
+  dorsal_jugador?: number;
 }
 export interface UsuarioRelacionado {
   id: string;
@@ -57,4 +58,5 @@ export interface SolicitudExpandida {
   aprobado_jugador?: boolean;
   aprobado_capitan?: boolean;
   aprobado_admin?: boolean;
+  dorsal_jugador?: number;
 }

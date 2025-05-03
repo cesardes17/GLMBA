@@ -131,6 +131,36 @@ export class InscripcionService {
       return false;
     }
   }
+
+  async getDorsalesFromTeam(
+    teamID: string
+  ): Promise<{ dorsales: number[]; error: boolean; mensaje: string | null }> {
+    try {
+      const { data, error } = await this.dbService.getByField<Inscripcion>(
+        this.tabla,
+        'equipo_id',
+        teamID
+      );
+
+      if (error || !data) {
+        console.error('Error al obtener dorsales:', error);
+        throw new Error(
+          error || 'No se encontraron inscripciones para este equipo'
+        );
+      }
+
+      const dorsales = data.map((inscripcion) => inscripcion.numero_camiseta);
+      return { dorsales, error: false, mensaje: null };
+    } catch (error) {
+      console.error('Error al obtener dorsales:', error);
+      return {
+        dorsales: [],
+        error: true,
+        mensaje:
+          error instanceof Error ? error.message : 'Error al obtener dorsales',
+      };
+    }
+  }
 }
 
 // Exportar instancia singleton

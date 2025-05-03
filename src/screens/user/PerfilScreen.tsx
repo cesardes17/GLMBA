@@ -3,100 +3,101 @@ import StyledAlert from '@/src/components/common/StyledAlert';
 import StyledButton from '@/src/components/common/StyledButton';
 import StyledText from '@/src/components/common/StyledText';
 import PerfilCard from '@/src/components/user/userInfo';
+
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { useUserContext } from '@/src/contexts/UserContext';
 import { isJugador } from '@/src/interfaces/Jugador';
 import { bolsaJugadoresService } from '@/src/service/bolsaJugadoresService';
+import { jugadorExtendidoService } from '@/src/service/jugadorExtendidoService';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 
 export default function PerfilScreen() {
   const { logout } = useAuth();
   const { theme } = useThemeContext();
   const { usuario, loading } = useUserContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [permitirInscripcion, setPermitirInscripcion] =
-    useState<boolean>(false);
+  const [mensajeBolsa, setMensajeBolsa] = useState<string | null>(null);
+  const [permitirInscripcion, setPermitirInscripcion] = useState(false);
+  const [jugadorExtendido, setJugadorExtendido] = useState<any>(null);
 
   useEffect(() => {
-    if (!usuario) return;
+    const cargarDatos = async () => {
+      if (!usuario || !isJugador(usuario)) return;
 
-    if (!isJugador(usuario)) {
-      setIsLoading(false);
-      return;
-    }
-    const fetchBolsaInscripcion = async () => {
-      try {
-        setIsLoading(true);
-        const { data, error, mensaje } =
-          await bolsaJugadoresService.getJugadorEnBolsaById(usuario.usuario_id);
+      setIsLoading(true);
+      const { data, error } =
+        await jugadorExtendidoService.getJugadorExtendidoPorId(
+          usuario.usuario_id
+        );
+      if (data && !error) {
+        setJugadorExtendido(data);
 
-        if (error || !data) {
-          throw new Error(mensaje || 'Error al obtener datos del jugador');
-        }
-        setPermitirInscripcion(false);
-        setIsLoading(false);
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          error.message.includes('Jugador no encontrado')
-        ) {
+        if (data.equipo_id) {
+          setPermitirInscripcion(false);
+          setMensajeBolsa(
+            'Ya perteneces a un equipo. No puedes inscribirte en la bolsa.'
+          );
+        } else if (data.esta_en_bolsa) {
+          setPermitirInscripcion(false);
+          setMensajeBolsa('Ya estás inscrito en la bolsa de jugadores.');
+        } else {
           setPermitirInscripcion(true);
+          setMensajeBolsa(null);
         }
-        setIsLoading(false);
       }
+      setIsLoading(false);
     };
-    fetchBolsaInscripcion();
+
+    cargarDatos();
   }, [usuario]);
 
   const handleInscripcion = async () => {
-    const esJugador = usuario && isJugador(usuario);
-    console.log(esJugador);
-    if (!esJugador) return;
+    if (!usuario || !isJugador(usuario)) return;
+
     const { data, error, mensaje } =
       await bolsaJugadoresService.inscribirseEnBolsa(usuario.usuario_id);
-
-    if (error || !data) {
-      console.error(mensaje || 'Error al inscribirse en la bolsa');
-      return;
+    if (!error && data) {
+      setPermitirInscripcion(false);
+      setMensajeBolsa('Ya estás inscrito en la bolsa de jugadores.');
     }
-    setPermitirInscripcion(false);
   };
+
   if (loading || isLoading) {
-    return <StyledActivityIndicator message='Cargando informacion...' />;
+    return <StyledActivityIndicator message='Cargando información...' />;
   }
-  console.log(JSON.stringify(usuario));
+  if (!usuario) {
+    return;
+  }
   return (
-    <ScrollView
-      style={{
-        flex: 1,
-      }}
-    >
-      <PerfilCard usuario={usuario} />
+    <ScrollView style={{ flex: 1 }}>
+      <PerfilCard usuario={usuario} jugadorExtendido={jugadorExtendido} />
+
       {usuario?.rol_id === 6 && (
         <StyledButton
-          variant='default'
           title='Editar Perfil'
           onPress={() => router.push('editar-perfil')}
         />
       )}
-      {usuario?.rol_id === 5 ? (
-        permitirInscripcion ? (
-          <StyledButton
-            variant='default'
-            title='Inscribirme a la Bolsa de Jugadores'
-            onPress={() => handleInscripcion()}
-          />
-        ) : (
-          <StyledAlert variant='info'>
-            <StyledText style={{ color: theme.info }}>
-              Ya estás inscrito en la bolsa de jugadores
-            </StyledText>
-          </StyledAlert>
-        )
-      ) : null}
+
+      {usuario?.rol_id === 5 && (
+        <>
+          {permitirInscripcion ? (
+            <StyledButton
+              title='Inscribirme a la Bolsa de Jugadores'
+              onPress={handleInscripcion}
+            />
+          ) : mensajeBolsa ? (
+            <StyledAlert variant='info'>
+              <StyledText style={{ color: theme.info }}>
+                {mensajeBolsa}
+              </StyledText>
+            </StyledAlert>
+          ) : null}
+        </>
+      )}
 
       <StyledButton variant='danger' title='Cerrar Sesión' onPress={logout} />
     </ScrollView>

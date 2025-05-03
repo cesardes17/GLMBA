@@ -1,93 +1,177 @@
-import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { FlatList, View, Text } from 'react-native';
 import { RequestWithId } from '@/src/types/requests';
-import StyledAlert from '@/src/components/common/StyledAlert';
-import { CreateTeamSolicitudCard } from './CreateTeamSolicitudCard';
-import { JoinTeamSolicitudCard } from './JoinTeamSolicitudCard';
-import { LeaveTeamSolicitudCard } from './LeaveTeamSolicitudCard';
-import { DissolveTeamSolicitudCard } from './DissolveTeamSolicitudCard';
+import {
+  aceptarSolicitudUnirseEquipo,
+  baseSolicitudService,
+} from '@/src/service/solicitudService';
+import { useUserContext } from '@/src/contexts/UserContext';
+import { useAuth } from '@/src/contexts/AuthContext';
+import SolicitudItemRenderer from './SolicitudItemRenderer';
+import StyledAlert from '../common/StyledAlert';
+import StyledText from '../common/StyledText';
+import { useThemeContext } from '@/src/contexts/ThemeContext';
+import ConfirmSolicitudModal from './ConfirmSolicitudModal';
+import { inscripcionService } from '@/src/service/inscripcionJugadorService';
+import { isJugador } from '@/src/interfaces/Jugador';
 
-interface SolicitudesListProps {
-  requests: RequestWithId[];
-  onAccept: (id: string, tipo: string) => void;
-  onReject: (id: string, tipo: string) => void;
-  currentUserEmail?: string;
-}
+export default function SolicitudesList() {
+  const { authUser } = useAuth();
+  const { usuario } = useUserContext();
+  const { theme } = useThemeContext();
+  const [requests, setRequests] = useState<RequestWithId[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTipo, setModalTipo] = useState<
+    'crear_equipo' | 'unirse_equipo' | 'baja_equipo' | 'disolver_equipo' | null
+  >(null);
+  const [modalSolicitudId, setModalSolicitudId] = useState<string | null>(null);
+  const [modalEsAceptacion, setModalEsAceptacion] = useState<boolean>(true);
+  const [dorsalesOcupados, setDorsalesOcupados] = useState<number[]>([]);
+  const usuarioID = isJugador(usuario!) ? usuario.usuario_id : usuario!.id;
+  const esAdmin = usuario?.rol_id === 1 || usuario?.rol_id === 2;
 
-export const SolicitudesList: React.FC<SolicitudesListProps> = ({
-  requests,
-  onAccept,
-  onReject,
-  currentUserEmail,
-}) => {
-  if (requests.length === 0) {
-    return (
-      <StyledAlert variant='info'>
-        No tienes ninguna solicitud asociada a tu cuenta. Para crear una nueva
-        solicitud, pulsa el botón "Crear Solicitud".
-      </StyledAlert>
-    );
-  }
+  const loadSolicitudes = useCallback(async () => {
+    if (!authUser || !usuario) return;
+
+    const { solicitudes, error } = esAdmin
+      ? await baseSolicitudService.getSolicitudesAdministrador()
+      : await baseSolicitudService.getSolicitudesUsuario(authUser.id);
+
+    if (!error && solicitudes) setRequests(solicitudes);
+  }, [authUser, usuario, esAdmin]);
+
+  useEffect(() => {
+    loadSolicitudes();
+  }, [loadSolicitudes]);
+
+  const abrirModal = (
+    id: string,
+    tipo: 'crear_equipo' | 'unirse_equipo' | 'baja_equipo' | 'disolver_equipo',
+    esAceptacion: boolean
+  ) => {
+    setModalSolicitudId(id);
+    setModalTipo(tipo);
+    setModalEsAceptacion(esAceptacion);
+    setModalVisible(true);
+  };
+
+  const handleAccept = async (id: string, tipo: string) => {
+    const solicitud = requests.find((r) => r.id === id);
+    if (!solicitud) return;
+
+    if (
+      tipo === 'unirse_equipo' &&
+      usuario?.rol_id === 5 &&
+      solicitud.data.tipo === 'unirse_equipo'
+    ) {
+      const equipoId = solicitud.data.equipo.id;
+
+      try {
+        const { dorsales, error, mensaje } =
+          await inscripcionService.getDorsalesFromTeam(equipoId);
+
+        if (error || !dorsales) {
+          console.error('Error al obtener los dorsales:', mensaje);
+          return;
+        }
+
+        setDorsalesOcupados(dorsales);
+      } catch (e) {
+        console.error('Error inesperado:', e);
+      }
+    } else {
+      setDorsalesOcupados([]);
+    }
+
+    abrirModal(id, tipo as any, true);
+  };
+
+  const handleReject = (id: string, tipo: string) => {
+    abrirModal(id, tipo as any, false);
+  };
+
+  const confirmarModal = async (dorsal?: number, motivo?: string) => {
+    if (!modalSolicitudId || !modalTipo) return;
+    console.log('confirmarModal');
+    console.log('modalSolicitudId', modalSolicitudId);
+    console.log('modalTipo', modalTipo);
+    console.log('modalEsAceptacion', modalEsAceptacion);
+    switch (modalTipo) {
+      case 'crear_equipo':
+        if (modalEsAceptacion) {
+          // TODO: Aceptar Crear equipo
+        } else {
+          // TODO: rechazar Crear equipo
+        }
+        break;
+      case 'unirse_equipo':
+        if (modalEsAceptacion) {
+          // TODO: Aceptar solicitud equipo
+          const { solicitud, error, mensaje } =
+            await aceptarSolicitudUnirseEquipo(
+              modalSolicitudId,
+              usuarioID,
+              esAdmin,
+              motivo,
+              dorsal
+            );
+
+          if (error || !solicitud) {
+            console.error('Error al aceptar la solicitud:', mensaje);
+            return;
+          }
+          setRequests((prevRequests) =>
+            prevRequests.filter((r) => r.id !== modalSolicitudId)
+          );
+          setModalVisible(false);
+        } else {
+          // TODO: Rechazar solicitud equipo
+        }
+        break;
+      default:
+        console.log('tipo solicitud no valida');
+    }
+  };
+
+  const renderItem = ({ item }: { item: RequestWithId }) => (
+    <SolicitudItemRenderer
+      solicitud={item}
+      onAccept={handleAccept}
+      onReject={handleReject}
+      esAdmin={esAdmin}
+    />
+  );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {requests.map((request) => {
-        const aceptar = () => onAccept(request.id, request.data.tipo);
-        const rechazar = () => onReject(request.id, request.data.tipo);
-
-        switch (request.data.tipo) {
-          case 'crear_equipo':
-            return (
-              <CreateTeamSolicitudCard
-                key={request.id}
-                request={request.data}
-                onAccept={aceptar}
-                onReject={rechazar}
-                id={request.id}
-                currentUserEmail={currentUserEmail!}
-              />
-            );
-          case 'unirse_equipo':
-            return (
-              <JoinTeamSolicitudCard
-                key={request.id}
-                request={request.data}
-                onAccept={aceptar}
-                onReject={rechazar}
-                id={request.id}
-                currentUserEmail={currentUserEmail!}
-              />
-            );
-          case 'baja_equipo':
-            return (
-              <LeaveTeamSolicitudCard
-                key={request.id}
-                request={request.data}
-                onAccept={aceptar}
-                onReject={rechazar}
-                id={request.id}
-              />
-            );
-          case 'disolver_equipo':
-            return (
-              <DissolveTeamSolicitudCard
-                key={request.id}
-                request={request.data}
-                onAccept={aceptar}
-                onReject={rechazar}
-                id={request.id}
-              />
-            );
-          default:
-            return null;
-        }
-      })}
-    </ScrollView>
+    <>
+      {modalTipo && (
+        <ConfirmSolicitudModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onConfirm={(dorsal, motivo) => {
+            confirmarModal(dorsal, motivo);
+          }}
+          tipoSolicitud={modalTipo!}
+          esAdmin={esAdmin}
+          esJugador={usuario?.rol_id === 5}
+          dorsalesOcupados={dorsalesOcupados}
+          esAceptacion={modalEsAceptacion}
+        />
+      )}
+      <FlatList
+        data={requests}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={{ padding: 16 }}
+        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+        ListEmptyComponent={() => (
+          <StyledAlert variant='info'>
+            <StyledText style={{ color: theme.info }}>
+              No hay solicitudes disponibles
+            </StyledText>
+          </StyledAlert>
+        )}
+      />
+    </>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 12,
-  },
-});
+}

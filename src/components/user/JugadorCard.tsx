@@ -8,8 +8,10 @@ import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { AlturaIcon, PesoIcon, PosicionIcon, RolIcon } from '../Icons';
 import { useResponsiveLayout } from '@/src/hooks/useResponsiveLayout';
 import { getRolesArray } from '@/src/constants/roles';
-export interface PlayerCardProps {
-  jugador: Jugador;
+import { JugadorConEquipo } from '@/src/interfaces/vistas/JugadorConEquipo';
+
+interface PlayerCardProps {
+  jugador: JugadorConEquipo;
 }
 
 export default function JugadorCard({ jugador }: PlayerCardProps) {
@@ -22,7 +24,7 @@ export default function JugadorCard({ jugador }: PlayerCardProps) {
   return isDesktop ? (
     <View style={styles.cardWeb}>
       <Image
-        source={{ uri: jugador.foto_url }}
+        source={{ uri: jugador.foto_url! }}
         style={styles.imageWeb}
         resizeMode='cover'
       />
@@ -50,7 +52,7 @@ export default function JugadorCard({ jugador }: PlayerCardProps) {
   ) : (
     <View style={styles.cardMobile}>
       <Image
-        source={{ uri: jugador.foto_url }}
+        source={{ uri: jugador.foto_url! }}
         style={styles.imageMobile}
         resizeMode='cover'
       />

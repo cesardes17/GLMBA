@@ -65,6 +65,13 @@ function parseSolicitudToRequestWithId(s: SolicitudExpandida): RequestWithId {
             email: s.iniciada_por_id?.email || '',
             nombre: s.iniciada_por_id?.nombre || '',
           },
+          admin_aprobador: s.admin_aprobador_id
+            ? {
+                id: s.admin_aprobador_id?.id || '',
+                email: s.admin_aprobador_id?.email || '',
+                nombre: s.admin_aprobador_id?.nombre || '',
+              }
+            : undefined,
         },
       };
 
@@ -101,7 +108,7 @@ function parseSolicitudToRequestWithId(s: SolicitudExpandida): RequestWithId {
 
 // 🔧 Función para crear una solicitud
 export async function crearSolicitud(
-  solicitudData: RequestData & { iniciada_por_id: string }
+  solicitudData: Omit<Solicitud, 'fecha_creacion'>
 ): Promise<{
   solicitud: RequestWithId | null;
   error: boolean;
@@ -141,7 +148,7 @@ export async function crearSolicitud(
     } else if (solicitudData.tipo === 'unirse_equipo') {
       const { equipo, error } =
         await equipoService.getEquipoDeTemporadaActualByCapitan(
-          solicitudData.iniciada_por.id
+          solicitudData.iniciada_por_id
         );
 
       if (error || !equipo) {
@@ -153,15 +160,15 @@ export async function crearSolicitud(
       }
 
       base.equipo_id = equipo.id;
-      base.jugador_objetivo_id = solicitudData.jugador_objetivo.id;
-      base.capitan_objetivo_id = solicitudData.capitan_objetivo;
+      base.jugador_objetivo_id = solicitudData.jugador_objetivo_id;
+      base.capitan_objetivo_id = solicitudData.capitan_objetivo_id;
     } else if (solicitudData.tipo === 'baja_equipo') {
-      base.equipo_id = solicitudData.equipo;
-      base.jugador_objetivo_id = solicitudData.jugador_objetivo;
+      base.equipo_id = solicitudData.equipo_id;
+      base.jugador_objetivo_id = solicitudData.jugador_objetivo_id;
       base.motivo = solicitudData.motivo;
     } else if (solicitudData.tipo === 'disolver_equipo') {
-      base.equipo_id = solicitudData.equipo;
-      base.capitan_objetivo_id = solicitudData.capitan_objetivo;
+      base.equipo_id = solicitudData.equipo_id;
+      base.capitan_objetivo_id = solicitudData.capitan_objetivo_id;
       base.motivo = solicitudData.motivo;
     }
 
@@ -321,7 +328,7 @@ async function getSolicitudesAdministrador(
 // 📦 Exportación principal
 export const baseSolicitudService = {
   getById: (id: string) =>
-    DatabaseService.getById<Solicitud>('solicitudes', 'id', id),
+    DatabaseService.getById<SolicitudExpandida>('solicitudes', 'id', id),
 
   update: (id: string, data: Partial<Solicitud>) =>
     DatabaseService.updateById('solicitudes', id, data),

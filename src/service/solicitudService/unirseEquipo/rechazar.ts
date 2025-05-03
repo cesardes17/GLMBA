@@ -1,9 +1,14 @@
+import { SolicitudServiceResponse } from '../types';
+
 export async function rechazarSolicitudUnirseEquipo(
   solicitudId: string,
-  adminId: string,
-  respuestaAdmin: string
-) {
-  throw new Error(
-    'Rechazar solicitud de unirse a equipo aún no está implementado'
-  );
+  userId: string,
+  respuestaAdmin: string,
+  esAdmin: boolean
+): Promise<SolicitudServiceResponse> {
+  return {
+    solicitud: null,
+    error: true,
+    mensaje: 'Aceptar solicitud de unirse a equipo aún no está implementado',
+  };
 }

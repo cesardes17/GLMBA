@@ -16,6 +16,7 @@ interface JoinTeamRequestProps {
   onReject: (id: string, respuesta_admin: string) => void;
   id: string;
   currentUserEmail: string;
+  esAdmin: boolean;
 }
 
 export function JoinTeamSolicitudCard({
@@ -24,6 +25,7 @@ export function JoinTeamSolicitudCard({
   onReject,
   id,
   currentUserEmail,
+  esAdmin,
 }: JoinTeamRequestProps) {
   const { theme } = useThemeContext();
   const {
@@ -32,8 +34,11 @@ export function JoinTeamSolicitudCard({
     iniciada_por,
     fecha_creacion,
     aprobado_jugador,
+    admin_aprobador,
     estado,
   } = request;
+
+  console.log('JoinTeamSolicitudCard request:', request);
 
   const formattedDate = new Date(fecha_creacion).toLocaleDateString('es-ES', {
     day: 'numeric',
@@ -87,7 +92,7 @@ export function JoinTeamSolicitudCard({
           <Text
             style={[styles.value, { color: theme.requestCard.text.content }]}
           >
-            {equipo.id.nombre || 'Nombre no disponible'}
+            {equipo.nombre || 'Nombre no disponible'}
           </Text>
         </View>
       </View>
@@ -130,25 +135,32 @@ export function JoinTeamSolicitudCard({
           <Text style={[styles.waiting, { color: theme.success }]}>
             Solicitud aceptada
           </Text>
-        ) : jugador_objetivo.email === currentUserEmail ? (
-          aprobado_jugador ? (
-            <Text style={[styles.waiting, { color: theme.warning }]}>
-              Esperando confirmación del organizador
-            </Text>
-          ) : (
-            <>
-              <Button
-                title='Rechazar'
-                onPress={() => onReject(id, '')}
-                color={theme.error}
-              />
-              <Button
-                title='Aceptar'
-                onPress={() => onAccept(id, '')}
-                color={theme.success}
-              />
-            </>
-          )
+        ) : jugador_objetivo.email === currentUserEmail && !aprobado_jugador ? (
+          <>
+            <Button
+              title='Rechazar'
+              onPress={() => onReject(id, '')}
+              color={theme.error}
+            />
+            <Button
+              title='Aceptar'
+              onPress={() => onAccept(id, '')}
+              color={theme.success}
+            />
+          </>
+        ) : esAdmin && !admin_aprobador ? (
+          <>
+            <Button
+              title='Rechazar'
+              onPress={() => onReject(id, '')}
+              color={theme.error}
+            />
+            <Button
+              title='Aceptar'
+              onPress={() => onAccept(id, '')}
+              color={theme.success}
+            />
+          </>
         ) : (
           <Text style={[styles.waiting, { color: theme.warning }]}>
             Esperando confirmación...

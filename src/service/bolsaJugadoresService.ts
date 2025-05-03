@@ -127,7 +127,7 @@ class BolsaJugadoresService {
   }
 
   async cancelarInscripcion(
-    jugador_id: number
+    jugador_id: string
   ): Promise<BolsaJugadorServiceResponse<null>> {
     try {
       const { data, error } = await this.dbService.getByField<BolsaJugador>(

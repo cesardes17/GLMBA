@@ -43,6 +43,12 @@ export type JoinTeamRequestData = {
     email: string;
     nombre: string;
   };
+  admin_aprobador?: {
+    id: string;
+    email: string;
+    nombre: string;
+  };
+  dorsal_jugador?: number;
 };
 
 export type LeaveTeamRequestData = {
