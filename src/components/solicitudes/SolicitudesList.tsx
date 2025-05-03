@@ -4,6 +4,7 @@ import { RequestWithId } from '@/src/types/requests';
 import {
   aceptarSolicitudUnirseEquipo,
   baseSolicitudService,
+  rechazarSolicitudUnirseEquipo,
 } from '@/src/service/solicitudService';
 import { useUserContext } from '@/src/contexts/UserContext';
 import { useAuth } from '@/src/contexts/AuthContext';
@@ -120,12 +121,39 @@ export default function SolicitudesList() {
             console.error('Error al aceptar la solicitud:', mensaje);
             return;
           }
+
+          // Actualizar la solicitud con los nuevos datos
           setRequests((prevRequests) =>
-            prevRequests.filter((r) => r.id !== modalSolicitudId)
+            prevRequests.map((r) =>
+              r.id === modalSolicitudId ? { ...r, ...solicitud } : r
+            )
           );
+
           setModalVisible(false);
+
+          // Recargar las solicitudes para asegurar que la lista está actualizada
+          await loadSolicitudes();
         } else {
           // TODO: Rechazar solicitud equipo
+          const { solicitud, error, mensaje } =
+            await rechazarSolicitudUnirseEquipo(
+              modalSolicitudId,
+              usuarioID,
+              esAdmin,
+              motivo
+            );
+          if (error || !solicitud) {
+            console.error('Error al aceptar la solicitud:', mensaje);
+            return;
+          }
+          // Actualizar la solicitud con los nuevos datos
+          setRequests((prevRequests) =>
+            prevRequests.map((r) =>
+              r.id === modalSolicitudId ? { ...r, ...solicitud } : r
+            )
+          );
+
+          setModalVisible(false);
         }
         break;
       default:

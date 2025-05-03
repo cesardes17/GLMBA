@@ -1,6 +1,4 @@
 // src/service/jugadorExtendidoService.ts
-
-import { Usuario } from '../interfaces/Usuario';
 import { JugadorConEquipo } from '../interfaces/vistas/JugadorConEquipo';
 import { DatabaseService } from './core/databaseService';
 import { storageService } from './core/storageService';
