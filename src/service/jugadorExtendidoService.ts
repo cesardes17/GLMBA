@@ -1,12 +1,14 @@
 // src/service/jugadorExtendidoService.ts
 
+import { Usuario } from '../interfaces/Usuario';
 import { JugadorConEquipo } from '../interfaces/vistas/JugadorConEquipo';
 import { DatabaseService } from './core/databaseService';
+import { storageService } from './core/storageService';
 
 export class JugadorExtendidoService {
   private static instance: JugadorExtendidoService;
   private readonly tabla = 'vista_jugadores_con_equipo';
-
+  private jugadorBucket = 'fotojugadores';
   private constructor() {}
 
   public static getInstance(): JugadorExtendidoService {
@@ -36,9 +38,23 @@ export class JugadorExtendidoService {
           mensaje: 'No se encontró el jugador con información extendida',
         };
       }
-
+      const {
+        data: dataFoto,
+        error: errorFoto,
+        mensaje,
+      } = await storageService.getPublicUrl(
+        this.jugadorBucket,
+        data[0].foto_url!
+      );
+      if (errorFoto || !dataFoto) {
+        throw new Error(mensaje || 'Error al obtener la foto del jugador');
+      }
+      const jugador = {
+        ...data[0],
+        foto_url: dataFoto.publicUrl,
+      };
       return {
-        data: data[0],
+        data: jugador,
         error: false,
         mensaje: null,
       };

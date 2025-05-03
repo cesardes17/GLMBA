@@ -11,7 +11,7 @@ import { Jugador } from '@/src/interfaces/Jugador';
 import { useAuth } from '@/src/contexts/AuthContext'; // Importa el AuthContext para obtener el ID del usuario actual
 
 interface UserContextProps {
-  usuario: Usuario | Jugador | null;
+  usuario: Usuario | null;
   loading: boolean;
   fetchUserData: () => Promise<void>;
 }
@@ -19,7 +19,7 @@ interface UserContextProps {
 const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [usuario, setUsuario] = useState<Usuario | Jugador | null>(null);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
   const { authUser } = useAuth(); // Obtén el usuario autenticado del AuthContext
 

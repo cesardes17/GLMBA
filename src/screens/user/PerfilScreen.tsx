@@ -7,34 +7,38 @@ import PerfilCard from '@/src/components/user/userInfo';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { useUserContext } from '@/src/contexts/UserContext';
-import { isJugador } from '@/src/interfaces/Jugador';
 import { bolsaJugadoresService } from '@/src/service/bolsaJugadoresService';
 import { jugadorExtendidoService } from '@/src/service/jugadorExtendidoService';
+
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
+import { JugadorConEquipo } from '@/src/interfaces/vistas/JugadorConEquipo';
 
 export default function PerfilScreen() {
   const { logout } = useAuth();
   const { theme } = useThemeContext();
   const { usuario, loading } = useUserContext();
+
   const [isLoading, setIsLoading] = useState(false);
   const [mensajeBolsa, setMensajeBolsa] = useState<string | null>(null);
   const [permitirInscripcion, setPermitirInscripcion] = useState(false);
-  const [jugadorExtendido, setJugadorExtendido] = useState<any>(null);
+  const [jugadorExtendido, setJugadorExtendido] =
+    useState<JugadorConEquipo | null>(null);
+
+  const esJugador = usuario?.rol_id === 5;
 
   useEffect(() => {
-    const cargarDatos = async () => {
-      if (!usuario || !isJugador(usuario)) return;
+    if (!usuario || !esJugador) return;
 
+    const cargarDatos = async () => {
       setIsLoading(true);
       const { data, error } =
-        await jugadorExtendidoService.getJugadorExtendidoPorId(
-          usuario.usuario_id
-        );
-      if (data && !error) {
-        setJugadorExtendido(data);
+        await jugadorExtendidoService.getJugadorExtendidoPorId(usuario.id);
 
+      if (!error && data) {
+        setJugadorExtendido(data);
+        console.log(data);
         if (data.equipo_id) {
           setPermitirInscripcion(false);
           setMensajeBolsa(
@@ -48,41 +52,45 @@ export default function PerfilScreen() {
           setMensajeBolsa(null);
         }
       }
+
       setIsLoading(false);
     };
 
     cargarDatos();
-  }, [usuario]);
+  }, [usuario, esJugador]);
 
   const handleInscripcion = async () => {
-    if (!usuario || !isJugador(usuario)) return;
+    if (!usuario || !esJugador) return;
 
     const { data, error, mensaje } =
-      await bolsaJugadoresService.inscribirseEnBolsa(usuario.usuario_id);
+      await bolsaJugadoresService.inscribirseEnBolsa(usuario.id);
+
     if (!error && data) {
       setPermitirInscripcion(false);
       setMensajeBolsa('Ya estás inscrito en la bolsa de jugadores.');
+    } else {
+      console.error(mensaje || 'Error al inscribirse en la bolsa');
     }
   };
 
   if (loading || isLoading) {
     return <StyledActivityIndicator message='Cargando información...' />;
   }
-  if (!usuario) {
-    return;
-  }
+
+  if (!usuario) return null;
+
   return (
     <ScrollView style={{ flex: 1 }}>
       <PerfilCard usuario={usuario} jugadorExtendido={jugadorExtendido} />
 
-      {usuario?.rol_id === 6 && (
+      {usuario.rol_id === 6 && (
         <StyledButton
           title='Editar Perfil'
           onPress={() => router.push('editar-perfil')}
         />
       )}
 
-      {usuario?.rol_id === 5 && (
+      {esJugador && (
         <>
           {permitirInscripcion ? (
             <StyledButton

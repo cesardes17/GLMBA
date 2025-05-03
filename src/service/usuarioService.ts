@@ -5,7 +5,7 @@ import { DatabaseService } from './core/databaseService';
 import { jugadorService } from './jugadorService';
 
 export type UsuarioServiceResponse = {
-  usuario: Usuario | Jugador | null;
+  usuario: Usuario | null;
   error: boolean;
   mensaje: string | null;
 };
@@ -46,39 +46,6 @@ export class UsuarioService {
           mensaje: error || 'No user found with the given ID',
         };
       }
-
-      // Si el usuario es un jugador (rol_id === 5), obtener la información adicional
-      if (data.rol_id === 5 || data.rol_id === 4) {
-        const {
-          jugador,
-          error: jugadorError,
-          mensaje,
-        } = await this.jugadorService.getJugadorByUserId(userId);
-
-        if (jugadorError || !jugador) {
-          console.error('Error fetching player:', mensaje);
-          return {
-            usuario: null,
-            error: true,
-            mensaje:
-              mensaje ||
-              'No se encontró el jugador con el ID de usuario proporcionado',
-          };
-        }
-
-        // Combinar la información del usuario con la del jugador
-        const jugadorCompleto: Jugador = {
-          ...data,
-          ...jugador,
-        };
-
-        return {
-          usuario: jugadorCompleto,
-          error: false,
-          mensaje: null,
-        };
-      }
-
       return {
         usuario: data,
         error: false,
@@ -162,8 +129,6 @@ export class UsuarioService {
         throw new Error(errorUsuario || 'No se pudo crear el usuario');
       }
 
-      let createdUser: Usuario | Jugador | null = usuarioCreado[0] as Usuario;
-
       // Si es un jugador, crear el perfil de jugador
       if (jugadorData && imageUri) {
         const jugadorDataConUsuario = {
@@ -178,15 +143,16 @@ export class UsuarioService {
 
         if (error || !jugador) {
           // Si falla la creación del jugador, intentar eliminar el usuario creado
-          await this.dbService.deleteById(this.tabla, createdUser.id);
+          await this.dbService.deleteById(
+            this.tabla,
+            (usuarioCreado[0] as Usuario).id
+          );
           throw new Error(mensaje || 'Error al crear el jugador');
         }
-
-        createdUser = jugador;
       }
 
       return {
-        usuario: createdUser,
+        usuario: usuarioCreado[0] as Usuario,
         error: false,
         mensaje: null,
       };
