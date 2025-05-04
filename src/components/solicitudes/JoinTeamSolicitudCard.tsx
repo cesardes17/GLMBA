@@ -6,9 +6,12 @@ import {
   UsersIcon,
   RibbonOutlineIcon,
   CalendarIcon,
+  InfoIcon,
 } from '../Icons';
 import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { JoinTeamRequestData } from '@/src/types/requests';
+import StyledAlert from '../common/StyledAlert';
+import StyledText from '../common/StyledText';
 
 interface JoinTeamRequestProps {
   request: JoinTeamRequestData;
@@ -36,15 +39,28 @@ export function JoinTeamSolicitudCard({
     aprobado_jugador,
     admin_aprobador,
     estado,
+    respuesta_admin,
+    fecha_respuesta,
   } = request;
 
-  console.log('JoinTeamSolicitudCard request:', request);
+  console.log('Request: ', request); // Agrega este console.log para verificar el valor de aprobado_jugador
 
-  const formattedDate = new Date(fecha_creacion).toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  const formattedDateCreacion = new Date(fecha_creacion).toLocaleDateString(
+    'es-ES',
+    {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }
+  );
+
+  const formattedDateRespuesta = fecha_respuesta
+    ? new Date(fecha_respuesta).toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : '';
 
   // Remove the return null statement that was preventing the component from rendering
   return (
@@ -121,20 +137,45 @@ export function JoinTeamSolicitudCard({
           <Text
             style={[styles.value, { color: theme.requestCard.text.content }]}
           >
-            {formattedDate}
+            {formattedDateCreacion}
           </Text>
         </View>
       </View>
 
       <View style={styles.footer}>
-        {estado === 'rechazada' ? (
-          <Text style={[styles.waiting, { color: theme.error }]}>
-            Solicitud rechazada
-          </Text>
-        ) : estado === 'aceptada' ? (
-          <Text style={[styles.waiting, { color: theme.success }]}>
-            Solicitud aceptada
-          </Text>
+        {estado !== 'pendiente' ? (
+          <StyledAlert variant={estado === 'aceptada' ? 'success' : 'error'}>
+            <View style={{ gap: 6 }}>
+              {respuesta_admin?.trim() !== '' && admin_aprobador && (
+                <>
+                  <Text style={{ color: theme.requestCard.text.content }}>
+                    <Text style={{ fontWeight: 'bold' }}>
+                      Mensaje del administrador:
+                    </Text>
+                    {' ' + respuesta_admin}
+                  </Text>
+                  <Text style={{ color: theme.requestCard.text.content }}>
+                    <Text style={{ fontWeight: 'bold' }}>
+                      Administrador que gestionó:
+                    </Text>
+                    {' ' + admin_aprobador.nombre} ({admin_aprobador.email})
+                  </Text>
+                </>
+              )}
+              {!admin_aprobador && estado === 'rechazada' && (
+                <Text style={{ color: theme.requestCard.text.content }}>
+                  <Text style={{ fontWeight: 'bold' }}>
+                    Rechazada por el jugador:
+                  </Text>
+                  {' ' + jugador_objetivo.nombre} ({jugador_objetivo.email})
+                </Text>
+              )}
+              <Text style={{ color: theme.requestCard.text.content }}>
+                <Text style={{ fontWeight: 'bold' }}>Fecha de respuesta:</Text>
+                {' ' + formattedDateRespuesta}
+              </Text>
+            </View>
+          </StyledAlert>
         ) : jugador_objetivo.email === currentUserEmail && !aprobado_jugador ? (
           <>
             <Button
@@ -162,9 +203,16 @@ export function JoinTeamSolicitudCard({
             />
           </>
         ) : (
-          <Text style={[styles.waiting, { color: theme.warning }]}>
-            Esperando confirmación...
-          </Text>
+          <StyledAlert variant='info'>
+            <View
+              style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}
+            >
+              <InfoIcon color={theme.info} size={16} />
+              <StyledText size='small' style={{ color: theme.info }}>
+                Pendiente de confirmación por parte de la administración.
+              </StyledText>
+            </View>
+          </StyledAlert>
         )}
       </View>
     </View>

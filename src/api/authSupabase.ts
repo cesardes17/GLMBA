@@ -55,4 +55,13 @@ export const AuthSupabase = {
     const { data, error } = await supabase.auth.refreshSession();
     return { data, error };
   },
+
+  /**
+   * Suscribe a cambios en la sesión (login, logout, expiración, etc.)
+   */
+  onAuthStateChange(
+    callback: Parameters<typeof supabase.auth.onAuthStateChange>[0]
+  ) {
+    return supabase.auth.onAuthStateChange(callback);
+  },
 };

@@ -33,6 +33,7 @@ export type JoinTeamRequestData = {
     nombre: string;
     escudo_url: string;
   };
+  respuesta_admin: string;
   capitan_objetivo: string;
   fecha_creacion: string;
   aprobado_jugador: boolean;
@@ -49,6 +50,7 @@ export type JoinTeamRequestData = {
     nombre: string;
   };
   dorsal_jugador?: number;
+  fecha_respuesta?: string;
 };
 
 export type LeaveTeamRequestData = {

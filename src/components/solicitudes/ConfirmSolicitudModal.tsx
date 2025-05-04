@@ -42,7 +42,9 @@ const ConfirmSolicitudModal: React.FC<ConfirmSolicitudModalProps> = ({
     esAdmin &&
     (tipoSolicitud === 'crear_equipo' ||
       tipoSolicitud === 'disolver_equipo' ||
-      tipoSolicitud === 'baja_equipo');
+      tipoSolicitud === 'baja_equipo' ||
+      tipoSolicitud === 'unirse_equipo') &&
+    !esAceptacion;
 
   const mostrarInputDorsal =
     tipoSolicitud === 'unirse_equipo' && esJugador && esAceptacion;

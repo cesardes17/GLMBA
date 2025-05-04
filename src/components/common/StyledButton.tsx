@@ -8,7 +8,7 @@ interface StyledButtonProps
   title: string;
   onPress: () => void;
   disabled?: boolean;
-  variant?: 'default' | 'outline' | 'danger';
+  variant?: 'default' | 'outline' | 'danger' | 'outline-danger';
   size?: 'small' | 'default' | 'large';
 }
 
@@ -29,6 +29,10 @@ export default function StyledButton({
     if (variant === 'danger') {
       if (isPressed) return theme.button.dangerActive;
       return theme.button.danger;
+    }
+    if (variant === 'outline-danger') {
+      if (isPressed) return theme.button.dangerActive;
+      return theme.button.outlineDanger;
     }
     if (isPressed) return theme.button.active;
     if (variant === 'outline') return theme.button.outline;

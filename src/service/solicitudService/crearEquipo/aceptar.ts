@@ -5,7 +5,6 @@ import { temporadaService } from '../../temporadaService';
 import { inscripcionService } from '../../inscripcionJugadorService';
 import { usuarioService } from '../../usuarioService';
 import { jugadorService } from '../../jugadorService';
-import { isJugador } from '@/src/interfaces/Jugador';
 
 export async function aceptarSolicitudCrearEquipo(
   solicitudId: string,

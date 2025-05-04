@@ -2,6 +2,7 @@ import StyledActivityIndicator from '@/src/components/common/StyledActivitiIndic
 import StyledAlert from '@/src/components/common/StyledAlert';
 import StyledButton from '@/src/components/common/StyledButton';
 import StyledText from '@/src/components/common/StyledText';
+import StyledModal from '@/src/components/common/StyledModal';
 import PerfilCard from '@/src/components/user/userInfo';
 
 import { useAuth } from '@/src/contexts/AuthContext';
@@ -23,6 +24,7 @@ export default function PerfilScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [mensajeBolsa, setMensajeBolsa] = useState<string | null>(null);
   const [permitirInscripcion, setPermitirInscripcion] = useState(false);
+  const [showModal, setShowModal] = useState(false); // Add this line
   const [jugadorExtendido, setJugadorExtendido] =
     useState<JugadorConEquipo | null>(null);
 
@@ -73,6 +75,21 @@ export default function PerfilScreen() {
     }
   };
 
+  const handleDesinscripcion = async () => {
+    if (!usuario || !esJugador) return;
+
+    const { error, mensaje } = await bolsaJugadoresService.cancelarInscripcion(
+      usuario.id
+    );
+
+    if (!error) {
+      setPermitirInscripcion(true);
+      setMensajeBolsa(null);
+    } else {
+      console.error(mensaje || 'Error al desinscribirse de la bolsa');
+    }
+  };
+
   if (loading || isLoading) {
     return <StyledActivityIndicator message='Cargando información...' />;
   }
@@ -97,6 +114,29 @@ export default function PerfilScreen() {
               title='Inscribirme a la Bolsa de Jugadores'
               onPress={handleInscripcion}
             />
+          ) : jugadorExtendido?.esta_en_bolsa ? (
+            <>
+              <StyledButton
+                variant='outline-danger'
+                title='Desinscribirme de la Bolsa'
+                onPress={() => setShowModal(true)}
+              />
+              <StyledModal
+                visible={showModal}
+                onClose={() => setShowModal(false)}
+                onConfirm={() => {
+                  handleDesinscripcion();
+                  setShowModal(false);
+                }}
+                title='Confirmar desinscripción'
+              >
+                <StyledText>
+                  ¿Estás seguro de que deseas desinscribirte de la bolsa de
+                  jugadores? Esta acción rechazará todas las solicitudes
+                  pendientes.
+                </StyledText>
+              </StyledModal>
+            </>
           ) : mensajeBolsa ? (
             <StyledAlert variant='info'>
               <StyledText style={{ color: theme.info }}>

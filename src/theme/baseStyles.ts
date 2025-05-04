@@ -34,10 +34,15 @@ export const baseButtonStyles = {
     border: colors.error,
   },
   dangerActive: {
-    background: colors.errorStyle.text, // Un rojo más intenso, puedes ajustar el color si lo prefieres
+    background: colors.errorStyle.text,
     text: colors.white,
     border: colors.errorStyle.border,
     shadow: colors.errorStyle.border,
+  },
+  outlineDanger: {
+    background: 'transparent',
+    text: colors.error,
+    border: colors.error,
   },
 };
 

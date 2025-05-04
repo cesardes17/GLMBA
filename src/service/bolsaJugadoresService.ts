@@ -4,6 +4,8 @@ import { VistaBolsaJugador } from '../interfaces/vistas/VistaBolsaJugador';
 import { DatabaseService } from './core/databaseService';
 import { v4 as uuidv4 } from 'uuid';
 import { storageService } from './core/storageService';
+import { baseSolicitudService } from './solicitudService/core/baseSolicitudService';
+import { rechazarSolicitudUnirseEquipo } from './solicitudService/unirseEquipo/rechazar';
 
 export type BolsaJugadorServiceResponse<T> = {
   data: T | null;
@@ -46,7 +48,6 @@ class BolsaJugadoresService {
         throw new Error('Error al obtener jugadores en bolsa');
       }
 
-      console.log('hola buenas', data);
       // Añadir información sobre si ya hay una solicitud pendiente con el capitán actual
       const jugadoresConEstado = await Promise.all(
         data.map(async (jugador) => {
@@ -64,9 +65,10 @@ class BolsaJugadoresService {
               jugador.jugador_id
             );
 
+          console.log('solicitudes', solicitudes);
           const yaTieneSolicitud = solicitudes?.some(
             (s) =>
-              s.capitan_objetivo_id === capitanId &&
+              s.iniciada_por_id === capitanId &&
               s.estado === 'pendiente' &&
               s.tipo === 'unirse_equipo'
           );
@@ -78,7 +80,6 @@ class BolsaJugadoresService {
           };
         })
       );
-      console.log('jugadoresestado', jugadoresConEstado);
 
       return {
         data: jugadoresConEstado,
@@ -105,7 +106,6 @@ class BolsaJugadoresService {
         id: uuidv4(),
         jugador_id,
       };
-      console.log(payload);
       const { data, error } = await this.dbService.insert<
         typeof payload,
         BolsaJugador
@@ -135,6 +135,22 @@ class BolsaJugadoresService {
         'jugador_id',
         jugador_id
       );
+
+      const { solicitudes, error: errorSolcitud } =
+        await baseSolicitudService.getSolicitudesUsuario(jugador_id);
+      if (!errorSolcitud && solicitudes) {
+        console.log('solicitudes pendientes usuario: ', solicitudes);
+        const crearEquipoSolicitudes = solicitudes.filter(
+          (s) =>
+            s.data.tipo === 'unirse_equipo' && s.data.estado === 'pendiente'
+        );
+        console.log('solicitudes pendientes', crearEquipoSolicitudes);
+
+        for (const solicitud of crearEquipoSolicitudes) {
+          await rechazarSolicitudUnirseEquipo(solicitud.id, jugador_id, false);
+        }
+      }
+
       if (error || !data || data.length === 0)
         throw new Error('Jugador no encontrado en la bolsa');
 

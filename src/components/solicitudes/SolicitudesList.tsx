@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { FlatList, View, Text } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { RequestWithId } from '@/src/types/requests';
 import {
+  aceptarSolicitudCrearEquipo,
   aceptarSolicitudUnirseEquipo,
   baseSolicitudService,
+  rechazarSolicitudCrearEquipo,
   rechazarSolicitudUnirseEquipo,
 } from '@/src/service/solicitudService';
 import { useUserContext } from '@/src/contexts/UserContext';
@@ -15,6 +17,7 @@ import { useThemeContext } from '@/src/contexts/ThemeContext';
 import ConfirmSolicitudModal from './ConfirmSolicitudModal';
 import { inscripcionService } from '@/src/service/inscripcionJugadorService';
 import { isJugador } from '@/src/interfaces/Jugador';
+import { bolsaJugadoresService } from '@/src/service/bolsaJugadoresService';
 
 export default function SolicitudesList() {
   const { authUser } = useAuth();
@@ -101,8 +104,42 @@ export default function SolicitudesList() {
       case 'crear_equipo':
         if (modalEsAceptacion) {
           // TODO: Aceptar Crear equipo
+          const { error, mensaje, solicitud } =
+            await aceptarSolicitudCrearEquipo(modalSolicitudId, usuarioID, '');
+
+          if (error || !solicitud) {
+            console.error('Error al aceptar la solicitud:', mensaje);
+            return;
+          }
+          // Actualizar la solicitud con los nuevos datos
+          setRequests((prevRequests) =>
+            prevRequests.map((r) =>
+              r.id === modalSolicitudId ? { ...r, ...solicitud } : r
+            )
+          );
+
+          setModalVisible(false);
         } else {
-          // TODO: rechazar Crear equipo
+          // TODO: Aceptar Crear equipo
+          const { error, mensaje, solicitud } =
+            await rechazarSolicitudCrearEquipo(
+              modalSolicitudId,
+              usuarioID,
+              motivo!
+            );
+
+          if (error || !solicitud) {
+            console.error('Error al aceptar la solicitud:', mensaje);
+            return;
+          }
+          // Actualizar la solicitud con los nuevos datos
+          setRequests((prevRequests) =>
+            prevRequests.map((r) =>
+              r.id === modalSolicitudId ? { ...r, ...solicitud } : r
+            )
+          );
+
+          setModalVisible(false);
         }
         break;
       case 'unirse_equipo':
@@ -113,6 +150,11 @@ export default function SolicitudesList() {
               modalSolicitudId,
               usuarioID,
               esAdmin,
+              {
+                cancelarInscripcion: async (jugador_id: string) => {
+                  return bolsaJugadoresService.cancelarInscripcion(jugador_id);
+                },
+              },
               motivo,
               dorsal
             );
@@ -132,7 +174,6 @@ export default function SolicitudesList() {
           setModalVisible(false);
 
           // Recargar las solicitudes para asegurar que la lista está actualizada
-          await loadSolicitudes();
         } else {
           // TODO: Rechazar solicitud equipo
           const { solicitud, error, mensaje } =

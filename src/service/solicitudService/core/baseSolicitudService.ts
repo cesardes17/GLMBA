@@ -56,6 +56,8 @@ function parseSolicitudToRequestWithId(s: SolicitudExpandida): RequestWithId {
             escudo_url: s.equipo_id?.escudo_url || '',
           },
           capitan_objetivo: getUserIdentifier(s.capitan_objetivo_id),
+          respuesta_admin: s.respuesta_admin ?? '',
+          fecha_respuesta: s.fecha_respuesta,
           fecha_creacion: s.fecha_creacion,
           aprobado_jugador: s.aprobado_jugador ?? false,
           aprobado_capitan: s.aprobado_capitan ?? false,
@@ -107,7 +109,7 @@ function parseSolicitudToRequestWithId(s: SolicitudExpandida): RequestWithId {
 }
 
 // 🔧 Función para crear una solicitud
-export async function crearSolicitud(
+async function crearSolicitud(
   solicitudData: Omit<Solicitud, 'fecha_creacion'>
 ): Promise<{
   solicitud: RequestWithId | null;
@@ -146,6 +148,7 @@ export async function crearSolicitud(
       base.escudo_url = data.path;
       base.motivo = solicitudData.motivo;
     } else if (solicitudData.tipo === 'unirse_equipo') {
+      console.log('solicitudData', solicitudData);
       const { equipo, error } =
         await equipoService.getEquipoDeTemporadaActualByCapitan(
           solicitudData.iniciada_por_id
@@ -196,6 +199,7 @@ export async function crearSolicitud(
 // 📄 Obtener solicitudes de usuario
 async function getSolicitudesUsuario(
   userId: string,
+  tipo: string = 'pendiente', // ← ya es opcional con valor por defecto
   page = 1,
   limit = 20
 ): Promise<{
@@ -215,14 +219,18 @@ async function getSolicitudesUsuario(
 
     const orFilter = `iniciada_por_id.eq.${userId},jugador_objetivo_id.eq.${userId},capitan_objetivo_id.eq.${userId}`;
 
+    const filters = tipo
+      ? [{ field: 'estado', operator: 'eq', value: tipo }]
+      : [];
     const { data, error } =
       await DatabaseService.getPaginatedData<SolicitudExpandida>(
         'solicitudes',
         {
-          orFilterString: orFilter,
           page,
           limit,
           select: query,
+          filters,
+          orFilterString: orFilter,
         }
       );
 
@@ -263,6 +271,7 @@ async function getSolicitudesUsuario(
 
 // 📄 Obtener solicitudes de administrador
 async function getSolicitudesAdministrador(
+  tipo: string = 'pendiente', // ← opcional
   page = 1,
   limit = 20
 ): Promise<{
@@ -280,6 +289,9 @@ async function getSolicitudesAdministrador(
       admin_aprobador_id ( id, nombre, email )
     `;
 
+    const filters = tipo
+      ? [{ field: 'estado', operator: 'eq', value: tipo }]
+      : [];
     const { data, error } =
       await DatabaseService.getPaginatedData<SolicitudExpandida>(
         'solicitudes',
@@ -287,6 +299,7 @@ async function getSolicitudesAdministrador(
           page,
           limit,
           select: query,
+          filters,
         }
       );
 

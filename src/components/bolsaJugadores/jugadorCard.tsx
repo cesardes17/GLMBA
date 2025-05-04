@@ -15,6 +15,7 @@ export default function PlayerCard({ player, onSendRequest }: Props) {
   const { theme } = useThemeContext();
   const { usuario } = useUserContext();
 
+  console.log('PlayerCard', player);
   const esCapitan = usuario?.rol_id === 4;
   const puedeEnviar = esCapitan && !player.solicitudPendiente;
 

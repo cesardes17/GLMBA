@@ -1,14 +1,22 @@
-import { Solicitud, SolicitudExpandida } from '@/src/interfaces/Solicitudes';
+import { Solicitud } from '@/src/interfaces/Solicitudes';
 import { baseSolicitudService } from '../core/baseSolicitudService';
 import { SolicitudServiceResponse } from '../types';
 import { inscripcionService } from '../../inscripcionJugadorService';
-import { bolsaJugadoresService } from '../../bolsaJugadoresService';
+// Import only the type and create a function parameter instead
+import type { BolsaJugadorServiceResponse } from '../../bolsaJugadoresService';
+
+interface IBolsaJugadoresService {
+  cancelarInscripcion(
+    jugador_id: string
+  ): Promise<BolsaJugadorServiceResponse<null>>;
+}
 
 export async function aceptarSolicitudUnirseEquipo(
   solicitudId: string,
   userId: string,
   esAdmin: boolean,
-  respuestaAdmin?: string,
+  bolsaJugadoresService: IBolsaJugadoresService,
+  respuestaAdmin: string | undefined,
   dorsalJugador?: number
 ): Promise<SolicitudServiceResponse> {
   try {

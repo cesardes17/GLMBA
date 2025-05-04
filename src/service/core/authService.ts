@@ -113,4 +113,9 @@ export const AuthService = {
       };
     }
   },
+  onAuthStateChange(
+    callback: Parameters<typeof AuthSupabase.onAuthStateChange>[0]
+  ) {
+    return AuthSupabase.onAuthStateChange(callback);
+  },
 };

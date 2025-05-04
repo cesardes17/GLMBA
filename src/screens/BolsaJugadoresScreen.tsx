@@ -54,29 +54,22 @@ export default function BolsaJugadoresScreen() {
   };
 
   useEffect(() => {
-    if (!usuario) return;
-
-    if (!isJugador(usuario)) {
-      setUserId(usuario.id);
-    } else {
-      setUserId(usuario.usuario_id);
-    }
     const fetchPlayers = async () => {
-      setIsLoading(true);
+      if (!usuario) return;
+
+      const capitanId = isJugador(usuario) ? usuario.usuario_id : usuario.id;
+      setUserId(capitanId);
       try {
-        console.log(
-          'Llamando al servicio getJugadoresEnBolsaConEstadoSolicitud...'
-        );
+        setIsLoading(true);
         const { data, error, mensaje } =
           await bolsaJugadoresService.getJugadoresEnBolsaConEstadoSolicitud(
-            userId
+            capitanId
           );
 
         if (error || !data) {
           console.error(mensaje || 'Error al obtener jugadores');
           return;
         }
-        console.log(data);
 
         setPlayers(data);
       } catch (error) {
@@ -87,7 +80,7 @@ export default function BolsaJugadoresScreen() {
     };
 
     fetchPlayers();
-  }, [userId, usuario]);
+  }, [usuario]);
 
   if (isLoading) {
     return <StyledActivityIndicator message='Cargando Jugadores...' />;

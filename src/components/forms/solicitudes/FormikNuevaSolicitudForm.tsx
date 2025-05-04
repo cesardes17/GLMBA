@@ -12,10 +12,14 @@ import { useThemeContext } from '@/src/contexts/ThemeContext';
 import { Solicitud } from '@/src/interfaces/Solicitudes';
 import { useUserContext } from '@/src/contexts/UserContext';
 import * as Yup from 'yup';
-import { isJugador } from '@/src/interfaces/Jugador';
+
 import { baseSolicitudService } from '@/src/service/solicitudService';
-import { inscripcionService } from '@/src/service/inscripcionJugadorService';
 import { v4 as uuidv4 } from 'uuid'; // si estás usando uuid
+import {
+  JugadorExtendidoService,
+  jugadorExtendidoService,
+} from '@/src/service/jugadorExtendidoService';
+import { JugadorConEquipo } from '@/src/interfaces/vistas/JugadorConEquipo';
 
 const TIPOS_SOLICITUD = [
   {
@@ -48,32 +52,34 @@ export default function FormikNuevaSolicitudForm({
   const { theme } = useThemeContext();
   const { usuario } = useUserContext();
   const [opciones, setOpciones] = useState<typeof TIPOS_SOLICITUD>([]);
-
+  const [jugador, setJugador] = useState<JugadorConEquipo | null>();
   useEffect(() => {
     const getOpcionesDisponibles = async () => {
-      if (!usuario || !isJugador(usuario)) {
+      if (!usuario) return [];
+
+      const { data: jugadorExtendido, error } =
+        await jugadorExtendidoService.getJugadorExtendidoPorId(usuario.id);
+
+      if (error || !jugadorExtendido) {
+        console.error(error);
         return [];
       }
+      setJugador(jugadorExtendido);
 
-      const tieneEquipo = await inscripcionService.userHasTeam(
-        usuario.usuario_id
-      );
-      const esJugador = usuario.rol_id === 5;
-      const esCapitan = usuario.rol_id === 4;
-      console.log('tieneEquipo', tieneEquipo);
-      console.log('esJugador', esJugador);
-      console.log('esCapitan', esCapitan);
-
-      if (!tieneEquipo && esJugador) {
+      const tieneEquipo = jugadorExtendido.equipo_id !== null;
+      const esCapitan = jugadorExtendido.rol_id === 4;
+      console.log('tieneEquipo:', tieneEquipo);
+      console.log('esCapitan:', esCapitan);
+      if (!tieneEquipo) {
         return [TIPOS_SOLICITUD.find((opt) => opt.id === 'crear_equipo')!];
-      }
-
-      if (tieneEquipo && esJugador) {
-        return [TIPOS_SOLICITUD.find((opt) => opt.id === 'baja_equipo')!];
       }
 
       if (tieneEquipo && esCapitan) {
         return [TIPOS_SOLICITUD.find((opt) => opt.id === 'disolver_equipo')!];
+      }
+
+      if (tieneEquipo && !esCapitan) {
+        return [TIPOS_SOLICITUD.find((opt) => opt.id === 'baja_equipo')!];
       }
 
       return [];
@@ -81,14 +87,25 @@ export default function FormikNuevaSolicitudForm({
 
     const loadOpciones = async () => {
       const opcionesDisponibles = await getOpcionesDisponibles();
+      console.log('opcionesDisponibles:', opcionesDisponibles);
       setOpciones(opcionesDisponibles);
     };
 
     loadOpciones();
   }, [usuario]);
 
-  if (!usuario || !isJugador(usuario)) {
+  if (!usuario || !jugador) {
     return null;
+  }
+
+  if (jugador.esta_en_bolsa) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <StyledAlert>
+          No puedes crear una solicitud porque estás en la bolsa.
+        </StyledAlert>
+      </View>
+    );
   }
 
   const initialValues = {
@@ -110,7 +127,7 @@ export default function FormikNuevaSolicitudForm({
         escudo_url: undefined,
         motivo: undefined,
         respuesta_admin: undefined,
-        iniciada_por_id: usuario.usuario_id,
+        iniciada_por_id: usuario.id,
         fecha_respuesta: undefined,
         jugador_objetivo_id: undefined,
         capitan_objetivo_id: undefined,
@@ -135,13 +152,13 @@ export default function FormikNuevaSolicitudForm({
         values.tipo === 'disolver_equipo' ||
         values.tipo === 'baja_equipo'
       ) {
-        if (!usuario.equipo_id) {
+        if (!jugador?.equipo_id) {
           throw new Error('No perteneces a ningún equipo actualmente');
         }
         solicitudData = {
           ...solicitudData,
           tipo: values.tipo,
-          equipo_id: usuario.equipo_id,
+          equipo_id: jugador.equipo_id,
           motivo: values.motivo,
         };
       }
@@ -295,6 +312,14 @@ export default function FormikNuevaSolicitudForm({
       </View>
     );
   };
+
+  if (opciones.length === 0) {
+    return (
+      <StyledAlert>
+        <StyledText>No tienes opciones disponibles</StyledText>
+      </StyledAlert>
+    );
+  }
 
   return (
     <Formik

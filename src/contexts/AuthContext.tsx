@@ -87,29 +87,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const loadSession = async () => {
       try {
-        const storedUser = await AsyncStorage.getItem('authUser');
-        const storedSession = await AsyncStorage.getItem('session');
+        const { data: sessionRes } = await AuthService.getSession();
+        const { data: userRes } = await AuthService.getCurrentUser();
 
-        if (storedUser && storedSession) {
-          setAuthUser(JSON.parse(storedUser));
-          setSession(JSON.parse(storedSession));
-          setAuthLoading(false);
-          return;
-        }
-
-        const sessionRes = await AuthService.getSession();
-        const userRes = await AuthService.getCurrentUser();
-        setSession(sessionRes.data); // Change from session to sessionRes.data
-        setAuthUser(userRes.data); // Change from user to userRes.data
-        if (userRes.data && sessionRes.data) {
-          await saveAuthData(userRes.data, sessionRes.data);
+        setSession(sessionRes);
+        setAuthUser(userRes);
+        if (sessionRes && userRes) {
+          await saveAuthData(userRes, sessionRes);
         }
       } catch (error) {
-        console.error('Error cargando sesión:', error);
+        console.error('Error cargando sesión inicial:', error);
       }
       setAuthLoading(false);
     };
+
     loadSession();
+
+    // 🔁 Escuchar cambios de sesión
+    const { data: listener } = AuthService.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          setSession(session);
+          setAuthUser(session.user);
+          saveAuthData(session.user, session);
+        } else {
+          setSession(null);
+          setAuthUser(null);
+          clearAuthData();
+        }
+      }
+    );
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
   }, []);
 
   return (
